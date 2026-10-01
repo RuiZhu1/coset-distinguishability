@@ -1,8 +1,9 @@
 """Truncated-MPS ML decoder versus the exact decoder on strata WITH erasures (k erased qubits, w Pauli errors).
 
 `mps_validation.py` covers e = 0 with an MWPM-enriched design; MWPM has no erasure support, so here the strata are chosen
-with 2w + k a few units above the distance, where ML fails with an O(1e-2 .. 1e-1) probability, and the comparison is a
-plain paired one on `--n` samples.  Decoders are matched at p.
+with an O(1e-2 .. 1e-1) exact-ML failure probability (probed beforehand: many erasure strata with 2w + k above the
+distance still have a failure probability of exactly 0 and would test nothing), and the comparison is a plain paired
+one on the same samples.  Decoders are matched at p.
 
     python experiments/p1_erasure_pauli/mps_erasure_check.py
 Writes results/mps_erasure_check.json.
@@ -55,10 +56,13 @@ def main() -> None:
     ap.add_argument("--out", type=Path, default=REPO / "results" / "mps_erasure_check.json")
     args = ap.parse_args()
     chis = [3, 4, 6, 8]
-    cases = [(11, 2, 8, 0.05, 3000, chis, args.seed), (11, 3, 7, 0.05, 3000, chis, args.seed),
-             (11, 4, 6, 0.05, 3000, chis, args.seed), (11, 5, 6, 0.05, 3000, chis, args.seed),
-             (13, 3, 9, 0.05, 1200, chis, args.seed), (13, 4, 8, 0.05, 1200, chis, args.seed),
-             (13, 5, 8, 0.05, 1200, chis, args.seed), (13, 6, 7, 0.05, 1200, chis, args.seed)]
+    # strata chosen (by probing the exact decoder) so that ML fails with probability ~1e-2 .. 1e-1; the dense ones are
+    # the harshest tests of the truncation
+    cases = [(11, 6, 12, 0.05, 4000, chis, args.seed), (11, 6, 14, 0.05, 4000, chis, args.seed),
+             (11, 8, 11, 0.05, 4000, chis, args.seed), (11, 8, 13, 0.05, 4000, chis, args.seed),
+             (11, 10, 10, 0.05, 4000, chis, args.seed), (11, 10, 12, 0.05, 4000, chis, args.seed),
+             (13, 4, 16, 0.05, 1500, chis, args.seed), (13, 8, 15, 0.05, 1500, chis, args.seed),
+             (13, 6, 18, 0.05, 1500, chis, args.seed), (13, 8, 17, 0.05, 1500, chis, args.seed)]
     with ProcessPoolExecutor(max_workers=args.jobs) as ex:
         results = list(ex.map(run_case, cases))
     for r in results:
