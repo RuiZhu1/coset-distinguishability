@@ -56,7 +56,7 @@ def main() -> None:
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--out", type=Path, default=REPO / "results" / "mps_erasure_check.json")
     args = ap.parse_args()
-    chis = [3, 4, 6, 8]
+    chis = [4, 6, 8, 12]
     # strata chosen (by probing the exact decoder) so that ML fails with probability ~1e-2 .. 1e-1; the dense ones are
     # the harshest tests of the truncation
     cases = [(11, 6, 12, 0.05, 4000, chis, args.seed), (11, 6, 14, 0.05, 4000, chis, args.seed),
