@@ -201,6 +201,8 @@ with equality at $\theta^\ast$. The difference $g(\theta)=\pL(\theta;D^\ast)-\er
 \[
 \partial_\theta\err\big|_{\theta^\ast}=\sum_{k,w}\partial_\theta P_\theta(k,w)\,f_{D^\ast}(k,w).
 \]
+The ML decoder depends on $\theta$ only through $p$: the erased positions are known, so $e$ never enters the posterior given the flags. Therefore
+the $e$-derivative is an exact identity for ML, and the envelope argument is needed only for $\partial_p$.
 Hence $\partial_\theta\ln\pL=\langle s_\theta\rangle_{\rm fail}$ (with $s_\theta=\partial_\theta\ln P_\theta$ the score function and the conditional expectation taken over failure events),
 and $\partial\alpha/\partial\theta$ is minus the least-squares slope of $\langle s_\theta\rangle_{\rm fail}$ against $d$ (the least-squares slope is linear in the data and commutes with differentiation).
 Differentiability: at finite $d$, $\err$ is the minimum of finitely many smooth functions and is differentiable almost everywhere; kinks may occur at ties between decisions.
@@ -210,5 +212,9 @@ Differentiability: at finite $d$, $\err$ is the minimum of finitely many smooth 
 \begin{observation}[Exact verification of the envelope identity]\label{obs:envelope}
 Check C8 of \texttt{exact\_small\_codes.py}: for $[[5,1,3]]$, the Steane code, and the $d=3$ rotated surface code, at $(p^\ast,e^\ast)\in\{(0.04,0.05),(0.1,0.2)\}$,
 the derivatives $\partial_p\err,\partial_e\err$ of the exact ML agree with the derivatives of the failure rate of the \emph{frozen decoder} to within relative $2\times10^{-10}$.
-This verifies the identity only on small codes; it has not yet been verified for tensor-network ML (with truncation error).\hfill\st{NUMERICAL}
+In addition, \texttt{experiments/p1\_erasure\_pauli/envelope\_check.py} tests the $p$-derivative at $d=5,7$ with the exact transfer-matrix ML decoder on common random samples
+of each stratum $(k,w)$. A central difference has a deterministic $O(h^2)$ discretisation error (about $+0.3\%$ at $d=5$ and $+1.9\%$ at $d=7$ for $h=0.01$, $p=0.06$, growing four times for $2h$),
+so the test compares the finite difference with re-matched decoders ($B_{\rm matched}$) against the \emph{same} finite difference with the frozen decoder ($B_{\rm frozen}$).
+Their difference is at most $0.04\%$ of the derivative (within $1.6$ bootstrap standard errors) in four cases, one of which has erasure strata; one deviation of $2.05$ standard errors ($0.1\%$ of the derivative) occurs at step $2h$, $d=7$.
+The identity has not yet been verified for truncated tensor-network ML (with truncation error) or at $d\ge9$.\hfill\st{NUMERICAL}
 \end{observation}

@@ -33,8 +33,8 @@ Theorem~\ref{thm:rate}\ (exchange-rate bound) &
 finite $d$: $R^{(d)}\le c$ (C7); \textbf{P1: $R_{e\to p}\le c(p_0,e_0)$, and report $\Delta=c-R$, $R_B$, $R_{\rm hash}$} &
 \texttt{theory/checks}; P1 / M2 & passes at finite $d$; P1 pending \\
 Remark~\ref{rem:envelope}\ (envelope argument for ML derivatives) &
-$\partial_\theta\err$ equals the derivative of the frozen-decoder failure rate (C8); to be verified with the exact ML decoder at $d\ge5$ and with tensor-network ML &
-\texttt{theory/checks}; M1 & passes on 3 small codes \\
+$\partial_\theta\err$ equals the derivative of the frozen-decoder failure rate (C8); verified with the exact ML decoder at $d=5,7$ (\texttt{envelope\_check.py}); tensor-network ML pending &
+\texttt{theory/checks}; M1 & passes on 3 small codes and at $d=5,7$ \\
 Observation~\ref{obs:sharp}\ ($[[5,1,3]]$ attains equality) &
 scan $R^{(d)}/c$ at $e_0{=}0$ over a library of random stabilizer codes &
 extend \texttt{theory/checks} & observed for 3 codes \\

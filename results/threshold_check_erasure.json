@@ -1,0 +1,32 @@
+{
+  "script": "experiments/p1_erasure_pauli/threshold_check.py",
+  "scenario": "erasure",
+  "swept": "e (p = 0)",
+  "reference": "ML = 0.5",
+  "args": {
+    "scenario": "erasure",
+    "ds": "[5, 7, 9]",
+    "shots": "30000",
+    "seed": "20241003",
+    "reanalyze": "False",
+    "out": "None"
+  },
+  "crossings": {
+    "ML_d5_d7": {
+      "crossing": 0.5009851200966353,
+      "se": 0.0030837486484499633
+    },
+    "ML_d7_d9": {
+      "crossing": 0.5001248664529995,
+      "se": 0.003589452344870847
+    }
+  },
+  "versions": {
+    "lcd": "0.0.1",
+    "numpy": "2.4.6"
+  },
+  "git_commit": "7d3d374dc61797f2232a432531d4ec3dacdc1cf8",
+  "git_dirty_src": true,
+  "date": "2026-10-01T11:32:24+00:00",
+  "note": "finite-size crossings of small d from a weighted linear fit of the difference; sanity check only (no finite-size scaling)"
+}

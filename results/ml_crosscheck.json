@@ -1,0 +1,77 @@
+{
+  "script": "experiments/p1_erasure_pauli/crosscheck_ml.py",
+  "seed": 20241002,
+  "versions": {
+    "lcd": "0.0.1",
+    "numpy": "2.4.6",
+    "qecsim": "1.0b9"
+  },
+  "git_commit": "7d3d374dc61797f2232a432531d4ec3dacdc1cf8",
+  "git_dirty_src": true,
+  "date": "2026-10-01T11:26:14+00:00",
+  "results": [
+    {
+      "name": "A: d=3 stratified ML with erasures vs exact enumeration",
+      "p": 0.05,
+      "e": 0.1,
+      "exact": 0.0828177992083329,
+      "estimate": 0.08251771536782063,
+      "se": 0.00023556074768180192,
+      "z": -1.2739127527207292,
+      "certified": [
+        0.08023792845183918,
+        0.0847993234250178
+      ],
+      "covered": true,
+      "strata": 55,
+      "decodes": 299984,
+      "passed": true
+    },
+    {
+      "name": "A: d=3 stratified ML with erasures vs exact enumeration",
+      "p": 0.15,
+      "e": 0.3,
+      "exact": 0.4262916699622993,
+      "estimate": 0.42550433277171607,
+      "se": 0.0007508607065817989,
+      "z": -1.0485795616705935,
+      "certified": [
+        0.41479654138338,
+        0.43608541006797524
+      ],
+      "covered": true,
+      "strata": 55,
+      "decodes": 299973,
+      "passed": true
+    },
+    {
+      "name": "B: d=3 qecsim MPS (chi=16) vs exact ML",
+      "d": 3,
+      "p": 0.1,
+      "ours": 0.102275,
+      "ours_se": 0.0006775500880931239,
+      "qecsim": 0.0989,
+      "qecsim_se": 0.0021109096380470672,
+      "z": 1.5223391429443276,
+      "shots_ours": 200000,
+      "shots_qecsim": 20000,
+      "qecsim_seconds": 23.9,
+      "passed": true
+    },
+    {
+      "name": "B: d=5 qecsim MPS (chi=16) vs exact ML",
+      "d": 5,
+      "p": 0.1,
+      "ours": 0.06621,
+      "ours_se": 0.0005559956650010861,
+      "qecsim": 0.06916666666666667,
+      "qecsim_se": 0.0032757350037533276,
+      "z": -0.8898693873712518,
+      "shots_ours": 200000,
+      "shots_qecsim": 6000,
+      "qecsim_seconds": 103.4,
+      "passed": true
+    }
+  ],
+  "all_passed": true
+}

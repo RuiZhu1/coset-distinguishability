@@ -58,7 +58,7 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Observation 3.5 | The bound is attained by $[[5,1,3]]$ at $e_0{=}0$ (8 significant digits) | NUMERICAL | C7 |
 | Theorem 3.7 | Necessary and sufficient condition for the local-free-operation preorder on the code-capacity Pauli+erasure class | PROVED | C4 |
 | Open problem 3.10 | The gap $c-R_\alpha$: code dependence or incompleteness of the free operations | open | **P1 (M2)** |
-| Remark 3.13 / Observation 3.14 | Envelope argument for ML derivatives (the P1 sampling scheme gets $\partial p_L/\partial p$, $\partial p_L/\partial e$ from one table $f$); exact check on small codes | SKETCH / NUMERICAL | C8 |
+| Remark 3.13 / Observation 3.14 | Envelope argument for ML derivatives (the P1 sampling scheme gets $\partial p_L/\partial p$, $\partial p_L/\partial e$ from one table $f$); exact check on small codes and at d = 5, 7 | SKETCH / NUMERICAL | C8; `envelope_check.py` |
 | Conjecture 3.11 | Code-universal operational order = local free order (the "strong" form of the iff) | CONJECTURE | counterexample search (to do) |
 | Conjecture 3.12 | $H_B$: $\alpha$ is a function of the Bhattacharyya parameter $B$, $R_\alpha=R_B$ | CONJECTURE | **P1 (M2)** |
 | Lemma 4.1 / Corollary 4.2 | Union (Bhattacharyya) bound $\varepsilon^\star\le\tfrac12\widetilde W(B)$ | PROVED | C5 |
