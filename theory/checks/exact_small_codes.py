@@ -17,6 +17,7 @@ statements that the theory relies on:
   C5  Bhattacharyya (union) upper bound  eps* <= W(B)/2            (Lemma 4.1)
   C6  genie lower bound eps* >= eps*_genie  (rotated d=3 only)     (Prop 5.1)
   C7  finite-d exchange rate  R^(d) = (d eps*/de)/(d eps*/dp)  vs  the bound c = (3/4-p)/(1-e)
+  C8  envelope identity: d eps*/dtheta = d/dtheta [failure of the decoder frozen at theta]  (README, derivatives)
 
 Run:  python theory/checks/exact_small_codes.py
 Exit status is non-zero if any *inequality* check is violated beyond 1e-12.
@@ -185,6 +186,28 @@ def eps_given_flags(code, p):
     return g
 
 
+def decisions_and_fail(code, p, mask):
+    """ML decision table (argmax label per syndrome) for erased set `mask` at rate p."""
+    n = code.n
+    q_dep, q_er = dep_vec(p), np.full(4, 0.25)
+    P = np.ones(1)
+    for j in range(n):
+        P = np.kron(P, q_er if (mask >> j) & 1 else q_dep)
+    joint = np.bincount(code.joint_idx, weights=P, minlength=code.nsyn * 4).reshape(code.nsyn, 4)
+    return joint.argmax(axis=1)
+
+
+def fixed_decoder_failure(code, dec, p, mask):
+    """Failure probability at rate p of the decoder `dec` (frozen label per syndrome) for erased set `mask`."""
+    n = code.n
+    q_dep, q_er = dep_vec(p), np.full(4, 0.25)
+    P = np.ones(1)
+    for j in range(n):
+        P = np.kron(P, q_er if (mask >> j) & 1 else q_dep)
+    joint = np.bincount(code.joint_idx, weights=P, minlength=code.nsyn * 4).reshape(code.nsyn, 4)
+    return 1.0 - joint[np.arange(code.nsyn), dec].sum()
+
+
 class Eps:
     """eps*(p,e) with caching of the flag-pattern tables g_p."""
     def __init__(self, code):
@@ -328,6 +351,28 @@ def run_code(code, rng):
             W = weight_enum_N_minus_S(code, B(p, e))
             worst = min(worst, 0.5 * W - eps(p, e))
     check("C5 eps* <= (1/2) W_{N\\S}(B(p,e))", worst > -TOL, f"(min slack {worst:.2e})")
+
+    # C8 envelope identity: derivative of the Bayes-optimal error equals the derivative of the failure of the
+    #    decoder frozen at the working point (the ML decoder depends on (p, e), the identity says it does not matter
+    #    to first order).  This is what lets one table f at theta* give d p_L / d theta without neighbouring decodes.
+    n = code.n
+    worst = 0.0
+    for p0, e0 in ((0.04, 0.05), (0.1, 0.2)):
+        decs = [decisions_and_fail(code, p0, m) for m in range(1 << n)]
+
+        def frozen(p, e):
+            w = (e ** code.pop) * ((1 - e) ** (n - code.pop))
+            return float(sum(w[m] * fixed_decoder_failure(code, decs[m], p, m) for m in range(1 << n)))
+
+        h = 1e-5
+        for name, f_opt, f_fix in (
+                ("p", lambda x: eps(p0 + x, e0), lambda x: frozen(p0 + x, e0)),
+                ("e", lambda x: eps(p0, e0 + x), lambda x: frozen(p0, e0 + x))):
+            d_opt = (f_opt(h) - f_opt(-h)) / (2 * h)
+            d_fix = (f_fix(h) - f_fix(-h)) / (2 * h)
+            worst = max(worst, abs(d_opt - d_fix) / abs(d_opt))
+    check("C8 envelope identity d(eps*)/dtheta = d(frozen-decoder failure)/dtheta", worst < 1e-5,
+          f"(max relative difference {worst:.2e})")
 
     # C7 finite-d exchange rate vs the rigorous bound
     print("  C7 finite-d rate R^(d)=(d eps*/de)/(d eps*/dp)  vs  bound c=(3/4-p)/(1-e)  [R_B, R_hash heuristics]")

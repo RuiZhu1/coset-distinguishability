@@ -18,7 +18,7 @@ theory/
 
 ```bash
 make -C theory pdf      # 需要 TeX Live: xelatex, latexmk, ctex, 中文字体
-make -C theory check    # 需要 numpy;约 25 秒;不等式被违反时退出码非零
+make -C theory check    # 需要 numpy;约 35 秒;不等式被违反时退出码非零
 ```
 
 `check` 输出末行应为 `ALL INEQUALITY CHECKS PASSED`。
@@ -48,6 +48,7 @@ make -C theory check    # 需要 numpy;约 25 秒;不等式被违反时退出码
 | 观察 3.5 | 上界对 $[[5,1,3]]$ 在 $e_0{=}0$ 处取等(8 位有效数字) | NUMERICAL | C7 |
 | 定理 3.7 | 码容量泡利+擦除类上局域自由操作预序的充要条件 | PROVED | C4 |
 | 开放问题 3.10 | 汇率缺口 $c-R_\alpha$ 来自码相关性还是自由操作不完备 | 开放 | **P1(M2)** |
+| 注 3.13 / 观察 3.14 | ML 导数的包络论证(P1 采样方案用一张 f 表求 ∂p_L/∂p、∂p_L/∂e);小码上精确验证 | SKETCH / NUMERICAL | C8 |
 | 猜想 3.11 | 码通用的操作序 = 局域自由序(充要条件的“强”形式) | CONJECTURE | 反例搜索(待做) |
 | 猜想 3.12 | $H_B$:$\alpha$ 是 Bhattacharyya 参数 $B$ 的函数,$R_\alpha=R_B$ | CONJECTURE | **P1(M2)** |
 | 引理 4.1 / 推论 4.2 | 联合(Bhattacharyya)上界 $\varepsilon^\star\le\tfrac12\widetilde W(B)$ | PROVED | C5 |

@@ -188,3 +188,27 @@ R_s(p,e)=\frac{\partial_eb_s}{\partial_pb_s}\le c(p,e).
 \noindent 这是可检验的:P1 的数值给出 $R_\alpha$,与解析式 $R_B$ 比较。$R_\alpha\neq R_B$ 表明
 Bhattacharyya 单调量不完备,下一层候选是 $b_s$ ($s\ne\tfrac12$)。引理~\ref{lem:union}(上界)与命题~\ref{prop:genie}
 (下界)已把 $\alpha$ 夹在两个仅依赖 $B$ 的函数之间,但夹逼并不约束导数,因此 $H_B$ 需要单独检验。
+
+\subsection{导数的解析公式与包络论证}\label{sec:envelope}
+
+P1 的采样方案(README §2)用一张 $f(k,w)$ 表直接求 $\partial_\theta\pL$,不解码邻近参数点。对与 $(p,e)$ 无关的解码器(MWPM)这是恒等式;
+对最大似然解码器依赖下面的论证。
+
+\begin{remark}[ML 导数的包络论证]\label{rem:envelope}
+设 $D^\ast$ 是 $\theta^\ast=(p^\ast,e^\ast)$ 处的 ML 解码器(固定的映射)。对固定解码器 $D$,
+$\pL(\theta;D)=\sum_{k,w}P_\theta(k,w)\,f_D(k,w)$,其中 $f_D$ 不依赖 $\theta$。最优性给出 $\err(\theta)=\min_D\pL(\theta;D)\le\pL(\theta;D^\ast)$,
+等号在 $\theta^\ast$ 成立。差 $g(\theta)=\pL(\theta;D^\ast)-\err(\theta)\ge0$ 且 $g(\theta^\ast)=0$,故只要二者在 $\theta^\ast$ 可导就有 $\nabla g(\theta^\ast)=0$,即
+\[
+\partial_\theta\err\big|_{\theta^\ast}=\sum_{k,w}\partial_\theta P_\theta(k,w)\,f_{D^\ast}(k,w).
+\]
+于是 $\partial_\theta\ln\pL=\langle s_\theta\rangle_{\rm fail}$($s_\theta=\partial_\theta\ln P_\theta$ 为得分函数,条件期望对失败事件取),
+而 $\partial\alpha/\partial\theta$ 是 $\langle s_\theta\rangle_{\rm fail}$ 随 $d$ 的最小二乘斜率的相反数(最小二乘斜率关于数据线性,与求导可交换)。
+可导性:有限 $d$ 时 $\err$ 是有限个光滑函数的最小值,几乎处处可导,在判决并列处可能有折点。
+\hfill\st{SKETCH}
+\end{remark}
+
+\begin{observation}[包络恒等式的精确验证]\label{obs:envelope}
+\texttt{exact\_small\_codes.py} 的检验 C8:对 $[[5,1,3]]$、Steane 码、$d=3$ 旋转表面码,在 $(p^\ast,e^\ast)\in\{(0.04,0.05),(0.1,0.2)\}$ 处,
+精确 ML 的 $\partial_p\err,\partial_e\err$ 与\emph{冻结解码器}失败率的导数在相对 $2\times10^{-10}$ 内一致。
+这只验证了小码上的恒等式;张量网络 ML(含截断误差)上尚未验证。\hfill\st{NUMERICAL}
+\end{observation}
