@@ -20,8 +20,8 @@ QR/SVD); every sample has its own prior, so the MPO tensors carry a batch index.
 
 Ties between classes (exact ties occur with positive probability under erasures) are detected with a tolerance
 ``tie_rtol`` on log Z, which must exceed the truncation error; they are then broken uniformly at random.
-A class whose truncated partition function is not positive (chi too small) is treated as never maximal and is counted in
-``last_invalid``; if all four classes of a sample are invalid an error is raised.
+A truncated partition function can come out non-positive when chi is too small (dense erasure strata at chi = 3):
+such samples are counted in ``last_invalid`` / ``last_fallback`` and decoded again with doubled chi until valid.
 """
 from __future__ import annotations
 
@@ -44,13 +44,16 @@ for _par in (0, 1):
 
 class MPSMLDecoder:
     def __init__(self, code: RotatedSurfaceCode, chi: int = 8, chunk: int = 64, tie_rtol: float = 1e-6,
-                 threads: int = 1):
+                 threads: int = 1, max_chi: int = 64):
         """chi: bond dimension; chunk: samples per vectorised batch; tie_rtol: tolerance on log Z for ties (must exceed
-        the truncation error); threads: worker threads over chunks (the batched LAPACK calls release the GIL)."""
+        the truncation error); threads: worker threads over chunks (the batched LAPACK calls release the GIL);
+        max_chi: cap for the automatic fallback (samples whose truncated partition function is not positive for every
+        class are decoded again with doubled bond dimension until valid)."""
         if chi < 1:
             raise ValueError("chi must be >= 1")
         self.code, self.chi, self.chunk, self.tie_rtol = code, int(chi), int(chunk), float(tie_rtol)
         self.threads = max(1, int(threads))
+        self.max_chi = int(max_chi)
         d = code.d
         self.W = d + 1
         pres = np.zeros((d + 1, d + 1), bool)               # pres[R + 1, C + 1]
@@ -65,6 +68,7 @@ class MPSMLDecoder:
         self._check_geometry()
         self.last_truncation: np.ndarray | None = None      # per-sample accumulated discarded weight of the last call
         self.last_invalid = 0                                # classes with a non-positive partition function (last call)
+        self.last_fallback = 0                               # samples re-decoded with larger chi because a class was invalid
         self.last_refined = 0                                # samples re-decoded by the convergence monitor (last call)
         self.last_refine_changed = 0                         # ... and how many of their decisions changed
 
@@ -199,6 +203,22 @@ class MPSMLDecoder:
         self.last_truncation = disc
         return out
 
+    def _repair_invalid(self, ex, ez, priors, L: np.ndarray) -> np.ndarray:
+        """Re-decode samples with a non-finite class weight (truncated Z <= 0) with doubled chi until all are valid."""
+        bad = ~np.isfinite(L).all(axis=1)
+        self.last_fallback = int(bad.sum())
+        chi = self.chi
+        while bad.any():
+            if chi >= self.max_chi:
+                raise FloatingPointError(f"partition function still non-positive at chi = {chi} (max_chi)")
+            chi = min(2 * chi, self.max_chi)
+            fine = MPSMLDecoder(self.code, chi=chi, chunk=self.chunk, tie_rtol=self.tie_rtol, threads=self.threads,
+                                max_chi=self.max_chi)
+            idx = np.flatnonzero(bad)
+            L[idx] = fine.log_class_weights(ex[idx], ez[idx], priors[idx])
+            bad[idx] = ~np.isfinite(L[idx]).all(axis=1)
+        return L
+
     @staticmethod
     def _decision(L: np.ndarray, tie_rtol: float) -> np.ndarray:
         """Conditional failure probability from log class weights: 1, 0, or 1 - 1/m for m tied maximisers."""
@@ -219,6 +239,7 @@ class MPSMLDecoder:
         error of the chi-run: if it is zero, chi was large enough for these samples)."""
         L = self.log_class_weights(ex, ez, priors)
         self.last_invalid = int((~np.isfinite(L)).sum())
+        L = self._repair_invalid(ex, ez, priors, L)
         self.last_refined = self.last_refine_changed = 0
         if refine_chi is not None and refine_chi > self.chi:
             wrong = np.where(np.isfinite(L[:, 1:]), L[:, 1:], -np.inf).max(axis=1)

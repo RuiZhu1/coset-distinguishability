@@ -132,3 +132,33 @@ def test_monitor_does_nothing_when_chi_is_already_large():
     a = mon.fail_prob(ex, ez, pri, refine_chi=32, margin=50.0)
     assert mon.last_refined == 40 and mon.last_refine_changed == 0
     np.testing.assert_array_equal(a, MPSMLDecoder(code, chi=16).fail_prob(ex, ez, pri))
+
+
+def test_invalid_partition_functions_fall_back_to_larger_chi():
+    """Dense strata with erasures at tiny chi give non-positive truncated Z: the decoder must repair, not crash."""
+    rng = np.random.default_rng(14)
+    d = 9
+    code = RotatedSurfaceCode(d)
+    exd = ExactTNMLDecoder(code)
+    seen_invalid = seen_fallback = 0
+    ex, ez, er = sample_stratum(code.n, 6, 14, 150, rng)
+    pri = make_priors(code.n, 0.05, er)
+    mps = MPSMLDecoder(code, chi=2)
+    L = mps.log_class_weights(ex, ez, pri)
+    assert (~np.isfinite(L)).any(), "the chosen stratum should produce invalid classes at chi = 2"
+    fp = mps.fail_prob(ex, ez, pri)                            # must not raise
+    assert np.isfinite(fp).all() and mps.last_fallback > 0 and mps.last_invalid > 0
+    fe = exd.fail_prob(ex, ez, pri)
+    # this stratum is extremely dense (failure fraction 0.37); chi = 2 is hopeless there, the point of the test is that
+    # the repaired run is valid and not absurd (it is far from useful accuracy: see the erasure check in README)
+    assert abs(fp.mean() - fe.mean()) < 0.1
+
+
+def test_fallback_gives_up_at_max_chi():
+    rng = np.random.default_rng(14)
+    code = RotatedSurfaceCode(9)
+    ex, ez, er = sample_stratum(code.n, 6, 14, 150, rng)
+    pri = make_priors(code.n, 0.05, er)
+    mps = MPSMLDecoder(code, chi=2, max_chi=2)                 # no room to grow
+    with pytest.raises(FloatingPointError):
+        mps.fail_prob(ex, ez, pri)

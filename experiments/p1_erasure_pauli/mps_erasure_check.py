@@ -45,7 +45,8 @@ def run_case(case: tuple) -> dict:
         f = mps.fail_prob(ex, ez, pri)
         out["per_chi"][str(chi)] = dict(changed=int((f != fe).sum()), ml_failing=int((fe > 0).sum()),
                                         mean_diff=float((f - fe).mean()), seconds_per_decode=(time.time() - t0) / N,
-                                        max_truncation_weight=float(mps.last_truncation.max()))
+                                        max_truncation_weight=float(mps.last_truncation.max()),
+                                        invalid_classes=mps.last_invalid, samples_repaired_by_fallback=mps.last_fallback)
     return out
 
 
@@ -67,7 +68,7 @@ def main() -> None:
         results = list(ex.map(run_case, cases))
     for r in results:
         print(f"d={r['d']} (k={r['k']}, w={r['w']}) exact failure fraction {r['exact_failure_fraction']:.4f}: " +
-              "  ".join(f"chi={c}: changed {v['changed']}/{r['N']}" for c, v in r["per_chi"].items()), flush=True)
+              "  ".join(f"chi={c}: changed {v['changed']}/{r['N']} (repaired {v['samples_repaired_by_fallback']})" for c, v in r["per_chi"].items()), flush=True)
     try:
         commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip()
         dirty = bool(subprocess.check_output(["git", "status", "--porcelain", "--", "src", "experiments"],
