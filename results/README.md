@@ -10,6 +10,9 @@ versions, the git commit and whether `src/` or `experiments/` had uncommitted ch
 | `threshold_check_depolarizing.{csv,json}` | `threshold_check.py --scenario depolarizing --shots 40000` | Exact ML and MWPM crossings, depolarizing noise, d = 5, 7, 9. |
 | `threshold_check_bitflip.{csv,json}` | `threshold_check.py --scenario bitflip --ds 5 7 9 11 13 15 --shots 100000` | MWPM crossings, bit-flip noise, d = 5..15. |
 | `threshold_check_erasure.{csv,json}` | `threshold_check.py --scenario erasure --shots 30000` | Exact ML crossings, pure erasure, d = 5, 7, 9. |
+| `mps_validation.json` | `experiments/p1_erasure_pauli/mps_validation.py` | Truncated-MPS decoder vs the exact decoder (d = 11, 13) and vs chi = 16 anchored to it (d = 15) on the strata that carry p_L, e = 0, MWPM-enriched stratified design. |
+| `mps_erasure_check.json` | `experiments/p1_erasure_pauli/mps_erasure_check.py` | Truncated-MPS decoder vs the exact decoder on strata with erasures (d = 11, 13); counts the samples repaired by the invalid-Z fallback. A first version used strata where ML never fails and tested nothing; it was replaced by strata probed to have a failure fraction of 1e-2 or more. |
+| `decoder_timing.json` | `experiments/p1_erasure_pauli/decoder_timing.py` | Cost per decode, exact vs MPS, d = 7..15 (idle machine, single core). |
 | `envelope_check.json` | `experiments/p1_erasure_pauli/envelope_check.py` | Envelope identity for the exact ML decoder at d = 5, 7 (matched vs frozen finite differences on common random samples; discretisation error reported separately). A first version of the test compared the matched finite difference with the analytic derivative and wrongly failed, because it mixed in the O(h^2) discretisation error of the central difference; the corrected design was fixed before looking at its results. |
 
 Notes on provenance.

@@ -28,7 +28,7 @@ The research plan is essentially settled; what matters most now is to produce **
 - Rotated surface code, distances d in {5, 7, 9, 11, 13, 15} (larger if the tensor network can afford it).
 - Code-capacity noise: each data qubit independently is erased with probability e (a uniformly random Pauli I/X/Y/Z is applied, location known); otherwise it suffers depolarizing noise with probability p.
 - Two decoders:
-  - **ML**: maximum-likelihood (coset) decoding, i.e. the Bravyi-Suchara-Vargo method. Erased qubits get the prior 1/4 for each of I/X/Y/Z, the other qubits the depolarizing prior. `qecsim`'s MPS decoder takes a single prior for all qubits and has no erasure support (checked on qecsim 1.0b9), so this is implemented here (`src/lcd/decoders/tn_ml.py`, see "ML decoder" below).
+  - **ML**: maximum-likelihood (coset) decoding, i.e. the Bravyi-Suchara-Vargo method. Erased qubits get the prior 1/4 for each of I/X/Y/Z, the other qubits the depolarizing prior. `qecsim`'s MPS decoder takes a single prior for all qubits and has no erasure support (checked on qecsim 1.0b9), so this is implemented here: an exact transfer-matrix decoder (`tn_ml.py`, d <= ~11) and a truncated-MPS decoder (`mps_ml.py`, d >= 11); see "ML decoders" below.
   - **MWPM**: PyMatching; erased qubits get edge weight 0 (or very small). Implemented for e = 0; erasure is still to do.
 
 **Quantities to compute**
@@ -62,19 +62,52 @@ If numerical results deviate noticeably from the known values, debug the impleme
 - Report the gap Delta = c - R, and compare with the analytic reference values R_B (Bhattacharyya) and R_hash (quantum hashing capacity); the table of reference values is in `theory/sec5-information.tex`.
 - Small-code exact oracle: `theory/checks/exact_small_codes.py` gives the exact ML p_L(p, e) for codes with n <= 9. The ML decoder agrees with it on the d = 3 rotated surface code to machine precision (`tests/test_tn_ml.py`).
 
-**ML decoder (M1; code `src/lcd/decoders/tn_ml.py`)**
+**ML decoders (M1; code `src/lcd/decoders/tn_ml.py` and `mps_ml.py`)**
 
-The coset sums Z_c = sum_{g in S} P(R_c g) are a two-dimensional classical partition function (qubit j carries the Pauli R_j X^x Z^z, with x and z the XOR of the X-type and Z-type stabilizer variables touching j). The decoder contracts it **exactly** by a row-by-row transfer matrix whose frontier has d + 3 binary variables: cost O(n 2^(d+3)) per decode, no bond-dimension truncation, per-qubit priors (hence erasures) built in, and the batch of samples is vectorized. Ties between classes (which have positive probability under erasures) are broken uniformly at random, which attains the Bayes optimum.
+The coset sums Z_c = sum_{g in S} P(R_c g) are a two-dimensional classical partition function: every stabilizer generator (plaquette) carries a binary spin, and qubit j carries the Pauli R_j X^x Z^z with x, z the XOR of the X-type and Z-type spins of the four plaquettes around it. Ties between classes (positive probability under erasures) are broken uniformly at random, which attains the Bayes optimum. Per-qubit priors (hence erasures) are built in. Two contractions are provided:
 
-Measured cost per decode (single core, batched, depolarizing noise at the dominant stratum): 
+*Exact decoder* (`ExactTNMLDecoder`): a row-by-row transfer matrix whose frontier has d + 3 binary variables; cost O(n 2^(d+3)) per decode, no truncation, batch-vectorized. It is the reference implementation and the oracle for the truncated decoder.
 
-| d | 5 | 7 | 9 | 11 | 13 |
+*Truncated-MPS decoder* (`MPSMLDecoder`, Bravyi-Suchara-Vargo): the boundary state is an MPS over the d + 1 plaquette columns; one row of qubits is an MPO of bond dimension 4; after each row the MPS is brought to left-canonical form by a QR sweep and truncated to bond dimension chi by a right-to-left SVD sweep; norms are kept as logs. Cost O(d^2 chi^3) per decode; for chi >= 2^((d+1)/2) nothing is truncated and it reproduces the exact decoder (<= 5e-10). Samples whose truncated partition function is not positive (this happens with erasures at small chi) are automatically decoded again with doubled chi (`last_fallback`). A **convergence monitor** (`fail_prob(..., refine_chi=2*chi)`) re-decodes only the ambiguous samples (best wrong class within `margin` = 8 of the true class in log Z) with a larger chi and reports how many decisions changed (`last_refine_changed`); on working strata this touches 0.3-9% of the samples (+3-25% time) and measures the truncation error of the run directly. (A single SVD sweep without the QR sweep was tried and rejected: it is not exact even for chi at least the Schmidt rank.)
+
+Measured cost per decode (ms; one core, batched, idle machine, depolarizing noise at a stratum typical of p = 0.04; `experiments/p1_erasure_pauli/decoder_timing.py`, `results/decoder_timing.json`):
+
+| d | 7 | 9 | 11 | 13 | 15 |
 |---|---|---|---|---|---|
-| ms per decode | 0.07 | 0.27 | 1.2 | 8.6 | 51 |
+| exact | 0.22 | 1.5 | 8.8 | 63 | 433 |
+| MPS chi = 4 | 2.4 | 4.5 | 8.8 | 11.8 | 16.9 |
+| MPS chi = 6 | 2.9 | 7.4 | 14 | 20 | 32 |
+| MPS chi = 8 | 3.1 | 10 | 20 | 33 | 49 |
+| MPS chi = 12 | 4.2 | 15 | 33 | 63 | 99 |
 
-d = 15 is extrapolated at about 0.25 s (not measured). Beyond d ~ 11-13 a truncated MPS contraction (Bravyi-Suchara-Vargo) is needed; the exact decoder will then serve as its oracle.
+The exact decoder is faster up to d = 11; the MPS decoder is 3x (chi = 6) to 14x faster at d = 13 / 15 (chi = 4: 5x / 26x). `threads=2` gains another factor of about 1.7; multiprocessing over strata scales better.
 
-Validation (all passing): coset sums equal brute-force enumeration at d = 3 including erasures (asserted to 1e-12, observed 1e-15); the Bayes error summed over all 4^9 errors equals the exact value (`tests/test_tn_ml.py`); stratified ML estimates with erasures agree with the exact oracle at (p, e) = (0.05, 0.10) and (0.15, 0.30) (|z| < 1.3, certified intervals cover); an independent implementation (qecsim 1.0b9, `RotatedPlanarMPSDecoder`, chi = 16) agrees at d = 3 and d = 5, p = 0.10 (|z| < 1.6). Details in `results/ml_crosscheck.json` (script `experiments/p1_erasure_pauli/crosscheck_ml.py`).
+Validation of the exact decoder (all passing): coset sums equal brute-force enumeration at d = 3 including erasures (asserted to 1e-12, observed 1e-15); the Bayes error summed over all 4^9 errors equals the exact value (`tests/test_tn_ml.py`); stratified ML estimates with erasures agree with the exact oracle at (p, e) = (0.05, 0.10) and (0.15, 0.30) (|z| < 1.3, certified intervals cover); an independent implementation (qecsim 1.0b9, `RotatedPlanarMPSDecoder`, chi = 16) agrees at d = 3 and d = 5, p = 0.10 (|z| < 1.6). Details in `results/ml_crosscheck.json`.
+
+Validation of the MPS decoder (`tests/test_mps_ml.py`, 21 tests, plus two experiments). Only the **decisions** are validated: individual log Z_c of classes far from the truth can be off by O(1) at moderate chi, so do not use Z_c as probabilities.
+- *e = 0*, `mps_validation.py` (`results/mps_validation.json`): on the strata that carry p_L at p = 0.04 and 0.06 (90% of p_L, from the MWPM table), using an MWPM-enriched stratified design (all MWPM failures plus a Bernoulli subsample of the successes, Horvitz-Thompson weights), paired with the exact decoder (d = 11, 13) or with chi = 16 anchored to it (d = 15):
+
+  | d, p | samples tested (ML-failing) | chi = 3 | chi = 4 | chi = 6, 8 |
+  |---|---|---|---|---|
+  | 11, 0.04 | 8890 (364) | 16 changed, +0.8 +- 0.7% | 0 changed | 0 changed |
+  | 11, 0.06 | 9544 (554) | 24 changed, +1.9 +- 0.6% | 0 changed | 0 changed |
+  | 13, 0.04 | 8136 (212) | 14 changed, +0.6 +- 0.6% | 1 changed, -0.13 +- 0.13% | 0 changed |
+  | 13, 0.06 | 9701 (392) | 29 changed, +75 +- 42% | 3 changed, +6 +- 6% | 0 changed |
+  | 15, 0.04 | 6289 (52) | 9 changed (weighted +1000%) | 1 changed, +3 +- 3% | 0 changed (chi = 12 too) |
+
+  (entries: changed decisions, and the relative change of the p_L contribution of these strata; the percentages at chi = 3 are inflated by the weights of the few flipped samples.) chi = 6 changed no decision anywhere. At d = 15 only 52 ML-failing samples were tested, so "no flip" bounds the relative error of p_L by about 3/52 = 6% (95%); the anchor (chi = 16 against the exact decoder, 480 samples) has no changed decision.
+- *With erasures*, `mps_erasure_check.py` (`results/mps_erasure_check.json`): 30,000 samples in ten strata at d = 11, 13 (k = 4..10 erasures, w = 10..18 errors, 785 ML-failing; strata with exactly zero failures were discarded because they test nothing), plain paired comparison with the exact decoder:
+
+  | chi | 4 | 6 | 8 | 12 |
+  |---|---|---|---|---|
+  | decisions changed | 7 | 0 | 0 | 0 |
+  | samples needing the invalid-Z fallback | 5.8% | 1.6% | 0.26% | 0.01% |
+
+  **Erasures need a larger chi than e = 0.**
+
+*Recommended chi.* e = 0: chi = 6. With erasures: chi >= 8. In every production run use the monitor (`refine_chi = 2*chi`) and report `last_refine_changed` and `last_fallback`.
+
+*Not verified.* The envelope identity (below) has not been tested directly with the MPS decoder (its decisions agree with the exact decoder on all tested samples, so it is expected to transfer); d = 15 with erasures; the test power at d = 15 is limited (above); chi was validated at p = 0.04 and 0.06, not at larger p.
 
 **Sampling scheme (settled; code `src/lcd/analysis/stratified.py`, benchmark `experiments/p1_erasure_pauli/sampling_benchmark.py`, data `results/p1_sampling_benchmark.*`)**
 
@@ -93,7 +126,7 @@ Validation (all passing): coset sums equal brute-force enumeration at d = 3 incl
    | d = 13 | 5.6e7 -> 1.3e6 | 5.1e5 -> 1.0e5 | 4.0e4 -> 1.6e4 |
    | d = 15 | 2.4e8 -> 1.3e7 | 1.4e6 -> 3.5e5 | 7.4e4 -> 3.2e4 |
 
-   Stratification gains about 20-50x at p = 0.02 and only 2-6x at p >= 0.04. Combining with the measured ML cost per decode (and assuming the ML strata profile is similar to MWPM's, to be re-measured): with the exact decoder on one core, d = 11 takes at most about 30 minutes per target; d = 13 takes about 1.4 h at p = 0.04 and 18 h at p = 0.02; d = 15 takes about 2 h at p = 0.06 (extrapolated) and a day at p = 0.04. (Multiply the decode counts by 4 for 5% relative error.) So **the exact decoder covers d <= 11 at every work point, d = 13 for p >= 0.04, and little beyond; p = 0.02 at d >= 13 and p = 0.04 at d = 15 need the truncated MPS decoder** (or the Bravyi-Vargo rare-event MCMC, PRA 88, 062308). MWPM is not limited in this way.
+   Stratification gains about 20-50x at p = 0.02 and only 2-6x at p >= 0.04. Combining with the measured cost per decode and assuming the ML strata profile is similar to MWPM's (to be re-measured): one core, the exact decoder for d <= 11 and the MPS decoder (chi = 6 at e = 0, with the +10% monitor) for d >= 13 give for 10% relative error: d = 11 at most 30 minutes per target; d = 13: 6 min (p = 0.06), 37 min (0.04), 8 h (0.02); d = 15: 19 min (0.06), 3.4 h (0.04), **126 h (0.02)**. With erasures use chi = 8 (about 1.6x slower at d = 13, 15). Multiply the decode counts by 4 for 5% error; divide the times by about 4 on four cores. **So every work point is reachable up to d = 13 and, for p >= 0.04, up to d = 15; only (p = 0.02, d = 15) stays expensive** (reduce the target precision, or the Bravyi-Vargo rare-event MCMC, PRA 88, 062308). MWPM is not limited in this way.
 
 *Verified and not verified.* Verified (`tests/`): estimates, derivatives, and interval coverage on toy decoders with exactly known f (one-dimensional and with erasure strata); the stratified MWPM estimate agrees with naive Monte Carlo at d = 5; stratified ML with erasures agrees with the exact oracle at d = 3 (`results/ml_crosscheck.json`); decoders never fail on strata with 2w + k < d. **Not verified:** the envelope identity for truncated tensor-network ML and at d >= 9; MWPM with erasure (it needs per-sample zero-weight edges and is not implemented); the pilot overhead of two-dimensional (k, w) strata with a real decoder at larger d (the number of strata is about an order of magnitude larger than in one dimension).
 
@@ -129,7 +162,8 @@ Validation (all passing): coset sums equal brute-force enumeration at d = 3 incl
 │   ├── noise/              # noise models: depolarizing, erasure, bit flip (done: code_capacity.py); local bursts, chip-scale events (to do)
 │   ├── codes/              # rotated surface code: construction, check matrices, logical operators (done)
 │   ├── decoders/
-│   │   ├── tn_ml.py        # exact transfer-matrix ML decoder with per-qubit priors (done; d <= ~11-13); truncated MPS (to do)
+│   │   ├── tn_ml.py        # exact transfer-matrix ML decoder with per-qubit priors (done; d <= ~11)
+│   │   ├── mps_ml.py       # truncated-MPS ML decoder (Bravyi-Suchara-Vargo) with fallback and convergence monitor (done; d >= 11)
 │   │   └── mwpm.py         # PyMatching wrapper (done for e = 0; erasure to do)
 │   ├── circuits/           # stim circuit generation and burst-event injection (to do)
 │   └── analysis/
@@ -176,7 +210,7 @@ Theory track: `make -C theory check` needs only numpy; `make -C theory pdf` need
 | Stage | Content | Acceptance criterion |
 |---|---|---|
 | M0 | Code construction, noise models, MWPM decoding, sanity checks | Three threshold checks pass. Status: rotated surface code, MWPM (e = 0), stratified sampling module and tests are done; pure erasure and depolarizing-ML crossings are consistent with 50% and 18.9%; the bit-flip MWPM crossing is 5-8% below 10.3% at d <= 15 and needs a finite-size-scaling fit; MWPM with erasure is to do |
-| M1 | ML decoding (code capacity, with erasure priors) | Depolarizing ML threshold about 18.9%, trend consistent with MWPM. Status: **exact transfer-matrix decoder done and validated** (oracle, qecsim cross-check, thresholds), usable to d ~ 11-13; truncated MPS for d = 13, 15 and the envelope identity at d >= 9 / for truncated MPS are to do (the identity holds at d = 5, 7 with exact ML) |
+| M1 | ML decoding (code capacity, with erasure priors) | Depolarizing ML threshold about 18.9%, trend consistent with MWPM. Status: **done**: exact transfer-matrix decoder (d <= ~11) and truncated-MPS decoder (d >= 11, validated against the exact decoder at e = 0 and with erasures; chi = 6 / 8 recommended), thresholds consistent with 50% and 18.9%. Open: the envelope identity tested directly with the MPS decoder and at d >= 9; d = 15 with erasures; limited test power at d = 15 |
 | M2 | Full P1 result | R_{e->p} and the ML-MWPM margin at at least 3 work points, with errors |
 | M3 | Burst-event injection and Poisson baseline | The injected event rate can be estimated without bias |
 | M4 | Full P2 result | Ratio of the experiment time needed by the pattern method relative to Poisson counting, with errors |

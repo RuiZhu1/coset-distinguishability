@@ -18,6 +18,9 @@ Cost per decode O(d^2 chi^3), against O(n 2^(d+3)) for the exact decoder.  For c
 happens and the result equals the exact decoder to rounding error.  The batch of samples is vectorised (batched
 QR/SVD); every sample has its own prior, so the MPO tensors carry a batch index.
 
+Only the DECISIONS (which class is largest) are validated against the exact decoder (README, M1): individual log Z_c of
+classes far from the truth can be off by O(1) at moderate chi, so do not use Z_c as probabilities.
+
 Ties between classes (exact ties occur with positive probability under erasures) are detected with a tolerance
 ``tie_rtol`` on log Z, which must exceed the truncation error; they are then broken uniformly at random.
 A truncated partition function can come out non-positive when chi is too small (dense erasure strata at chi = 3):
