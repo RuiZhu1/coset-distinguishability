@@ -1,0 +1,190 @@
+\section{局域汇率上界与码容量泡利加擦除类的预序}\label{sec:exchange}
+
+本节的主线:\emph{丢弃擦除标记是自由操作}(推论~\ref{cor:discard}),据此得到汇率的严格上界(定理~\ref{thm:rate}),
+并在最简单子类 $\Nn_{\rm cc}(p,e)$ 中完整刻画局域自由操作诱导的预序(定理~\ref{thm:preorder})。
+真实汇率与上界之间的缺口是本项目的核心研究问题之一(§\ref{sec:gap})。
+
+\subsection{部分丢弃标记与汇率上界}
+
+\begin{theorem}[部分丢弃标记不等式]\label{thm:partial}
+设 $0\le p\le\tfrac34$,$0\le e_0<1$,$0\le\delta\le1-e_0$。对每个码距 $d$,
+\[
+\err_d\big(\Nn_{\rm cc}(p,\,e_0+\delta)\big)\;\le\;\err_d\big(\Nn_{\rm cc}(p'',\,e_0)\big),\qquad
+p''=p+\delta\,\frac{\tfrac34-p}{1-e_0}.
+\]
+从而 $\alpha_\pm(p,e_0+\delta)\ge\alpha_\pm(p'',e_0)$。\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+把引理~\ref{lem:basic-ops}(c) 用于 $e=e_0+\delta$,取 $\kappa=\delta/(e_0+\delta)$(若 $e_0+\delta=0$ 则平凡)。
+则 $e'=e(1-\kappa)=e_0$,且 $e\kappa=\delta$,
+\[
+p'=\frac{(1-e_0-\delta)p+\tfrac34\delta}{1-e_0}=p+\delta\frac{\tfrac34-p}{1-e_0}=p''.
+\]
+该操作是 (F1$'$),由定理~\ref{thm:monotone} 得 $\err(p,e_0+\delta)\le\err(p'',e_0)$;
+指数版本由推论~\ref{cor:alpha} 得到。
+\end{proof}
+
+\begin{theorem}[汇率上界]\label{thm:rate}
+记 $c(p_0,e_0)=\dfrac{3/4-p_0}{1-e_0}$。
+
+(a) 若 $\err_d$ 在 $(p_0,e_0)$ 处关于 $p$ 与 $e$ 的右导数存在,则
+\[\partial_e\err_d\le c\,\partial_p\err_d,\]
+当 $\partial_p\err_d>0$ 时 $R^{(d)}:=\partial_e\err_d/\partial_p\err_d\le c(p_0,e_0)$。
+
+(b) 设极限 $\alpha=\alpha_-=\alpha_+$ 存在,在 $(p_0,e_0)$ 处关于 $p$ 与 $e$ 的右导数存在且 $\partial_p\alpha<0$,则局域汇率
+\[
+R_{e\to p}(p_0,e_0)=-\frac{\partial_e\alpha}{\partial_p\alpha}\;\le\;\frac{3/4-p_0}{1-e_0}.
+\]
+\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+定理~\ref{thm:partial} 中 $p''=p_0+c\,\delta$ 关于 $\delta$ 线性。(a):两边减去 $\err_d(p_0,e_0)$ 除以 $\delta\downarrow0$,
+左边趋于 $\partial_e\err_d$,右边趋于 $c\,\partial_p\err_d$。(b):对 $\alpha$ 同样得
+$\partial_e\alpha\ge c\,\partial_p\alpha$;因 $-\partial_p\alpha>0$,两边乘 $-1$ 得
+$-\partial_e\alpha\le c(-\partial_p\alpha)$,除以 $-\partial_p\alpha$ 即得。
+\end{proof}
+
+\begin{remark}[与启发式“$R\le3/4$”的关系]\label{rem:34}
+“增加 $\delta e$ 的擦除 $\to$ 增加 $\tfrac34\delta e$ 的去极化”是 $c$ 在 $(p_0,e_0)=(0,0)$ 处的取值。精确的 $c$ 有两处修正:
+(i) 分子 $\tfrac34-p_0$:新擦除的比特本来就带有概率 $p_0$ 的去极化,净增的非平凡泡利概率是 $\tfrac34-p_0$;
+(ii) 分母 $1-e_0$:$p$ 是\emph{未擦除比特}上的条件速率,总体的非平凡泡利概率为 $(1-e)p+\tfrac34 e$。
+
+因此 $c\le\tfrac34$ 当且仅当 $p_0\ge\tfrac34e_0$。在 $e_0=0$ 总有 $c=\tfrac34-p_0<\tfrac34$;
+但在 README 建议的工作点 $(p_0,e_0)=(0.02,0.05)$ 处 $c=0.768>\tfrac34$。
+所以“$R\le3/4$”只在 $p_0\ge\tfrac34e_0$ 的区域是定理;一般情形应使用 $c(p_0,e_0)$。
+\end{remark}
+
+\begin{corollary}[积分形式:擦除的“泡利当量”]\label{cor:worth}
+对每个 $(p,e)$,定义当量 $p_{\rm eq}^{(d)}(p,e):=\inf\{p'\in[0,\tfrac34]:\err_d(p',0)\ge\err_d(p,e)\}$。则
+\[
+p_{\rm eq}^{(d)}(p,e)\;\le\;p+e\,(\tfrac34-p),
+\]
+这是定理~\ref{thm:partial} 取 $e_0=0,\delta=e$。若 $\err_d(\cdot,0)$ 严格递增,则还有下界 $p_{\rm eq}^{(d)}\ge p$
+(叠加擦除的单调性,命题~\ref{prop:rate-mono}),此时擦除的泡利当量夹在 $0$ 与 $e(\tfrac34-p)$ 之间,
+即 $0\le R_{\rm eff}\le\tfrac34-p$。\hfill\st{PROVED}
+\end{corollary}
+
+\begin{observation}[{上界的锐性:$[[5,1,3]]$ 码在 $e_0=0$ 处取等}]\label{obs:sharp}
+\texttt{theory/checks/exact\_small\_codes.py} 对三个 $n\le9$ 的码精确枚举全部 $4^n$ 个泡利错误,逐一计算最大似然
+$\err(p,e)$ 并验证定理~\ref{thm:partial}(全部通过,见 §\ref{sec:map})。其中:
+\begin{itemize}[leftmargin=2em]
+\item 五量子比特码 $[[5,1,3]]$ 在 $e_0=0$ 处,对 $p\in\{0.005,0.02,0.06,0.1,0.2,0.3,0.45\}$,
+$R^{(d)}=\partial_e\err/\partial_p\err$ 与 $c=\tfrac34-p$ 在 8 位有效数字内\emph{相等}。
+\item Steane 码的 $R^{(d)}/c$ 在 $0.67$--$0.86$ 之间;$d=3$ 旋转表面码在 $p=0.02,e_0=0$ 处 $R^{(3)}\approx0.54$,而 $c=0.73$。
+\end{itemize}
+解释(未证明):对完美码,单个比特被标记并不改变任何综合征上的 ML 判决,故 $\err$ 沿“把比特 $j$ 的分布从
+$\Dep_p$ 换为 $\Dep_{3/4}$”的线段是线性的,于是一阶系数恰为 $(\tfrac34-p)\partial_{p_j}\err$。
+这说明不等式 $\partial_e\err_d\le c\,\partial_p\err_d$ 不能对所有码一致地改进;表面码上的严格缺口是\emph{码相关}的。
+\hfill\st{NUMERICAL}
+\end{observation}
+
+\subsection{码容量类上局域自由操作预序的完整刻画}
+
+\begin{definition}[局域自由操作]\label{def:local}
+对 i.i.d. 类,\emph{局域自由操作}逐比特独立作用:处理器对每个比特按马尔可夫核
+$Q(n,f'\mid f)$($f\in\{0,1\}$ 为输入标记,$n\in\F^2$ 为叠加的泡利,$f'\in\{0,1\}$ 为输出标记)抽取 $(n,f')$,
+并令 $E'_j=E_j+n$,$F'_j=f'$。($n$ 可依赖 $f,f'$ 及处理器随机性,但不依赖 $E_j$;这是 (F1$'$)(F2)(F2$'$) 的一般局域形式。)
+\end{definition}
+
+\begin{theorem}[预序定理:泡利加擦除类]\label{thm:preorder}
+设 $p,p'\in[0,\tfrac34)$,$e,e'\in[0,1)$。以下等价:
+\begin{enumerate}[label=(\roman*),leftmargin=2.2em]
+\item 存在局域自由操作把 $\Nn_{\rm cc}(p,e)$ 变为 $\Nn_{\rm cc}(p',e')$;
+\item 要么 $e'\ge e$ 且 $\lambda(p')\le\lambda(p)$(即 $p'\ge p$);要么 $e'<e$ 且 $\mu(p',e')\le\mu(p,e)$,
+即 $(1-e')\lambda(p')\le(1-e)\lambda(p)$。
+\end{enumerate}
+特别地,(i) 蕴含 $\err_d(p',e')\ge\err_d(p,e)$ 对一切码与 $d$ 成立。\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+\emph{(ii)$\Rightarrow$(i)。}情形 $e'\ge e$、$p'\ge p$:先按引理~\ref{lem:basic-ops}(b) 叠加擦除使 $e\to e'$,
+再按 (a) 叠加去极化使 $\lambda\to\lambda(p')$(所需 $\lambda(q)=\lambda(p')/\lambda(p)\in[0,1]$)。
+情形 $e'<e$、$\mu'\le\mu$:按 (c) 取 $\kappa=1-e'/e$,得到 $e'$ 且
+$\lambda_c=(1-e)\lambda(p)/(1-e')$。条件 $\mu'\le\mu$ 恰为 $\lambda(p')\le\lambda_c$,再按 (a) 叠加去极化。
+
+\emph{(i)$\Rightarrow$(ii)。}对 $P\in\F^2\setminus\{0\}$ 记 $\hat\nu(P)=\sum_a\nu(a)(-1)^{\langle P,a\rangle}$。
+输入:标记 1(概率 $e$)时 $E$ 均匀,$\hat E(P)=0$;标记 0(概率 $1-e$)时 $\hat E(P)=\lambda:=\lambda(p)$。
+记 $q_{f,f'}(n)=Q(n,f'\mid f)$(次概率测度),总质量 $q_{f,f'}$。输出标记为 $1$ 的子测度的 Fourier 系数为
+$(1-e)\lambda\,\hat q_{0,1}(P)$(来自输入标记 1 的部分是均匀分布,无非零模)。
+输出类要求“标记 1 时 $E'$ 均匀”,故对所有 $P\ne0$ 有 $\lambda\hat q_{0,1}(P)=0$;由 $\lambda>0$ 得 $q_{0,1}$ 是均匀测度。
+记 $s_0=\sum_n q_{0,0}(n)$,于是 $\sum q_{0,1}=1-s_0$,且输出未标记的概率
+\[
+m':=1-e'=e\,y+(1-e)s_0,\qquad y:=\textstyle\sum_nq_{1,0}(n)\in[0,1].
+\]
+输出标记 0 的子测度对 $P\neq0$ 的 Fourier 系数为 $(1-e)\lambda\,\hat q_{0,0}(P)$,而输出类要求它等于
+$m'\lambda'$($\lambda'=\lambda(p')$)。由 $|\hat q_{0,0}(P)|\le s_0$ 得
+\[
+m'\lambda'\le(1-e)\lambda\,s_0.\tag{$*$}
+\]
+若 $e'\ge e$(即 $m'\le1-e$):$m'\ge(1-e)s_0$,代入 $(*)$ 得 $\lambda'\le\lambda$。
+若 $e'<e$:$s_0\le1$,$(*)$ 给出 $(1-e')\lambda'\le(1-e)\lambda$。
+
+最后一句由定理~\ref{thm:monotone}。
+\end{proof}
+
+\begin{remark}[结构]
+(1) 完备单调量:局域自由序由两个泛函完全决定——总的未标记本征值质量 $\mu=(1-e)\lambda$(任何局域自由操作下不增)
+以及“不降低擦除率时条件本征值 $\lambda$ 不增”。
+(2) 可达集边界的斜率:从 $(p,e)$ 出发降低 $e'$ 的最陡方向是 $\mu'=\mu$,其切线斜率恰为
+$dp'/de'=-c(p',e')$,与定理~\ref{thm:rate} 的 $c$ 一致——$c$ 就是自由序的边界斜率。
+(3) 该序不是全序;例如 $(p,e)$ 与 $(p',e')$ 满足 $e'<e$ 但 $\mu'>\mu$ 时,两个方向都不可达。
+\end{remark}
+
+\subsection{Hellinger/Chernoff 单调量}
+
+\begin{proposition}[Hellinger 单调量]\label{prop:hellinger}
+对噪声实例 $P=P_{EF}$、$G\in V$ 与 $s\in(0,1)$,令
+$\BC_s(P;G)=\sum_{E,F}P(E,F)^{1-s}P(E+G,F)^s$。
+对 (F1) 与 (F2)/(F2$'$) 型自由操作得到的 $P'$,有 $\BC_s(P';G)\ge\BC_s(P;G)$(同一 $G$)。\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+这些操作都是对 $(E,F)$ 作用的马尔可夫核 $W$(丢弃/粗粒化标记;叠加由 $E$ 独立的 $N$ 即卷积),
+且平移与卷积可交换:$(WP)(\cdot+G)=W(P(\cdot+G))$。函数 $(x,y)\mapsto x^{1-s}y^s$ 是正齐次凹函数,故超可加,
+$\sum_u(\sum_vW(u|v)x_v)^{1-s}(\sum_vW(u|v)y_v)^s\ge\sum_v x_v^{1-s}y_v^s$。取 $x=P,y=P(\cdot+G)$ 即得。
+\end{proof}
+
+对 $\Nn_{\rm cc}(p,e)$ 及任一非零单比特平移 $G_j\in\{X,Y,Z\}$(三者对称),单比特系数为
+\[
+b_s(p,e)=e+(1-e)\Big[(1-p)^{1-s}(\tfrac p3)^s+(\tfrac p3)^{1-s}(1-p)^s+\tfrac{2p}3\Big],
+\]
+(第一项来自 $F=1$:均匀分布平移后不变)。因 $b_s=b_{1-s}$ 且凸,$\min_s b_s=b_{1/2}$。记
+\[
+\beta_{\rm dep}(p)=2\sqrt{p(1-p)/3}+2p/3,\qquad B(p,e)=b_{1/2}(p,e)=e+(1-e)\beta_{\rm dep}(p).
+\]
+$B$ 是\emph{单比特 Bhattacharyya 参数}。对每个 $s$,由命题~\ref{prop:hellinger} 与定理~\ref{thm:partial} 同样的论证
+(部分丢弃标记使 $b_s$ 不降),$\partial_eb_s\le c\,\partial_pb_s$,即 Hellinger 汇率
+\[
+R_s(p,e)=\frac{\partial_eb_s}{\partial_pb_s}\le c(p,e).
+\]
+记 $R_B:=R_{1/2}=\dfrac{1-\beta_{\rm dep}(p)}{(1-e)\,\beta_{\rm dep}'(p)}$。
+
+\subsection{缺口问题}\label{sec:gap}
+
+自由序 $\succeq_{\rm free}$ 是 \emph{操作序}(对给定码比较 $\err_d$ 或 $\alpha$)的子序。设 $R_\alpha$ 为表面码上的真实汇率。
+\begin{problem}[汇率缺口]\label{prob:gap}
+量化 $\Delta:=c-R_\alpha\ge0$,并回答:缺口来自
+\begin{enumerate}[label=(\Alph*),leftmargin=2.2em]
+\item \emph{码相关性}:\emph{码通用}的操作序(对所有线性解码结构、所有 $n$ 逐一要求 $\err$ 不增)与局域自由序重合,
+表面码的 $\alpha$ 序只是更粗的序;还是
+\item \emph{自由操作不完备}:存在不在定义~\ref{def:local} 中的(非局域或码相关的)自由操作,可以把序做得更细?
+\end{enumerate}
+\end{problem}
+
+\begin{conjecture}[码通用序 = 局域自由序]\label{conj:universal}
+在 $\Nn_{\rm cc}(p,e)$ 内,\emph{码通用的有限 $n$ 操作序}与定理~\ref{thm:preorder} 的局域自由序重合。
+\hfill\st{CONJECTURE}
+\end{conjecture}
+\noindent\emph{证据与路线。}观察~\ref{obs:sharp} 给出 $e_0=0$ 处的一阶证据:边界斜率 $c$ 被某个码取到。
+证明路线:(S1) 对每个 $n$ 与线性结构 $(\sigma,L)$,$\err$ 的比较是对 $n$ 个独立拷贝的“实验”作 Blackwell 比较
+(Blackwell--Sherman--Stein:实验 $A$ 对一切先验与损失不劣于 $B$ 当且仅当 $B$ 是 $A$ 的随机化加工 \cite{Blackwell});
+(S2) 线性结构给出的决策问题类是全体决策问题的真子类,须证它们足以分辨局域自由序的两个泛函 $\mu$ 与 $(e,\lambda)$;
+(S3) 渐近版本用大样本 Blackwell 序刻画为 R\'enyi 散度全体 \cite{MPST},这正好对应 $\{b_s\}_{s\in(0,1)}$ 与其高阶推广。
+若猜想成立则缺口为情形 (A),$c-R_\alpha$ 度量的是表面码特有的信息,而不是自由操作的缺漏;
+若猜想被某个码(例如 $[[5,1,3]]$ 之外的码)的反例否定,则需要新的自由操作(情形 (B))。
+
+\begin{conjecture}[$B$ 的完备性假设 $H_B$]\label{conj:HB}
+在 $\Nn_{\rm cc}$ 的某个邻域内,表面码的 $\alpha(p,e)$ 是 $B(p,e)$ 的函数,从而 $R_\alpha=R_B$。
+\hfill\st{CONJECTURE}
+\end{conjecture}
+\noindent 这是可检验的:P1 的数值给出 $R_\alpha$,与解析式 $R_B$ 比较。$R_\alpha\neq R_B$ 表明
+Bhattacharyya 单调量不完备,下一层候选是 $b_s$ ($s\ne\tfrac12$)。引理~\ref{lem:union}(上界)与命题~\ref{prop:genie}
+(下界)已把 $\alpha$ 夹在两个仅依赖 $B$ 的函数之间,但夹逼并不约束导数,因此 $H_B$ 需要单独检验。

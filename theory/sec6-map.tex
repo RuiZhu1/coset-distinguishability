@@ -1,0 +1,97 @@
+\section{理论--数值对照表与开放问题}\label{sec:map}
+
+原则:\textbf{每条定理都配一个数值证伪测试}。数值通过不证明定理,但违反则说明定理(或实现)有错;
+数值结果也反过来决定下一个要证的命题。
+
+\subsection{对照表}
+
+{\footnotesize
+\begin{longtable}{p{3.7cm} p{4.5cm} p{3.2cm} p{2.6cm}}
+\toprule
+理论陈述 & 数值检验 & 位置 / 里程碑 & 现状 \\
+\midrule
+\endfirsthead
+\toprule
+理论陈述 & 数值检验 & 位置 / 里程碑 & 现状 \\
+\midrule
+\endhead
+定理~\ref{thm:monotone}、命题~\ref{prop:free-ops}\ (单调性) &
+$\err(p,e)$ 对 $p,e$ 不降;叠加独立层不降 (C1,C2) &
+\texttt{theory/checks}\ (精确 ML,3 个码) & 通过 \\
+定理~\ref{thm:partial}\ (部分丢弃标记) &
+$\err(p,e_0{+}\delta)\le\err(p'',e_0)$,约 $300$ 组随机参数/码 (C3) &
+同上 & 通过 \\
+定理~\ref{thm:preorder}\ (预序必要性) &
+可达对均满足 $\err$ 同序 (C4);同时统计“不可达却同序”的比例(操作序严格大于自由序的有限 $d$ 证据) &
+同上 & 通过;不可达对中约 15\% 仍同序 \\
+引理~\ref{lem:union}、推论~\ref{cor:product}\ (联合上界) &
+$\err\le\tfrac12\widetilde W(B)$ (C5) & 同上 & 通过 \\
+命题~\ref{prop:genie}\ (先知下界) &
+$\err_{d=3}\ge\varepsilon_{\rm genie}$ (C6);$d\ge5$ 用 TN-ML 复核 &
+同上 / M1 & $d=3$ 通过 \\
+定理~\ref{thm:rate}\ (汇率上界) &
+有限 $d$:$R^{(d)}\le c$ (C7);\textbf{P1:$R_{e\to p}\le c(p_0,e_0)$,并报告 $\Delta=c-R$、$R_B$、$R_{\rm hash}$} &
+\texttt{theory/checks};P1 / M2 & 有限 $d$ 通过;P1 待做 \\
+观察~\ref{obs:sharp}\ ($[[5,1,3]]$ 取等) &
+扫描 $e_0{=}0$ 处的 $R^{(d)}/c$:随机稳定子码库 &
+\texttt{theory/checks}\ 扩展 & 3 个码已观察 \\
+猜想~\ref{conj:universal}\ (码通用序 = 自由序) &
+对不可达对 $(p,e)\to(p',e')$,在随机稳定子码库中搜索使 $\err$ \emph{反序}的码 &
+\texttt{theory/checks}\ 扩展 & 未开始 \\
+猜想~\ref{conj:HB}\ ($H_B$) &
+P1 的 $R_\alpha$ 与解析的 $R_B$ 比较 &
+P1 / M2 & 待 P1 \\
+定理~\ref{thm:cc-cert}\ (码容量认证) &
+(i) 模拟标定数据,检验 $\bar e,\bar p$ 的覆盖率 $\ge1-\delta$;(ii) 与 TN-ML 的 $\err_d$ 比较(证书必须 $\ge$) &
+\texttt{experiments/}\ / M1 & 待做 \\
+引理~\ref{lem:floor}\ (芯片事件地板) &
+stim:$\pL\ge q_c(1-2^{-q})$ 且 $\propto r_cT$;地板与 $d$ 无关 &
+P2 / M3--M4 & 待做 \\
+命题~\ref{prop:poisson}\ (泊松下限) &
+任何检验所需轮数 $\ge\ln((1-a)/\delta)/r$ &
+P2 / M4 & 待做 \\
+命题~\ref{prop:exponents}\ (指数链) &
+估计 $D_{\rm count}$ 与 $D_{\rm pattern}$,验证 $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ &
+P2 / M4 & 待做 \\
+\bottomrule
+\end{longtable}
+}
+
+\paragraph{精确小码的第二个用途。}
+\texttt{exact\_small\_codes.py} 给出 $n\le9$ 的码上\emph{精确}的最大似然 $\err(p,e)$,可直接作为 M1(张量网络 ML 解码器)的 oracle:
+$d=3$ 旋转表面码上 TN-ML 的结果必须与它在机器精度内一致(这是 README 中“合理性检验”之前更强的一道门)。
+
+\paragraph{测试的分工:MWPM 不能证伪针对 ML 的上界。}
+引理~\ref{lem:union}、定理~\ref{thm:cc-cert} 等是对 ML 的上界,而 MWPM 的失败率 $\ge\err$,
+所以 MWPM 的数据既不能证实也不能证伪这些上界;必须用精确 ML(小 $d$)或 TN-ML。
+而下界(地板、泊松下限、先知下界)对任何解码器成立,可以用 stim + MWPM 检验。
+
+\subsection{开放问题清单}
+
+\begin{enumerate}[leftmargin=2em]
+\item \textbf{缺口问题}(问题~\ref{prob:gap}):$c-R_\alpha$ 来自码相关性还是自由操作不完备?
+  \emph{先决数值}:P1 的 $R_\alpha$;\emph{理论路线}:猜想~\ref{conj:universal} 的 Blackwell/R\'enyi 路线。
+\item \textbf{O1}(问题~\ref{prob:O1}):无标记突发下 $\err$ 对形状参数 $p_b,R,T_b$ 的单调性。
+\item \textbf{O2}(问题~\ref{prob:O2}):突发/芯片事件污染下的参数置信上限。
+\item \textbf{O3}(问题~\ref{prob:O3}):突发混合联合上界的显式估计(团簇展开)。
+\item \textbf{O4}(问题~\ref{prob:O4}):实验设计定理。
+\item \textbf{O5}:对\emph{次优解码器}(MWPM)的认证:需要针对该解码器的 Peierls 型上界,本笔记的上界只对 ML。
+\item \textbf{O6}:观察~\ref{obs:sharp} 的证明:对哪些码类(完美码、传递码)单比特标记不改变 ML 判决?
+\item \textbf{O7}:联合上界的收紧(用测得的小 $d$ 失败率校准),使认证在实际参数下不再空洞。
+\end{enumerate}
+
+\subsection{近期工作顺序(与 M0--M5 并行)}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+理论线 & 内容 & 与数值线的咬合 \\
+\midrule
+T0 & 框架、单调性、表示(本文 §\ref{sec:framework}--\ref{sec:repr})+ 精确小码检验 & M0/M1 的 oracle 与合理性检验 \\
+T1 & 汇率上界、预序定理(§\ref{sec:exchange}) & M2:报告 $R\le c$、缺口 $\Delta$ \\
+T2 & 猜想~\ref{conj:universal} 的反例搜索;观察~\ref{obs:sharp} 的证明 & 扩展 \texttt{checks};无需大计算 \\
+T3 & 码容量认证 + O1--O3(§\ref{sec:cert}) & M3/M4:地板、参数识别 \\
+T4 & 信息论界与实验设计(§\ref{sec:info}) & M4:$T_{\rm count}/T_{\rm pattern}$ 对照 \\
+\bottomrule
+\end{tabular}
+\end{center}

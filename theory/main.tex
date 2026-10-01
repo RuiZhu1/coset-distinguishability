@@ -1,0 +1,85 @@
+% 逻辑陪集可区分性(LCD)理论笔记 —— 主文件
+% 编译:  cd theory && latexmk -xelatex main.tex     (需要 ctex;见 theory/README.md)
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+% ---------- 定理环境 ----------
+\theoremstyle{plain}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{proposition}[theorem]{命题}
+\newtheorem{corollary}[theorem]{推论}
+\newtheorem{conjecture}[theorem]{猜想}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{定义}
+\newtheorem{problem}[theorem]{开放问题}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{注}
+\newtheorem{observation}[theorem]{数值观察}
+
+% ---------- 状态标签(可 grep):PROVED / SKETCH / NUMERICAL / CONJECTURE / PLAN ----------
+%  PROVED     笔记中给出完整论证(仍需作者逐行复核,见 theory/README.md)
+%  SKETCH     论证框架完整,个别步骤引用标准结果或尚未展开
+%  NUMERICAL  由 theory/checks 中的精确计算观察到,尚无证明
+%  CONJECTURE 明确的猜想
+%  PLAN       只有陈述与证明路线
+\newcommand{\st}[1]{{\small\textsc{[\textcolor{red!60!black}{#1}]}}}
+
+% ---------- 记号 ----------
+\newcommand{\F}{\mathbb{F}_2}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\err}{\varepsilon^{\star}}           % Bayes (最大似然) 错误率 = 逻辑失败概率
+\newcommand{\pL}{p_{\mathrm{L}}}
+\newcommand{\Dep}{\mathrm{Dep}}
+\newcommand{\Nn}{\mathcal{N}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\wt}{\operatorname{wt}}
+\newcommand{\BC}{\mathfrak{B}}                    % Bhattacharyya / Hellinger 系数
+\renewcommand{\Pr}{\Prob}
+
+\title{逻辑陪集可区分性的理论笔记\\\large 单调性引理、局域汇率上界、预序、条件认证与实验设计}
+\author{LCD 项目\ (theory 线)}
+\date{\today\ \ ——\ 草稿,持续更新}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}\noindent
+本笔记是 \texttt{ABSTRACT.md} 中四类理论结果的工作底稿。每个命题都带有状态标签
+(\st{PROVED}、\st{SKETCH}、\st{NUMERICAL}、\st{CONJECTURE}、\st{PLAN}),并在 §\ref{sec:map}
+中与仓库里的数值检验一一对应:\textbf{理论带路,数值检验理论}。
+已写出完整证明的结果:(i) 三类自由操作下的单调性;(ii) 擦除/泄漏/突发事件在模型中的表示及适用边界;
+(iii) 局域汇率的精确上界
+$R_{e\to p}\le (3/4-p_0)/(1-e_0)$;(iv) 码容量泡利加擦除类中局域自由操作预序的完整刻画;
+(v) 代数可计算的有限样本认证(码容量)。其余为带证明路线的陈述。
+\end{abstract}
+
+\tableofcontents
+
+\input{sec1-framework}
+\input{sec2-representation}
+\input{sec3-exchange}
+\input{sec4-certification}
+\input{sec5-information}
+\input{sec6-map}
+
+\begin{thebibliography}{99}
+\bibitem{DKLP} E.~Dennis, A.~Kitaev, A.~Landahl, J.~Preskill, \emph{Topological quantum memory}, J.\ Math.\ Phys.\ 43, 4452 (2002).
+\bibitem{BSV} S.~Bravyi, M.~Suchara, A.~Vargo, \emph{Efficient algorithms for maximum likelihood decoding in the surface code}, Phys.\ Rev.\ A 90, 032326 (2014).
+\bibitem{BV} S.~Bravyi, A.~Vargo, \emph{Simulation of rare events in quantum error correction}, Phys.\ Rev.\ A 88, 062308 (2013).
+\bibitem{CF} C.~T.~Chubb, S.~T.~Flammia, \emph{Statistical mechanical models for quantum codes with correlated noise}, Ann.\ Inst.\ Henri Poincar\'e D 8, 269 (2021).
+\bibitem{DZ} N.~Delfosse, G.~Z\'emor, \emph{Linear-time maximum likelihood decoding of surface codes over the quantum erasure channel}, Phys.\ Rev.\ Research 2, 033042 (2020).
+\bibitem{Blackwell} D.~Blackwell, \emph{Equivalent comparisons of experiments}, Ann.\ Math.\ Stat.\ 24, 265 (1953).
+\bibitem{MPST} X.~Mu, L.~Pomatto, P.~Strack, O.~Tamuz, \emph{From Blackwell dominance in large samples to R\'enyi divergences and back again}, Econometrica 89, 475 (2021).
+\bibitem{CT} T.~Cover, J.~Thomas, \emph{Elements of Information Theory}, 2nd ed., Wiley (2006), Ch.~11.
+\bibitem{LeCam} L.~Le Cam, \emph{Asymptotic Methods in Statistical Decision Theory}, Springer (1986).
+\end{thebibliography}
+\end{document}

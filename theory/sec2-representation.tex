@@ -1,0 +1,120 @@
+\section{擦除、泄漏与事件类噪声在模型中的表示}\label{sec:repr}
+
+单调性(定理~\ref{thm:monotone})只对满足“可经典采样、与隐变量独立”的叠加成立
+(注~\ref{rem:independence})。本节逐一说明各类物理噪声如何写成噪声实例 $(E,F)$,
+以及单调性论证在什么假设下仍然成立、在哪里会失效。
+
+\subsection{擦除}
+
+\begin{proposition}[擦除 = 带标记的完全去极化]\label{prop:erasure}
+设稳定子码,理想(无噪声)综合征提取。比特 $j$ 以概率 $e$ 被擦除并被标记($F_j=1$),擦除后该比特处于最大混态。
+则在 $(E,F)$ 表示下,擦除等价于:$F_j=1$ 且 $E_j$ 在 $\{I,X,Y,Z\}$ 上均匀分布,与其他比特独立。
+\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+替换为最大混态的信道 $\Lambda(\rho)=\operatorname{tr}(\rho)\,\mathbb 1/2=\tfrac14\sum_{P\in\{I,X,Y,Z\}}P\rho P$
+(泡利扭曲恒等式)。于是整体信道是泡利酉算符的凸组合;综合征测量是泡利框架上的线性函数,
+故整个过程等价于“随机泡利 + 经典标记”。
+\end{proof}
+
+\begin{remark}[保守性]
+若实际擦除把比特重置到固定已知态(如 $\lvert 0\rangle$)或留下泄漏态,实验者可以额外对该位置施加一个随机泡利
+(带标记)——这又是 (F2$'$) 型的自由操作,只会使问题变难。因此“最大混态模型”给出的
+$\err$ 是\emph{真实噪声 $\err$ 的上界}(对真实噪声保守的一侧),而不是下界。
+\end{remark}
+
+\begin{corollary}[丢弃标记 = 去极化]\label{cor:discard}
+对被擦除的比特丢弃标记 (F1$'$),得到未标记的均匀泡利错误,即速率 $3/4$ 的去极化(非平凡泡利的概率为 $3/4$)。
+\end{corollary}
+
+\subsection{码容量类 $\Nn_{\rm cc}(p,e)$ 及其上的三种操作}
+
+\begin{definition}\label{def:Ncc}
+$\Nn_{\rm cc}(p,e)$:每个数据比特独立,以概率 $e$ 被擦除(标记 $F_j=1$,$E_j$ 均匀),
+否则以概率 $p$ 发生去极化($E_j=X,Y,Z$ 各 $p/3$)。记 $\lambda(p)=1-\tfrac43p$(去极化信道的泡利本征值),
+$\mu(p,e)=(1-e)\lambda(p)$。注意 $\Dep_p$ 对 $p$ 是线性的,$\Dep_{3/4}$ 是均匀分布。
+\end{definition}
+
+\begin{lemma}[类内的基本自由操作]\label{lem:basic-ops}
+下列操作把 $\Nn_{\rm cc}(p,e)$ 映到 $\Nn_{\rm cc}(p',e')$,且都是 (F1$'$)/(F2)/(F2$'$) 的特例:
+\begin{enumerate}[label=(\alph*),leftmargin=2.2em]
+\item \emph{叠加去极化}(F2$'$,只作用在未标记比特上):$p'=p\oplus q$,即 $\lambda(p')=\lambda(p)\lambda(q)$;$e'=e$。
+\item \emph{叠加擦除}(F2):$p'=p$,$e'=1-(1-e)(1-\delta)$。
+\item \emph{随机丢弃标记}(F1$'$):每个被标记比特独立地以概率 $\kappa\in[0,1]$ 丢弃标记。则
+\[
+e'=e(1-\kappa),\qquad p'=\frac{(1-e)p+\tfrac34 e\kappa}{1-e+e\kappa},\qquad
+\lambda(p')=\frac{(1-e)\lambda(p)}{1-e+e\kappa}.
+\]
+\end{enumerate}
+\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+(a)(b) 由去极化信道的复合与“擦除覆盖已有故障”的事实(均匀噪声与任何独立噪声之和仍均匀)直接得到;
+(b) 中被新擦除的比特其 $E$ 变为均匀,标记并入。
+
+(c) 每个比特独立处理。丢弃标记后:仍被标记者概率 $e(1-\kappa)$,此时 $E$ 均匀;未标记者以概率
+$(1-e)$ 来自未擦除(分布 $\Dep_p$),以概率 $e\kappa$ 来自被丢弃标记的擦除(分布 $\Dep_{3/4}$)。
+给定“未标记”,$E$ 的分布是 $\Dep_p$ 与 $\Dep_{3/4}$ 按权重 $(1-e):e\kappa$ 的混合;
+因 $\Dep_p$ 对 $p$ 线性,混合仍是 $\Dep_{p'}$,$p'$ 即上式;比特之间独立,故结果仍在 $\Nn_{\rm cc}$ 内。
+$\lambda$ 的公式由 $\lambda=1-\tfrac43p$ 的线性性得到。
+\end{proof}
+
+\subsection{泄漏}
+
+物理上,泄漏比特离开计算子空间,在其寿命内使与之相互作用的门产生随机泡利错误并使测量结果随机。
+我们把泄漏纳入模型类的\emph{假设}如下。
+
+\begin{definition}[假设 (L):泄漏可经典采样]\label{def:L}
+泄漏过程由随机\emph{泄漏事件集合} $\Lambda$(位置、起始时间、持续时间 $\le\tau$)描述,满足
+\begin{enumerate}[label=(L\arabic*),leftmargin=2.8em]
+\item 经计算子空间泡利扭曲后,泄漏对检测器的全部影响等价于故障向量 $E_\Lambda\in V$,其条件分布
+$P(E_\Lambda\mid\Lambda)$ 已知(典型:被泄漏比特参与的每个门以概率 $1/2$ 施加均匀泡利);
+\item $\Lambda$ 的分布已知,且与背景故障 $E_{\rm bg}$ \emph{独立};
+\item 边信息 $F_\Lambda$ 是 $\Lambda$ 的已知(可能是部分)函数:全检测对应带标记,无检测对应 $F_\Lambda=\text{常数}$。
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[泄漏下的单调性]\label{prop:leak}
+在假设 (L) 下,总噪声实例为 $(E_{\rm bg}+E_\Lambda,\,(F_{\rm bg},F_\Lambda))$,而 $(E_\Lambda,F_\Lambda)$ 是与背景
+独立、可经典采样的随机对。于是命题~\ref{prop:free-ops} 适用:\\
+(1) 加入泄漏不降低 $\err$;\\
+(2) 泄漏事件率 $r_\ell$ 的单调性:速率为 $r_\ell+r'_\ell$ 的泊松泄漏过程 = 速率 $r_\ell$ 的过程与独立的速率 $r'_\ell$ 过程之和
+(泊松叠加定理;故障按 $\F$ 相加),故 $\err$ 对 $r_\ell$ 不降;\\
+(3) 丢弃泄漏检测标记是 (F1$'$),使 $\err$ 不降。\hfill\st{PROVED}
+\end{proposition}
+
+\begin{remark}[假设 (L) 之外:论证失效的位置]\label{rem:L-fail}
+(L2) 失败时,叠加层依赖隐变量,处理器无法独立采样(注~\ref{rem:independence}),单调性论证不成立。典型情形:
+(i) 泄漏概率依赖比特所处的计算基态(例如 $\lvert1\rangle$ 更易泄漏),使 $\Lambda$ 与背景故障相关;
+(ii) 泄漏比特对邻居的作用是相干旋转而非随机泡利,(L1) 的扭曲近似不成立;
+(iii) 泄漏与测量/重置错误通过同一物理机制耦合。这些都被列为\emph{模型类假设},不在本笔记的证明范围内,
+并应与 ABSTRACT 的“范围与局限”一致:相干误差不在模型类内。
+(L1) 中“扭曲后为泡利”的近似本身是可由实验检验的假设,应与相干误差一并列为模型类假设。
+\end{remark}
+
+\subsection{局域突发事件与芯片尺度事件}
+
+\begin{definition}[加性事件层]\label{def:events}
+设背景 $(E_{\rm bg},F_{\rm bg})$ 如上。\emph{局域突发层}:时空中的泊松点过程,强度 $r\,\mu(dz\,dt)$,
+每个事件(中心 $z$、起始 $t$)在半径 $R$、持续 $T_b$ 的时空区域内的每个故障位置独立地施加速率 $p_b$ 的去极化噪声;
+\emph{芯片尺度层}:速率 $r_c$ 的泊松事件,每个事件在持续 $\tau_c$ 内对全芯片位置施加某个已知故障律 $K_c$。
+各层与背景相互独立,故障按 $\F$ 相加(\emph{加性语义},与 README P2 中“检测事件按位异或叠加”一致)。
+\end{definition}
+
+\begin{proposition}[速率方向的单调性]\label{prop:rate-mono}
+在定义~\ref{def:events} 的模型类中,$\err$ 对 $p$、$e$、突发率 $r$、芯片事件率 $r_c$ 均不降。
+\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+强度 $r+r'$ 的泊松过程等于强度 $r$ 与强度 $r'$ 的独立过程之并(叠加定理),且加性语义下各事件的故障按 $\F$ 相加,
+因此增大 $r$ 恰是叠加一个独立的、可经典采样的突发层;$r_c$、$p$、$e$ 同理(引理~\ref{lem:basic-ops})。
+应用命题~\ref{prop:free-ops}。
+\end{proof}
+
+\begin{remark}[形状参数 $(R,T_b,p_b,\tau_c)$ 的单调性\emph{不}由自由操作给出]\label{rem:shape}
+增大 $p_b$(或 $R,T_b$)相当于在\emph{已发生的突发区域内}再叠加噪声。突发事件对解码器不可见(无标记)时,
+该附加层依赖隐变量(事件位置),处理器无法独立采样,论证失败。
+若突发事件\emph{带标记}(事件的位置与时间进入 $F$),则附加层依赖观测到的 $F$,属 (F2$'$),单调性成立。
+无标记情形下关于形状参数的单调性是开放问题(\ref{prob:O1})。这直接决定认证定理
+(§\ref{sec:cert})能否对形状不确定性给出稳健上界。
+\end{remark}
