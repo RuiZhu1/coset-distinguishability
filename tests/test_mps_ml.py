@@ -96,3 +96,39 @@ def test_no_failure_below_half_distance():
         assert 2 * w + k < d
         ex, ez, er = sample_stratum(code.n, k, w, 60, rng)
         assert (mps.fail_prob(ex, ez, make_priors(code.n, 0.05, er)) == 0).all()
+
+
+def test_convergence_monitor_fixes_truncation_errors_and_counts_them():
+    """Re-decoding the ambiguous samples with a larger chi repairs wrong decisions; last_refine_changed counts them."""
+    rng = np.random.default_rng(12)
+    d = 9
+    code = RotatedSurfaceCode(d)
+    exd = ExactTNMLDecoder(code)
+    wrong_plain = wrong_refined = changed_seen = refined = 0
+    for w in (14, 17, 20):                                   # dense strata with many ambiguous samples
+        ex, ez, er = sample_stratum(code.n, 0, w, 100, rng)
+        pri = make_priors(code.n, 0.10, er)
+        fe = exd.fail_prob(ex, ez, pri)
+        plain = MPSMLDecoder(code, chi=2)
+        fp0 = plain.fail_prob(ex, ez, pri)
+        mon = MPSMLDecoder(code, chi=2)
+        fp1 = mon.fail_prob(ex, ez, pri, refine_chi=8, margin=8.0)
+        wrong_plain += int((fp0 != fe).sum())
+        wrong_refined += int((fp1 != fe).sum())
+        changed_seen += mon.last_refine_changed
+        refined += mon.last_refined
+        assert mon.last_refined >= mon.last_refine_changed
+    assert wrong_plain > 0                                   # chi = 2 really makes errors here
+    assert wrong_refined < wrong_plain / 3
+    assert changed_seen >= wrong_plain - wrong_refined       # the monitor sees (at least) the repaired decisions
+
+
+def test_monitor_does_nothing_when_chi_is_already_large():
+    rng = np.random.default_rng(13)
+    code = RotatedSurfaceCode(5)
+    ex, ez, er = sample_stratum(code.n, 0, 5, 40, rng)
+    pri = make_priors(code.n, 0.1, er)
+    mon = MPSMLDecoder(code, chi=16)
+    a = mon.fail_prob(ex, ez, pri, refine_chi=32, margin=50.0)
+    assert mon.last_refined == 40 and mon.last_refine_changed == 0
+    np.testing.assert_array_equal(a, MPSMLDecoder(code, chi=16).fail_prob(ex, ez, pri))

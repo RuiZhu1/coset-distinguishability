@@ -65,6 +65,8 @@ class MPSMLDecoder:
         self._check_geometry()
         self.last_truncation: np.ndarray | None = None      # per-sample accumulated discarded weight of the last call
         self.last_invalid = 0                                # classes with a non-positive partition function (last call)
+        self.last_refined = 0                                # samples re-decoded by the convergence monitor (last call)
+        self.last_refine_changed = 0                         # ... and how many of their decisions changed
 
     def _check_geometry(self) -> None:
         """The plaquettes defined above must be exactly the stabilizer generators of the code."""
@@ -197,20 +199,43 @@ class MPSMLDecoder:
         self.last_truncation = disc
         return out
 
-    def fail_prob(self, ex: np.ndarray, ez: np.ndarray, priors: np.ndarray) -> np.ndarray:
-        """Conditional failure probability of the (truncated) ML decision: 1, 0, or 1 - 1/m for m tied maximisers."""
-        L = self.log_class_weights(ex, ez, priors)
-        self.last_invalid = int((~np.isfinite(L)).sum())
+    @staticmethod
+    def _decision(L: np.ndarray, tie_rtol: float) -> np.ndarray:
+        """Conditional failure probability from log class weights: 1, 0, or 1 - 1/m for m tied maximisers."""
         if not np.isfinite(L.max(axis=1)).all():
             raise FloatingPointError("all four partition functions non-positive for some sample: increase chi")
-        top = L >= L.max(axis=1, keepdims=True) - self.tie_rtol          # -inf (invalid) classes are never maximal
+        top = L >= L.max(axis=1, keepdims=True) - tie_rtol          # -inf (invalid) classes are never maximal
         m = top.sum(axis=1)
         return np.where(top[:, 0], 1.0 - 1.0 / m, 1.0)
 
+    def fail_prob(self, ex: np.ndarray, ez: np.ndarray, priors: np.ndarray, refine_chi: int | None = None,
+                  margin: float = 8.0) -> np.ndarray:
+        """Conditional failure probability of the (truncated) ML decision: 1, 0, or 1 - 1/m for m tied maximisers.
+
+        Convergence monitor: with ``refine_chi`` > chi, every sample whose best wrong class is within ``margin`` (in log Z)
+        of the true class -- the only samples whose decision a truncation error of that size can change -- is decoded
+        again with bond dimension ``refine_chi`` and its decision is replaced.  ``last_refined`` is the number of such
+        samples and ``last_refine_changed`` the number of decisions the refinement changed (a measure of the truncation
+        error of the chi-run: if it is zero, chi was large enough for these samples)."""
+        L = self.log_class_weights(ex, ez, priors)
+        self.last_invalid = int((~np.isfinite(L)).sum())
+        self.last_refined = self.last_refine_changed = 0
+        if refine_chi is not None and refine_chi > self.chi:
+            wrong = np.where(np.isfinite(L[:, 1:]), L[:, 1:], -np.inf).max(axis=1)
+            amb = ~(wrong - L[:, 0] < -margin)                       # ambiguous, or invalid (NaN / -inf true class)
+            if amb.any():
+                fine = MPSMLDecoder(self.code, chi=refine_chi, chunk=self.chunk, tie_rtol=self.tie_rtol,
+                                    threads=self.threads)
+                L2 = fine.log_class_weights(ex[amb], ez[amb], priors[amb])
+                self.last_refined = int(amb.sum())
+                self.last_refine_changed = int((self._decision(L[amb], self.tie_rtol) != self._decision(L2, self.tie_rtol)).sum())
+                L[amb] = L2
+        return self._decision(L, self.tie_rtol)
+
     def fail(self, ex: np.ndarray, ez: np.ndarray, p: float, erased: np.ndarray | None = None,
-             rng: np.random.Generator | None = None) -> np.ndarray:
+             rng: np.random.Generator | None = None, refine_chi: int | None = None, margin: float = 8.0) -> np.ndarray:
         N = ex.shape[0]
-        fp = self.fail_prob(ex, ez, make_priors(self.code.n, p, erased, N))
+        fp = self.fail_prob(ex, ez, make_priors(self.code.n, p, erased, N), refine_chi=refine_chi, margin=margin)
         if ((fp > 0) & (fp < 1)).any():
             if rng is None:
                 raise ValueError("ties between classes present: pass an rng for random tie-breaking")
