@@ -1,100 +1,101 @@
-\section{理论--数值对照表与开放问题}\label{sec:map}
+\section{Theory--numerics map and open problems}\label{sec:map}
 
-原则:\textbf{每条定理都配一个数值证伪测试}。数值通过不证明定理,但违反则说明定理(或实现)有错;
-数值结果也反过来决定下一个要证的命题。
+Principle: \textbf{every theorem comes with a numerical falsification test}. A passing test does not prove the theorem, but a violation shows that the theorem (or the implementation) is wrong;
+conversely, numerical results decide which statement to prove next.
 
-\subsection{对照表}
+\subsection{The correspondence table}
 
 {\footnotesize
 \begin{longtable}{p{3.7cm} p{4.5cm} p{3.2cm} p{2.6cm}}
 \toprule
-理论陈述 & 数值检验 & 位置 / 里程碑 & 现状 \\
+Theoretical statement & Numerical check & Location / milestone & Status \\
 \midrule
 \endfirsthead
 \toprule
-理论陈述 & 数值检验 & 位置 / 里程碑 & 现状 \\
+Theoretical statement & Numerical check & Location / milestone & Status \\
 \midrule
 \endhead
-定理~\ref{thm:monotone}、命题~\ref{prop:free-ops}\ (单调性) &
-$\err(p,e)$ 对 $p,e$ 不降;叠加独立层不降 (C1,C2) &
-\texttt{theory/checks}\ (精确 ML,3 个码) & 通过 \\
-定理~\ref{thm:partial}\ (部分丢弃标记) &
-$\err(p,e_0{+}\delta)\le\err(p'',e_0)$,约 $300$ 组随机参数/码 (C3) &
-同上 & 通过 \\
-定理~\ref{thm:preorder}\ (预序必要性) &
-可达对均满足 $\err$ 同序 (C4);同时统计“不可达却同序”的比例(操作序严格大于自由序的有限 $d$ 证据) &
-同上 & 通过;不可达对中约 15\% 仍同序 \\
-引理~\ref{lem:union}、推论~\ref{cor:product}\ (联合上界) &
-$\err\le\tfrac12\widetilde W(B)$ (C5) & 同上 & 通过 \\
-命题~\ref{prop:genie}\ (先知下界) &
-$\err_{d=3}\ge\varepsilon_{\rm genie}$ (C6);$d\ge5$ 用 TN-ML 复核 &
-同上 / M1 & $d=3$ 通过 \\
-定理~\ref{thm:rate}\ (汇率上界) &
-有限 $d$:$R^{(d)}\le c$ (C7);\textbf{P1:$R_{e\to p}\le c(p_0,e_0)$,并报告 $\Delta=c-R$、$R_B$、$R_{\rm hash}$} &
-\texttt{theory/checks};P1 / M2 & 有限 $d$ 通过;P1 待做 \\
-注~\ref{rem:envelope}\ (ML 导数的包络论证) &
-$\partial_\theta\err$ 与冻结解码器失败率的导数一致 (C8);张量网络 ML 上待验证 &
-\texttt{theory/checks};M1 & 3 个小码通过 \\
-观察~\ref{obs:sharp}\ ($[[5,1,3]]$ 取等) &
-扫描 $e_0{=}0$ 处的 $R^{(d)}/c$:随机稳定子码库 &
-\texttt{theory/checks}\ 扩展 & 3 个码已观察 \\
-猜想~\ref{conj:universal}\ (码通用序 = 自由序) &
-对不可达对 $(p,e)\to(p',e')$,在随机稳定子码库中搜索使 $\err$ \emph{反序}的码 &
-\texttt{theory/checks}\ 扩展 & 未开始 \\
-猜想~\ref{conj:HB}\ ($H_B$) &
-P1 的 $R_\alpha$ 与解析的 $R_B$ 比较 &
-P1 / M2 & 待 P1 \\
-定理~\ref{thm:cc-cert}\ (码容量认证) &
-(i) 模拟标定数据,检验 $\bar e,\bar p$ 的覆盖率 $\ge1-\delta$;(ii) 与 TN-ML 的 $\err_d$ 比较(证书必须 $\ge$) &
-\texttt{experiments/}\ / M1 & 待做 \\
-引理~\ref{lem:floor}\ (芯片事件地板) &
-stim:$\pL\ge q_c(1-2^{-q})$ 且 $\propto r_cT$;地板与 $d$ 无关 &
-P2 / M3--M4 & 待做 \\
-命题~\ref{prop:poisson}\ (泊松下限) &
-任何检验所需轮数 $\ge\ln((1-a)/\delta)/r$ &
-P2 / M4 & 待做 \\
-命题~\ref{prop:exponents}\ (指数链) &
-估计 $D_{\rm count}$ 与 $D_{\rm pattern}$,验证 $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ &
-P2 / M4 & 待做 \\
+Theorem~\ref{thm:monotone}, Proposition~\ref{prop:free-ops}\ (monotonicity) &
+$\err(p,e)$ nondecreasing in $p,e$; superposing independent layers does not decrease it (C1, C2) &
+\texttt{theory/checks}\ (exact ML, 3 codes) & passes \\
+Theorem~\ref{thm:partial}\ (partial flag discarding) &
+$\err(p,e_0{+}\delta)\le\err(p'',e_0)$, about $300$ random parameter/code draws (C3) &
+same & passes \\
+Theorem~\ref{thm:preorder}\ (necessity in the preorder) &
+reachable pairs are $\err$-ordered (C4); also the fraction of ``unreachable yet ordered'' pairs (finite-$d$ evidence that the operational order is strictly larger than the free order) &
+same & passes; about 15\% of unreachable pairs are still ordered \\
+Lemma~\ref{lem:union}, Corollary~\ref{cor:product}\ (union bound) &
+$\err\le\tfrac12\widetilde W(B)$ (C5) & same & passes \\
+Proposition~\ref{prop:genie}\ (genie lower bound) &
+$\err_{d=3}\ge\varepsilon_{\rm genie}$ (C6); recheck with exact ML for $d\ge5$ &
+same / M1 & passes at $d=3$ \\
+Theorem~\ref{thm:rate}\ (exchange-rate bound) &
+finite $d$: $R^{(d)}\le c$ (C7); \textbf{P1: $R_{e\to p}\le c(p_0,e_0)$, and report $\Delta=c-R$, $R_B$, $R_{\rm hash}$} &
+\texttt{theory/checks}; P1 / M2 & passes at finite $d$; P1 pending \\
+Remark~\ref{rem:envelope}\ (envelope argument for ML derivatives) &
+$\partial_\theta\err$ equals the derivative of the frozen-decoder failure rate (C8); to be verified with the exact ML decoder at $d\ge5$ and with tensor-network ML &
+\texttt{theory/checks}; M1 & passes on 3 small codes \\
+Observation~\ref{obs:sharp}\ ($[[5,1,3]]$ attains equality) &
+scan $R^{(d)}/c$ at $e_0{=}0$ over a library of random stabilizer codes &
+extend \texttt{theory/checks} & observed for 3 codes \\
+Conjecture~\ref{conj:universal}\ (code-universal order = free order) &
+for unreachable pairs $(p,e)\to(p',e')$, search a library of random stabilizer codes for a code that \emph{reverses} the $\err$ order &
+extend \texttt{theory/checks} & not started \\
+Conjecture~\ref{conj:HB}\ ($H_B$) &
+compare the $R_\alpha$ of P1 with the analytic $R_B$ &
+P1 / M2 & awaits P1 \\
+Theorem~\ref{thm:cc-cert}\ (code-capacity certificate) &
+(i) simulate calibration data and check that the coverage of $\bar e,\bar p$ is $\ge1-\delta$; (ii) compare with the $\err_d$ of exact/TN ML (the certificate must be $\ge$) &
+\texttt{experiments/}\ / M1 & to do \\
+Lemma~\ref{lem:floor}\ (chip-event floor) &
+stim: $\pL\ge q_c(1-2^{-q})$ and $\propto r_cT$; the floor is independent of $d$ &
+P2 / M3--M4 & to do \\
+Proposition~\ref{prop:poisson}\ (Poisson lower bound) &
+any test needs at least $\ln((1-a)/\delta)/r$ rounds &
+P2 / M4 & to do \\
+Proposition~\ref{prop:exponents}\ (chain of exponents) &
+estimate $D_{\rm count}$ and $D_{\rm pattern}$ and verify $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ &
+P2 / M4 & to do \\
 \bottomrule
 \end{longtable}
 }
 
-\paragraph{精确小码的第二个用途。}
-\texttt{exact\_small\_codes.py} 给出 $n\le9$ 的码上\emph{精确}的最大似然 $\err(p,e)$,可直接作为 M1(张量网络 ML 解码器)的 oracle:
-$d=3$ 旋转表面码上 TN-ML 的结果必须与它在机器精度内一致(这是 README 中“合理性检验”之前更强的一道门)。
+\paragraph{A second use of the exact small-code computation.}
+\texttt{exact\_small\_codes.py} gives the \emph{exact} maximum-likelihood $\err(p,e)$ for codes with $n\le9$, and serves directly as the oracle for M1 (the ML decoder):
+on the $d=3$ rotated surface code the ML decoder of \texttt{lcd.decoders.ExactTNMLDecoder} must agree with it to machine precision, which is a stronger gate than the sanity checks in the README.
+This gate has been passed (\texttt{tests/test\_tn\_ml.py} compares coset sums with brute-force enumeration to $10^{-12}$, and \texttt{experiments/p1\_erasure\_pauli/crosscheck\_ml.py} compares the stratified ML estimate with erasures against the oracle).
 
-\paragraph{测试的分工:MWPM 不能证伪针对 ML 的上界。}
-引理~\ref{lem:union}、定理~\ref{thm:cc-cert} 等是对 ML 的上界,而 MWPM 的失败率 $\ge\err$,
-所以 MWPM 的数据既不能证实也不能证伪这些上界;必须用精确 ML(小 $d$)或 TN-ML。
-而下界(地板、泊松下限、先知下界)对任何解码器成立,可以用 stim + MWPM 检验。
+\paragraph{Division of tests: MWPM cannot falsify upper bounds for ML.}
+Lemma~\ref{lem:union}, Theorem~\ref{thm:cc-cert}, and similar statements are upper bounds for ML, while the MWPM failure rate is $\ge\err$,
+so MWPM data can neither confirm nor refute these bounds; one must use exact ML (small $d$) or tensor-network ML.
+Lower bounds (the floor, the Poisson lower bound, the genie lower bound) hold for any decoder and can be tested with stim + MWPM.
 
-\subsection{开放问题清单}
+\subsection{List of open problems}
 
-\begin{enumerate}[leftmargin=2em]
-\item \textbf{缺口问题}(问题~\ref{prob:gap}):$c-R_\alpha$ 来自码相关性还是自由操作不完备?
-  \emph{先决数值}:P1 的 $R_\alpha$;\emph{理论路线}:猜想~\ref{conj:universal} 的 Blackwell/R\'enyi 路线。
-\item \textbf{O1}(问题~\ref{prob:O1}):无标记突发下 $\err$ 对形状参数 $p_b,R,T_b$ 的单调性。
-\item \textbf{O2}(问题~\ref{prob:O2}):突发/芯片事件污染下的参数置信上限。
-\item \textbf{O3}(问题~\ref{prob:O3}):突发混合联合上界的显式估计(团簇展开)。
-\item \textbf{O4}(问题~\ref{prob:O4}):实验设计定理。
-\item \textbf{O5}:对\emph{次优解码器}(MWPM)的认证:需要针对该解码器的 Peierls 型上界,本笔记的上界只对 ML。
-\item \textbf{O6}:观察~\ref{obs:sharp} 的证明:对哪些码类(完美码、传递码)单比特标记不改变 ML 判决?
-\item \textbf{O7}:联合上界的收紧(用测得的小 $d$ 失败率校准),使认证在实际参数下不再空洞。
+\begin{enumerate}
+\item \textbf{The gap problem} (Problem~\ref{prob:gap}): does $c-R_\alpha$ come from code dependence or from incompleteness of the free operations?
+  \emph{Prerequisite numerics}: the $R_\alpha$ of P1; \emph{theoretical route}: the Blackwell/R\'enyi route of Conjecture~\ref{conj:universal}.
+\item \textbf{O1} (Problem~\ref{prob:O1}): monotonicity of $\err$ in the shape parameters $p_b,R,T_b$ for unflagged bursts.
+\item \textbf{O2} (Problem~\ref{prob:O2}): confidence upper limits for the parameters under contamination by burst/chip events.
+\item \textbf{O3} (Problem~\ref{prob:O3}): explicit estimates for the union bound for burst mixtures (cluster expansion).
+\item \textbf{O4} (Problem~\ref{prob:O4}): the experimental-design theorem.
+\item \textbf{O5}: certification for \emph{suboptimal decoders} (MWPM): this needs a Peierls-type upper bound for that decoder; the bounds of these notes are for ML only.
+\item \textbf{O6}: a proof of Observation~\ref{obs:sharp}: for which classes of codes (perfect codes, transitive codes) does flagging a single qubit leave the ML decision unchanged?
+\item \textbf{O7}: tightening the union bound (calibrating with measured small-$d$ failure rates) so that certification is no longer vacuous at realistic parameters.
 \end{enumerate}
 
-\subsection{近期工作顺序(与 M0--M5 并行)}
+\subsection{Near-term order of work (in parallel with M0--M5)}
 
 \begin{center}
 \begin{tabular}{lll}
 \toprule
-理论线 & 内容 & 与数值线的咬合 \\
+Theory track & Content & Interlock with the numerics track \\
 \midrule
-T0 & 框架、单调性、表示(本文 §\ref{sec:framework}--\ref{sec:repr})+ 精确小码检验 & M0/M1 的 oracle 与合理性检验 \\
-T1 & 汇率上界、预序定理(§\ref{sec:exchange}) & M2:报告 $R\le c$、缺口 $\Delta$ \\
-T2 & 猜想~\ref{conj:universal} 的反例搜索;观察~\ref{obs:sharp} 的证明 & 扩展 \texttt{checks};无需大计算 \\
-T3 & 码容量认证 + O1--O3(§\ref{sec:cert}) & M3/M4:地板、参数识别 \\
-T4 & 信息论界与实验设计(§\ref{sec:info}) & M4:$T_{\rm count}/T_{\rm pattern}$ 对照 \\
+T0 & framework, monotonicity, representation (this document, \S\ref{sec:framework}--\ref{sec:repr}) + exact small-code checks & oracle and sanity checks for M0/M1 \\
+T1 & exchange-rate bound, preorder theorem (\S\ref{sec:exchange}) & M2: report $R\le c$ and the gap $\Delta$ \\
+T2 & counterexample search for Conjecture~\ref{conj:universal}; proof of Observation~\ref{obs:sharp} & extend \texttt{checks}; no large computation needed \\
+T3 & code-capacity certification + O1--O3 (\S\ref{sec:cert}) & M3/M4: floor, parameter identification \\
+T4 & information-theoretic bounds and experimental design (\S\ref{sec:info}) & M4: compare $T_{\rm count}/T_{\rm pattern}$ \\
 \bottomrule
 \end{tabular}
 \end{center}

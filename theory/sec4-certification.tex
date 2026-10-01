@@ -1,21 +1,21 @@
-\section{条件认证:有限样本上界}\label{sec:cert}
+\section{Conditional certification: finite-sample upper bounds}\label{sec:cert}
 
-目标:在模型类内,\emph{直接}对大码距的 $\pL(d)$ 给出有限样本上界,而不是先估计 $\alpha$ 再外推。
-证明骨架分三层:\emph{(A) 统计层}(由数据得到参数的置信上界);\emph{(B) 单调层}(参数的上界给出模型的``支配'',
-由定理~\ref{thm:monotone} 得 $\err$ 的上界);\emph{(C) 计算层}(对支配模型给出 $\err_d$ 的显式上界)。
-本节完整证明码容量情形(定理~\ref{thm:cc-cert}),并把含突发与芯片事件的情形(定理~\ref{thm:burst-cert})
-化为三个明确的开放引理。
+Goal: within the model class, give finite-sample upper bounds on $\pL(d)$ at large code distance \emph{directly}, rather than estimating $\alpha$ first and extrapolating.
+The proof skeleton has three layers: \emph{(A) the statistical layer} (confidence upper bounds on the parameters from data); \emph{(B) the monotonicity layer} (upper bounds on the parameters give a ``dominating'' model,
+and Theorem~\ref{thm:monotone} gives an upper bound on $\err$); \emph{(C) the computational layer} (an explicit upper bound on $\err_d$ for the dominating model).
+This section proves the code-capacity case completely (Theorem~\ref{thm:cc-cert}) and reduces the case with burst and chip-scale events (Theorem~\ref{thm:burst-cert})
+to three explicit open lemmas.
 
-\paragraph{关于“哪个解码器”。}
-本节所有上界都是对\emph{最大似然(Bayes 最优)解码}的上界,表述为“存在解码器(已知噪声参数下的 ML)
-使逻辑失败概率不超过 $U$”。由最优性,它\emph{不是}对实验中实际使用的次优解码器(如 MWPM)失败率的上界。
-反之,本节的\emph{下界}(地板,引理~\ref{lem:floor})对任何解码器成立。
+\paragraph{Which decoder.}
+All upper bounds in this section are upper bounds for \emph{maximum-likelihood (Bayes-optimal) decoding}, stated as ``there is a decoder (ML with the noise parameters known)
+whose logical failure probability does not exceed $U$''. By optimality, this is \emph{not} an upper bound on the failure rate of the suboptimal decoder actually used in an experiment (such as MWPM).
+Conversely, the \emph{lower bounds} of this section (the floor, Lemma~\ref{lem:floor}) hold for any decoder.
 
-\subsection{(C) 联合(Bhattacharyya)上界}
+\subsection{(C) The union (Bhattacharyya) upper bound}
 
-\begin{lemma}[联合上界]\label{lem:union}
-设 $(E,F)$ 为线性解码结构 $(V,\sigma,L)$ 上的任意噪声实例,令 $K=\ker\sigma\setminus\ker L$
-(不被检测却翻转可观测量的故障)。则
+\begin{lemma}[Union bound]\label{lem:union}
+Let $(E,F)$ be any noise instance on a linear decoding structure $(V,\sigma,L)$, and let $K=\ker\sigma\setminus\ker L$
+(faults that are undetected but flip an observable). Then
 \[
 \err(E,F)\;\le\;\tfrac12\sum_{G\in K}\BC(P;G),\qquad
 \BC(P;G):=\sum_{E,F}\sqrt{P(E,F)\,P(E+G,F)}.
@@ -23,154 +23,154 @@
 \hfill\st{PROVED}
 \end{lemma}
 \begin{proof}
-固定观测 $y=(s,f)$,记 $P(\ell,y)=\Prob[L=\ell,Y=y]$,ML 判决为 $\ell^\ast(y)$。则
-$\err=\sum_y\sum_{\ell\ne\ell^\ast}P(\ell,y)$。对 $\ell\ne\ell^\ast$ 有 $P(\ell,y)\le P(\ell^\ast,y)$,故
-$P(\ell,y)\le\sqrt{P(\ell,y)P(\ell^\ast,y)}$,于是
+Fix an observation $y=(s,f)$, write $P(\ell,y)=\Prob[L=\ell,Y=y]$, and let the ML decision be $\ell^\ast(y)$. Then
+$\err=\sum_y\sum_{\ell\ne\ell^\ast}P(\ell,y)$. For $\ell\ne\ell^\ast$ we have $P(\ell,y)\le P(\ell^\ast,y)$, hence
+$P(\ell,y)\le\sqrt{P(\ell,y)P(\ell^\ast,y)}$, and so
 \[
-\err\le\sum_y\sum_{\{\ell,\ell'\}}\sqrt{P(\ell,y)P(\ell',y)}\quad(\text{对无序标签对求和}).
+\err\le\sum_y\sum_{\{\ell,\ell'\}}\sqrt{P(\ell,y)P(\ell',y)}\quad(\text{sum over unordered label pairs}).
 \]
-记 $c(s,\ell)=\{E:\sigma(E)=s,L(E)=\ell\}$,有 $P(\ell,s,f)=\sum_{A\in c(s,\ell)}P(A,f)$。
-由 $\sqrt{\sum_ix_i}\le\sum_i\sqrt{x_i}$ 得
+Write $c(s,\ell)=\{E:\sigma(E)=s,L(E)=\ell\}$, so that $P(\ell,s,f)=\sum_{A\in c(s,\ell)}P(A,f)$.
+From $\sqrt{\sum_ix_i}\le\sum_i\sqrt{x_i}$ we get
 \[
 \sqrt{P(\ell,s,f)P(\ell',s,f)}\le\sum_{A\in c(s,\ell)}\sum_{B\in c(s,\ell')}\sqrt{P(A,f)P(B,f)}.
 \]
-对 $s,\{\ell,\ell'\},f$ 求和,右边变成对满足 $\sigma(A)=\sigma(B)$、$L(A)\ne L(B)$ 的\emph{无序}故障对 $\{A,B\}$ 求和。
-令 $G=A+B\in K$,$(A,B)\mapsto(A,G)$ 是有序对到 $V\times K$ 的双射,无序对数为其一半,
-故得 $\tfrac12\sum_{G\in K}\sum_{A,f}\sqrt{P(A,f)P(A+G,f)}$。
+Summing over $s$, $\{\ell,\ell'\}$, and $f$, the right side becomes a sum over \emph{unordered} fault pairs $\{A,B\}$ with $\sigma(A)=\sigma(B)$ and $L(A)\ne L(B)$.
+Put $G=A+B\in K$; the map $(A,B)\mapsto(A,G)$ is a bijection from ordered pairs onto $V\times K$, and the number of unordered pairs is half of that,
+which gives $\tfrac12\sum_{G\in K}\sum_{A,f}\sqrt{P(A,f)P(A+G,f)}$.
 \end{proof}
 
-\begin{corollary}[码容量的积形式与重量枚举]\label{cor:product}
-对 $\Nn_{\rm cc}(p,e)$ 与稳定子码 $(n,S)$,$K=N(S)\setminus S$,且对 $G\in K$
-$\BC(P;G)=B(p,e)^{\wt(G)}$,其中 $B=e+(1-e)\beta_{\rm dep}(p)$($\wt$ 为泡利重量)。故
+\begin{corollary}[Product form and weight enumerators at code capacity]\label{cor:product}
+For $\Nn_{\rm cc}(p,e)$ and a stabilizer code $(n,S)$ we have $K=N(S)\setminus S$, and for $G\in K$
+$\BC(P;G)=B(p,e)^{\wt(G)}$, with $B=e+(1-e)\beta_{\rm dep}(p)$ ($\wt$ the Pauli weight). Hence
 \[
 \err_d(p,e)\le\tfrac12\widetilde W_d\big(B(p,e)\big),\qquad
 \widetilde W_d(x)=\sum_{G\in N(S)\setminus S}x^{\wt(G)}=W_{N(S)}(x)-W_S(x),
 \]
-并由 MacWilliams 恒等式 $W_{N(S)}(x)=\dfrac1{|S|}\sum_{g\in S}(1+3x)^{n-\wt(g)}(1-x)^{\wt(g)}$ 可由稳定子群的重量分布计算。
+and by the MacWilliams identity $W_{N(S)}(x)=\dfrac1{|S|}\sum_{g\in S}(1+3x)^{n-\wt(g)}(1-x)^{\wt(g)}$ this can be computed from the weight distribution of the stabilizer group.
 \hfill\st{PROVED}
 \end{corollary}
 \begin{proof}
-单比特:标记 $f=1$(概率 $e$)时分布均匀,平移不变,贡献 $e\cdot1$;标记 $f=0$ 时贡献
-$(1-e)\sum_a\sqrt{\Dep_p(a)\Dep_p(a+G_j)}=(1-e)\beta_{\rm dep}(p)$($G_j\in\{X,Y,Z\}$ 三者对称;
-配对 $(I,G_j),(G_j,I)$ 给出 $2\sqrt{(1-p)p/3}$,另外两个非平凡泡利互相配对给出 $2p/3$)。
-$G_j=I$ 的比特贡献 $1$。独立性给出积形式。MacWilliams 恒等式为标准结果。
+Single qubit: with flag $f=1$ (probability $e$) the law is uniform and invariant under the shift, contributing $e\cdot1$; with flag $f=0$ the contribution is
+$(1-e)\sum_a\sqrt{\Dep_p(a)\Dep_p(a+G_j)}=(1-e)\beta_{\rm dep}(p)$ (the three shifts $G_j\in\{X,Y,Z\}$ are symmetric;
+the pairs $(I,G_j),(G_j,I)$ give $2\sqrt{(1-p)p/3}$, and the other two nontrivial Paulis pair with each other and give $2p/3$).
+Qubits with $G_j=I$ contribute $1$. Independence gives the product form. The MacWilliams identity is a standard result.
 \end{proof}
 
-\noindent 对 $d=3$ 的三个码,不等式 $\err\le\tfrac12\widetilde W(B)$ 在 $\texttt{theory/checks}$ 中全部通过(检验 C5)。
-一般 $d$ 时 $W_S$ 可由张量网络计算(每格点 4 维腿,转移矩阵宽度随 $d$ 指数增长),具体可行的 $d$ 范围待 M1 之后基准测试,\emph{此处不作承诺}。
+\noindent For the three $d=3$ codes the inequality $\err\le\tfrac12\widetilde W(B)$ passes in \texttt{theory/checks} (check C5).
+For general $d$, $W_S$ can be computed by tensor networks (a 4-dimensional leg per lattice site; the transfer-matrix width grows exponentially with $d$); the feasible range of $d$ is to be benchmarked, and \emph{no commitment is made here}.
 
-\subsection{(A) 统计层:参数的置信上界}
+\subsection{(A) The statistical layer: confidence upper bounds on the parameters}
 
-\begin{lemma}[由标记估计 $e$]\label{lem:flags}
-$M$ 个独立样本中共 $nM$ 个比特-样本,标记 $F_{ij}$ i.i.d.\ Bernoulli($e$)。令
-$\bar e=\bar e(\delta_1)$ 为 Clopper--Pearson 单侧上限,则 $\Prob[e\le\bar e]\ge1-\delta_1$。\hfill\st{PROVED}
+\begin{lemma}[Estimating $e$ from the flags]\label{lem:flags}
+Among $M$ independent samples there are $nM$ qubit-samples in total, and the flags $F_{ij}$ are i.i.d.\ Bernoulli($e$). Let
+$\bar e=\bar e(\delta_1)$ be the one-sided Clopper--Pearson upper limit; then $\Prob[e\le\bar e]\ge1-\delta_1$.\hfill\st{PROVED}
 \end{lemma}
 
-\begin{lemma}[由综合征频率估计 $\lambda$]\label{lem:lambda}
-取一个固定的 $X$ 型稳定子生成元 $g_0$,重量 $w_0$。对其支撑上没有任何标记的那些样本(记其个数为 $M'$),
-综合征比特为 i.i.d.\ Bernoulli,参数 $\tfrac12(1-\lambda^{w_0})$(以标记模式为条件,精确成立)。
-令 $\overline{P}$ 为该参数的 Clopper--Pearson 上限(置信水平 $1-\delta_2$),则
-$\lambda\ge\underline\lambda:=(1-2\overline P)_+^{1/w_0}$,即 $p\le\bar p:=\tfrac34(1-\underline\lambda)$,
-概率 $\ge1-\delta_2$。\hfill\st{PROVED}
+\begin{lemma}[Estimating $\lambda$ from syndrome frequencies]\label{lem:lambda}
+Fix an $X$-type stabilizer generator $g_0$ of weight $w_0$. Among the samples in which none of the qubits in its support is flagged (say there are $M'$ of them),
+the syndrome bit is i.i.d.\ Bernoulli with parameter $\tfrac12(1-\lambda^{w_0})$ (exact when conditioning on the flag pattern).
+Let $\overline{P}$ be the Clopper--Pearson upper limit for this parameter (confidence level $1-\delta_2$); then
+$\lambda\ge\underline\lambda:=(1-2\overline P)_+^{1/w_0}$, that is, $p\le\bar p:=\tfrac34(1-\underline\lambda)$,
+with probability $\ge1-\delta_2$.\hfill\st{PROVED}
 \end{lemma}
 \begin{proof}
-没有标记时 $g_0$ 支撑上每个比特以概率 $p$ 去极化;$X$ 型检测器翻转当且仅当支撑上 $\{Y,Z\}$ 型错误的个数为奇数,
-单比特贡献本征值 $1-\tfrac43p=\lambda$,故 $\Pr[\text{bit}=1]=\tfrac12(1-\lambda^{w_0})$。
-以标记为条件时各样本独立,故为精确二项。
+Without flags, every qubit in the support of $g_0$ is depolarized with probability $p$; an $X$-type detector flips if and only if the number of $\{Y,Z\}$-type errors in the support is odd,
+and each qubit contributes the eigenvalue $1-\tfrac43p=\lambda$, so $\Pr[\text{bit}=1]=\tfrac12(1-\lambda^{w_0})$.
+Conditioned on the flags the samples are independent, hence the count is exactly binomial.
 \end{proof}
 
-\begin{theorem}[码容量情形的有限样本认证]\label{thm:cc-cert}
-设数据为码容量噪声 $\Nn_{\rm cc}(p,e)$ 的 $M$ 个独立样本(标记与综合征),$\delta=\delta_1+\delta_2$。
-令 $\bar e,\bar p$ 如引理~\ref{lem:flags}、\ref{lem:lambda}。则以概率至少 $1-\delta$,对\emph{一切} $d$,
+\begin{theorem}[Finite-sample certification at code capacity]\label{thm:cc-cert}
+Let the data be $M$ independent samples (flags and syndromes) of code-capacity noise $\Nn_{\rm cc}(p,e)$, and let $\delta=\delta_1+\delta_2$.
+Let $\bar e,\bar p$ be as in Lemmas~\ref{lem:flags} and~\ref{lem:lambda}. Then with probability at least $1-\delta$, simultaneously for \emph{all} $d$,
 \[
 \err_d(p,e)\;\le\;\err_d(\bar p,\bar e)\;\le\;\tfrac12\widetilde W_d\big(B(\bar p,\bar e)\big).
 \]
 \hfill\st{PROVED}
 \end{theorem}
 \begin{proof}
-在事件 $\{e\le\bar e\}\cap\{p\le\bar p\}$ 上,由定理~\ref{thm:preorder}(情形 $e'\ge e$、$p'\ge p$)
-$\Nn_{\rm cc}(\bar p,\bar e)$ 可由 $\Nn_{\rm cc}(p,e)$ 经局域自由操作得到(叠加擦除,再叠加去极化),
-故定理~\ref{thm:monotone} 给出第一个不等式;第二个是推论~\ref{cor:product}。
-该事件的概率由并集界 $\ge1-\delta_1-\delta_2$。
+On the event $\{e\le\bar e\}\cap\{p\le\bar p\}$, Theorem~\ref{thm:preorder} (case $e'\ge e$, $p'\ge p$) shows that
+$\Nn_{\rm cc}(\bar p,\bar e)$ is obtained from $\Nn_{\rm cc}(p,e)$ by a local free operation (superpose erasure, then superpose depolarizing noise),
+so Theorem~\ref{thm:monotone} gives the first inequality; the second is Corollary~\ref{cor:product}.
+The probability of this event is $\ge1-\delta_1-\delta_2$ by the union bound.
 \end{proof}
 
-这是一个\emph{不依赖任何 $\pL$ 数据}的认证:标记和综合征统计足以给出所有 $d$ 的上界。代价是联合上界的松弛
-(它的阈值远低于真实 ML 阈值)。把联合上界换成更紧的、同样单调的上界(例如用测得的小 $d$ 失败率校准)是下一步。
+This is a certificate that \emph{does not depend on any $\pL$ data}: flag and syndrome statistics suffice to give upper bounds for all $d$. The price is the looseness of the union bound
+(its threshold lies far below the true ML threshold). Replacing the union bound by a tighter, equally monotone bound (for example calibrated with measured small-$d$ failure rates) is the next step.
 
-\subsection{含局域突发与芯片尺度事件的情形}
+\subsection{The case with local bursts and chip-scale events}
 
-设模型类为定义~\ref{def:events}。记 $q_c=1-e^{-r_c\,T_{\rm tot}}$ 为总时长 $T_{\rm tot}$ 内至少发生一次芯片尺度事件的概率。
+Let the model class be that of Definition~\ref{def:events}. Let $q_c=1-e^{-r_c\,T_{\rm tot}}$ be the probability of at least one chip-scale event within the total time $T_{\rm tot}$.
 
-\begin{lemma}[芯片尺度事件的地板]\label{lem:floor}
-令 ${\err}^{(0)}$ 为去掉芯片尺度层后的同一噪声的 $\err$。则
+\begin{lemma}[Floor from chip-scale events]\label{lem:floor}
+Let ${\err}^{(0)}$ be the $\err$ of the same noise with the chip-scale layer removed. Then
 \[
 \err\;\le\;q_c+(1-q_c)\,{\err}^{(0)}.
 \]
-若进一步假设 \textbf{(K)}:给定发生芯片事件,可观测量 $L(E)\in\F^q$ 均匀且与 $Y=(\sigma(E),F)$ 独立,则
+If in addition \textbf{(K)} holds: given a chip event, the observable $L(E)\in\F^q$ is uniform and independent of $Y=(\sigma(E),F)$, then
 \[
 \err\;\ge\;q_c\,(1-2^{-q}).
 \]
-于是 $\err\sim q_c\propto r_cT_{\rm tot}$ 的“地板”与 $d$ 无关;上界对 (K) 不需要,下界对任何解码器的失败率同样成立。
+So the ``floor'' $\err\sim q_c\propto r_cT_{\rm tot}$ is independent of $d$; the upper bound does not need (K), and the lower bound holds equally for the failure rate of any decoder.
 \hfill\st{PROVED}
 \end{lemma}
 \begin{proof}
-上界:用去掉芯片层后最优的 ML 解码器 $\hat g_0$ 处理完整问题。设 $C$ 为“至少一个芯片事件”。
-$\Prob[\hat g_0\text{ 失败}]\le\Prob[C]+\Prob[C^c]\,{\err}^{(0)}$,因为在 $C^c$ 上数据服从去掉芯片层的噪声(各层独立)。
-$\err$ 不超过任何解码器的失败率。
+Upper bound: process the full problem with the optimal ML decoder $\hat g_0$ for the problem without the chip layer. Let $C$ be the event ``at least one chip event''.
+$\Prob[\hat g_0\text{ fails}]\le\Prob[C]+\Prob[C^c]\,{\err}^{(0)}$, because on $C^c$ the data follow the noise without the chip layer (the layers are independent).
+$\err$ does not exceed the failure rate of any decoder.
 
-下界:考虑知道 $C$ 的先知解码器,其失败率不超过 $\err$(定理~\ref{thm:monotone} 的 (F1) 情形:真实观测是先知观测的粗粒化)。
-在 $C$ 上由 (K) 任何猜测的失败概率为 $1-2^{-q}$。
-(K) 对“全芯片完全去极化事件”成立:均匀的 $E_{\rm chip}$ 使 $(\sigma,L)(E)$ 在 $\F^{n-k}\times\F^{2k}$ 上均匀(满射),
-故 $L$ 与 $\sigma$ 独立;标记独立于 $E_{\rm chip}$。
+Lower bound: consider a genie decoder that knows $C$; its failure rate does not exceed $\err$ (the (F1) case of Theorem~\ref{thm:monotone}: the real observation is a coarse-graining of the genie's observation).
+On $C$, by (K) any guess fails with probability $1-2^{-q}$.
+(K) holds for ``whole-chip completely depolarizing events'': a uniform $E_{\rm chip}$ makes $(\sigma,L)(E)$ uniform on $\F^{n-k}\times\F^{2k}$ (surjectivity),
+so $L$ is independent of $\sigma$; the flags are independent of $E_{\rm chip}$.
 \end{proof}
 
-\begin{lemma}[突发混合的联合上界]\label{lem:burst-union}
-设 $E=E_{\rm bg}+E_{\rm burst}$,以突发构型 $\mathcal C$ 为条件时噪声是比特间独立的积测度,构型分布为 $\pi$。则
+\begin{lemma}[Union bound for burst mixtures]\label{lem:burst-union}
+Let $E=E_{\rm bg}+E_{\rm burst}$, and suppose that conditioned on the burst configuration $\mathcal C$ the noise is a product measure over qubits, with configuration law $\pi$. Then
 \[
 \BC(P;G)\;\le\;\sum_{\mathcal C,\mathcal C'}\sqrt{\pi(\mathcal C)\pi(\mathcal C')}\;\prod_{j}\beta_j(\mathcal C,\mathcal C';G_j),
 \]
-其中 $\beta_j(\mathcal C,\mathcal C';G_j)=\sum_{a,f}\sqrt{P_{\mathcal C,j}(a,f)P_{\mathcal C',j}(a+G_j,f)}$。
+where $\beta_j(\mathcal C,\mathcal C';G_j)=\sum_{a,f}\sqrt{P_{\mathcal C,j}(a,f)P_{\mathcal C',j}(a+G_j,f)}$.
 \hfill\st{PROVED}
 \end{lemma}
 \begin{proof}
-$P=\sum_{\mathcal C}\pi(\mathcal C)P_{\mathcal C}$。由 $\sqrt{\sum x_i}\le\sum\sqrt{x_i}$,
+$P=\sum_{\mathcal C}\pi(\mathcal C)P_{\mathcal C}$. From $\sqrt{\sum x_i}\le\sum\sqrt{x_i}$,
 \[
 \sqrt{P(E,F)P(E+G,F)}\le\sum_{\mathcal C,\mathcal C'}\sqrt{\pi(\mathcal C)\pi(\mathcal C')}\sqrt{P_{\mathcal C}(E,F)P_{\mathcal C'}(E+G,F)}.
 \]
-对 $(E,F)$ 求和并用积测度。
+Sum over $(E,F)$ and use the product measure.
 \end{proof}
-\noindent 注意不能简单地“以 $\mathcal C$ 为条件、把 $\mathcal C$ 当作已知”:那样得到的是知道构型的解码器的失败率,
-它\emph{低于} $\err$(先知更强),不是上界。引理~\ref{lem:burst-union} 是对未知构型的正确处理,但右端把两条独立的突发构型同时求和,
-结果偏松。
+\noindent Note that one cannot simply ``condition on $\mathcal C$ and treat $\mathcal C$ as known'': that yields the failure rate of a decoder that knows the configuration,
+which is \emph{lower} than $\err$ (the genie is stronger), not an upper bound. Lemma~\ref{lem:burst-union} is the correct treatment of an unknown configuration, but its right side sums over two independent burst configurations simultaneously
+and is therefore loose.
 
-\begin{theorem}[含突发与芯片事件的条件认证(目标陈述)]\label{thm:burst-cert}
-设真实参数 $\theta=(p,e,r,\vartheta,r_c)$,形状 $\vartheta=(R,T_b,p_b)$ 属于已知的有限类 $\Theta_\vartheta$(若问题~\ref{prob:O1} 的单调性成立,可代以形状上限;否则下式右端对 $\vartheta\in\Theta_\vartheta$ 取最大值)。
-假设由数据得到的置信上限满足 $\Prob[p\le\bar p,\ e\le\bar e,\ r\le\bar r,\ r_c\le\bar r_c]\ge1-\delta$。则
-以概率 $\ge1-\delta$,对一切 $d,T_{\rm tot}$,
+\begin{theorem}[Conditional certification with bursts and chip events (target statement)]\label{thm:burst-cert}
+Let the true parameters be $\theta=(p,e,r,\vartheta,r_c)$, with shape $\vartheta=(R,T_b,p_b)$ in a known finite class $\Theta_\vartheta$ (if the monotonicity of Problem~\ref{prob:O1} holds one may replace it by a shape upper bound; otherwise the right side below is maximized over $\vartheta\in\Theta_\vartheta$).
+Suppose the confidence upper limits obtained from data satisfy $\Prob[p\le\bar p,\ e\le\bar e,\ r\le\bar r,\ r_c\le\bar r_c]\ge1-\delta$. Then
+with probability $\ge1-\delta$, for all $d,T_{\rm tot}$,
 \[
 \err_{d,T_{\rm tot}}(\theta)\;\le\;\bar q_c+(1-\bar q_c)\,\tfrac12\sum_{G\in K}\ \sum_{\mathcal C,\mathcal C'}\sqrt{\pi_{\bar\theta}(\mathcal C)\pi_{\bar\theta}(\mathcal C')}\prod_j\beta_j(\mathcal C,\mathcal C';G_j),
 \]
-其中 $\bar q_c=1-e^{-\bar r_cT_{\rm tot}}$,$\pi_{\bar\theta}$ 为参数上限对应的突发构型分布。\hfill\st{PLAN}
+where $\bar q_c=1-e^{-\bar r_cT_{\rm tot}}$ and $\pi_{\bar\theta}$ is the burst-configuration law for the parameter upper limits.\hfill\st{PLAN}
 \end{theorem}
 
-\noindent\textbf{已证明的组成部分:}速率方向的单调性(命题~\ref{prop:rate-mono}),地板(引理~\ref{lem:floor}),
-联合上界(引理~\ref{lem:union}、\ref{lem:burst-union});把 $\bar\theta$ 代入的论证与定理~\ref{thm:cc-cert} 相同。
-\textbf{尚缺三块:}
-\begin{problem}[O1:形状参数的单调性]\label{prob:O1}
-无标记突发下,$\err$ 对 $p_b,R,T_b$ 是否单调?(注~\ref{rem:shape} 说明自由操作不给出;若不成立,
-则须对形状取有限类上的最坏情形,或对形状作联合上界。)
+\noindent\textbf{Components already proved:} monotonicity in the rate directions (Proposition~\ref{prop:rate-mono}), the floor (Lemma~\ref{lem:floor}),
+the union bounds (Lemmas~\ref{lem:union} and~\ref{lem:burst-union}); the argument for substituting $\bar\theta$ is the same as in Theorem~\ref{thm:cc-cert}.
+\textbf{Three pieces are still missing:}
+\begin{problem}[O1: monotonicity in the shape parameters]\label{prob:O1}
+For unflagged bursts, is $\err$ monotone in $p_b,R,T_b$? (Remark~\ref{rem:shape} shows that free operations do not give it; if it fails,
+one must take the worst case over a finite class of shapes, or use a union bound over shapes.)
 \end{problem}
-\begin{problem}[O2:污染下的参数识别]\label{prob:O2}
-突发与芯片事件污染综合征统计,引理~\ref{lem:lambda} 的 i.i.d.\ 前提失效。需要对 $p$ 的稳健置信上限(例如排除高权重检测事件窗口后的估计)
-与对 $r,r_c$ 的置信上限(由事件检测统计,与 P2 的泊松下限 §\ref{sec:design} 衔接)。
+\begin{problem}[O2: parameter identification under contamination]\label{prob:O2}
+Bursts and chip events contaminate the syndrome statistics, and the i.i.d.\ premise of Lemma~\ref{lem:lambda} fails. One needs a robust confidence upper limit for $p$ (for example an estimate that excludes windows with high-weight detection events)
+and confidence upper limits for $r,r_c$ (from event-detection statistics, connected to the Poisson lower bound of P2, \S\ref{sec:design}).
 \end{problem}
-\begin{problem}[O3:突发和的显式估计]\label{prob:O3}
-把引理~\ref{lem:burst-union} 右端的二重构型和化为显式的指数函数(团簇展开);需给出收敛域,
-并说明在 $d\gg R$ 时它只改变指数、不产生与 $d$ 无关的地板。
+\begin{problem}[O3: explicit estimates for the burst sum]\label{prob:O3}
+Turn the double sum over configurations on the right side of Lemma~\ref{lem:burst-union} into an explicit exponential function (cluster expansion); a domain of convergence is needed,
+together with a proof that for $d\gg R$ it only changes the exponent and produces no $d$-independent floor.
 \end{problem}
 
-\paragraph{数值检验的分工(见 §\ref{sec:map})。}
-电路级 stim + MWPM 的 P2 数据能检验:(i) 地板 $\err\ge q_c(1-2^{-q})$ 与 $\propto r_cT_{\rm tot}$ 的标度
-(下界对任何解码器成立,MWPM 的失败率不得低于它);(ii) 参数估计器的无偏性(M3 验收项);
-(iii) 突发使指数变小而不是产生地板。\emph{上界}部分针对 ML,MWPM 数据不能证伪它;
-须用小 $d$ 的精确 ML 或码容量下带突发簇的张量网络 ML(M1)检验。
+\paragraph{Division of numerical checks (see \S\ref{sec:map}).}
+The circuit-level stim + MWPM data of P2 can check: (i) the floor $\err\ge q_c(1-2^{-q})$ and its scaling $\propto r_cT_{\rm tot}$
+(the lower bound holds for any decoder, so the MWPM failure rate must not fall below it); (ii) unbiasedness of the parameter estimators (milestone M3); and
+(iii) that bursts reduce the exponent rather than create a floor. The \emph{upper-bound} parts concern ML, and MWPM data cannot falsify them;
+they must be checked with exact ML at small $d$ (\texttt{lcd.decoders.ExactTNMLDecoder}) or with tensor-network ML for code capacity with burst clusters (M1).

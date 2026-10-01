@@ -1,141 +1,141 @@
-\section{框架:线性解码结构、可模拟约化与单调性}\label{sec:framework}
+\section{Framework: linear decoding structures, simulable reductions, and monotonicity}\label{sec:framework}
 
-\subsection{线性解码结构与噪声实例}
+\subsection{Linear decoding structures and noise instances}
 
-为了让同一套证明同时覆盖码容量噪声和电路级噪声(检测器误差模型),我们只用到\emph{线性性}。
+To let one set of proofs cover both code-capacity noise and circuit-level noise (detector error models), we only use \emph{linearity}.
 
-\begin{definition}[线性解码结构]\label{def:structure}
-一个线性解码结构是三元组 $\mathfrak D=(V,\sigma,L)$:$V$ 是有限维 $\F$-线性空间(\emph{故障空间}),
-$\sigma:V\to\F^{r}$ 是\emph{检测器映射}(综合征),$L:V\to\F^{q}$ 是\emph{可观测量映射},均为线性映射。
+\begin{definition}[Linear decoding structure]\label{def:structure}
+A linear decoding structure is a triple $\mathfrak D=(V,\sigma,L)$: $V$ is a finite-dimensional $\F$-vector space (the \emph{fault space}),
+$\sigma:V\to\F^{r}$ is the \emph{detector map} (syndrome), and $L:V\to\F^{q}$ is the \emph{observable map}; both are linear.
 \end{definition}
 
-\begin{definition}[稳定子码的结构]\label{def:code-structure}
-设 $S$ 为 $n$ 比特稳定子码的稳定子群($n-k$ 个独立生成元 $g_i$),泡利算符模相位记为 $V=\F^{2n}$,
-辛内积 $\langle u,v\rangle=u_x\!\cdot v_z+u_z\!\cdot v_x$。取
+\begin{definition}[Structure of a stabilizer code]\label{def:code-structure}
+Let $S$ be the stabilizer group of an $n$-qubit stabilizer code ($n-k$ independent generators $g_i$). Write Paulis modulo phase as $V=\F^{2n}$ with
+symplectic form $\langle u,v\rangle=u_x\!\cdot v_z+u_z\!\cdot v_x$. Put
 \[
 \sigma(E)=\big(\langle E,g_i\rangle\big)_{i=1}^{n-k},\qquad
 L(E)=\big(\langle E,\bar X_j\rangle,\langle E,\bar Z_j\rangle\big)_{j=1}^{k},
 \]
-其中 $\bar X_j,\bar Z_j$ 是一组逻辑算符(辛基)。映射 $E\mapsto(\sigma(E),L(E))$ 满射,其核恰为 $S$。
-电路级噪声:$V=\F^{\#\text{故障位置}}$,$\sigma$ 为检测器,$L$ 为可观测量翻转,线性性来自
-Clifford 电路中泡利故障的线性传播。
+where $\bar X_j,\bar Z_j$ is a symplectic basis of logical operators. The map $E\mapsto(\sigma(E),L(E))$ is surjective and its kernel is exactly $S$.
+For circuit-level noise, $V=\F^{\#\text{fault locations}}$, $\sigma$ is the detector map and $L$ the observable flips; linearity comes from
+the linear propagation of Pauli faults through Clifford circuits.
 \end{definition}
 
-\begin{definition}[噪声实例与陪集区分问题]\label{def:instance}
-噪声实例是随机对 $(E,F)$:$E\in V$ 是故障向量,$F\in\mathfrak F$($\mathfrak F$ 有限)是经典\emph{边信息}
-(擦除标记、泄漏检测标记、事件标记等),联合分布 $P_{EF}$ 为解码器所知。解码器的观测为
-$Y=(\sigma(E),F)$,任务是猜测 $L(E)$。解码器是(可随机化的)映射 $\hat g(Y)$。定义
+\begin{definition}[Noise instance and the coset-distinguishing problem]\label{def:instance}
+A noise instance is a random pair $(E,F)$: $E\in V$ is the fault vector and $F\in\mathfrak F$ ($\mathfrak F$ finite) is classical \emph{side information}
+(erasure flags, leakage-detection flags, event flags, \dots); the joint law $P_{EF}$ is known to the decoder. The decoder observes
+$Y=(\sigma(E),F)$ and must guess $L(E)$. A decoder is a (possibly randomized) map $\hat g(Y)$. Define
 \[
 \err(P):=\min_{\hat g}\Prob[\hat g(Y)\neq L(E)]
 =1-\sum_{y}\max_{\ell}\Prob[L=\ell,\,Y=y].
 \]
-最小值由最大似然(陪集)解码达到,$\err(P)=\pL$ 即最大似然下的逻辑失败概率。
+The minimum is attained by maximum-likelihood (coset) decoding, and $\err(P)=\pL$ is the logical failure probability under maximum-likelihood decoding.
 \end{definition}
 
-\begin{lemma}[解码即标签猜测]\label{lem:decoding}
-对稳定子码(定义~\ref{def:code-structure}),设解码器看到 $y=(s,f)$ 后施加恢复算符 $R$,$\sigma(R)=s$。
-则恢复成功(即 $E+R\in S$,逻辑恒等)当且仅当 $L(R)=L(E)$;且对每个 $(s,\ell)$ 存在 $R$ 使
-$\sigma(R)=s,L(R)=\ell$。因此恢复失败概率的最小值就是 $\err(P)$。\hfill\st{PROVED}
+\begin{lemma}[Decoding is label guessing]\label{lem:decoding}
+For a stabilizer code (Definition~\ref{def:code-structure}), suppose that after seeing $y=(s,f)$ the decoder applies a recovery operator $R$ with $\sigma(R)=s$.
+Recovery succeeds (that is, $E+R\in S$, a logical identity) if and only if $L(R)=L(E)$; moreover for every $(s,\ell)$ there is an $R$ with
+$\sigma(R)=s$ and $L(R)=\ell$. Hence the minimal recovery failure probability is $\err(P)$.\hfill\st{PROVED}
 \end{lemma}
 \begin{proof}
-$\sigma(E+R)=0$,故 $E+R$ 属于归一化子,且 $E+R\in S\iff L(E+R)=0\iff L(R)=L(E)$
-(因 $(\sigma,L)$ 的联合核为 $S$)。$(\sigma,L)$ 满射给出第二句。
+$\sigma(E+R)=0$, so $E+R$ lies in the normalizer, and $E+R\in S\iff L(E+R)=0\iff L(R)=L(E)$
+(because the joint kernel of $(\sigma,L)$ is $S$). Surjectivity of $(\sigma,L)$ gives the second sentence.
 \end{proof}
 
-\begin{remark}[标签选取无关]
-把 $L$ 换成 $L'(E)=\pi_{\sigma(E)}(L(E))$,其中 $\pi_s$ 是依赖综合征的标签置换(例如换一个参考提升 $\rho(s)$),
-$\err$ 不变:对固定 $y$ 取最大的 $\ell$ 的值不受置换影响。数值上我们直接使用原始标签
-$(\langle E,\bar X\rangle,\langle E,\bar Z\rangle)$(见 \texttt{theory/checks})。
+\begin{remark}[The choice of label does not matter]
+Replacing $L$ by $L'(E)=\pi_{\sigma(E)}(L(E))$, where $\pi_s$ is a syndrome-dependent label permutation (for example from a different choice of
+reference lift of the syndrome), leaves $\err$ unchanged: for fixed $y$ the maximum over $\ell$ is unaffected by a permutation. Numerically we use the raw labels
+$(\langle E,\bar X\rangle,\langle E,\bar Z\rangle)$ directly (see \texttt{theory/checks}).
 \end{remark}
 
-对一族噪声模型 $\Nn=(P_d)_{d}$(码距 $d$ 为指标),记
-$\alpha_-(\Nn)=\liminf_{d\to\infty}-\tfrac1d\ln\err(P_d)$,$\alpha_+(\Nn)=\limsup_{d\to\infty}-\tfrac1d\ln\err(P_d)$;
-二者相等时记为压制指数 $\alpha$。
+For a family of noise models $\Nn=(P_d)_{d}$ indexed by the code distance $d$, write
+$\alpha_-(\Nn)=\liminf_{d\to\infty}-\tfrac1d\ln\err(P_d)$ and $\alpha_+(\Nn)=\limsup_{d\to\infty}-\tfrac1d\ln\err(P_d)$;
+when they coincide the common value is the suppression exponent $\alpha$.
 
-\subsection{可模拟约化}
+\subsection{Simulable reductions}
 
-\begin{definition}[可模拟约化]\label{def:reduction}
-设 $(L,Y)$ 与 $(L',Y')$ 是取值于有限集的随机对。一个\emph{可模拟约化}
-$(L,Y)\rightsquigarrow(L',Y')$ 是三元组 $(\kappa,g,h)$:
-$\kappa(\cdot\mid y)$ 是从 $Y$ 到\emph{处理器随机性} $\xi$ 的马尔可夫核;$g(y,\xi)$ 与 $h(\ell,y,\xi)$ 为函数,满足
+\begin{definition}[Simulable reduction]\label{def:reduction}
+Let $(L,Y)$ and $(L',Y')$ be random pairs with values in finite sets. A \emph{simulable reduction}
+$(L,Y)\rightsquigarrow(L',Y')$ is a triple $(\kappa,g,h)$:
+$\kappa(\cdot\mid y)$ is a Markov kernel from $Y$ to the \emph{processor's randomness} $\xi$, and $g(y,\xi)$, $h(\ell,y,\xi)$ are functions such that
 
 \smallskip
-(i) 对每个 $(y,\xi)$,$\ell\mapsto h(\ell,y,\xi)$ 是标签集上的双射;
+(i) for every $(y,\xi)$ the map $\ell\mapsto h(\ell,y,\xi)$ is a bijection of the label set;
 
-(ii) 令 $\xi\sim\kappa(\cdot\mid Y)$(在给定 $Y$ 时与 $L$ 条件独立),则
-$\big(h(L,Y,\xi),\,g(Y,\xi)\big)$ 与 $(L',Y')$ 同分布。
+(ii) if $\xi\sim\kappa(\cdot\mid Y)$ (conditionally independent of $L$ given $Y$), then
+$\big(h(L,Y,\xi),\,g(Y,\xi)\big)$ has the same law as $(L',Y')$.
 \end{definition}
 
-\begin{theorem}[单调性]\label{thm:monotone}
-若 $(L,Y)\rightsquigarrow(L',Y')$,则 $\err(L\mid Y)\le\err(L'\mid Y')$。\hfill\st{PROVED}
+\begin{theorem}[Monotonicity]\label{thm:monotone}
+If $(L,Y)\rightsquigarrow(L',Y')$ then $\err(L\mid Y)\le\err(L'\mid Y')$.\hfill\st{PROVED}
 \end{theorem}
 \begin{proof}
-设 $\hat g'$ 是 $(L',Y')$ 上的任一解码器。构造 $(L,Y)$ 上的随机化解码器 $\hat g$:
-观察 $y$,抽 $\xi\sim\kappa(\cdot\mid y)$,输出 $h^{-1}(\hat g'(g(y,\xi));y,\xi)$,其中 $h^{-1}$ 对标签变量取逆(由 (i) 存在)。
-则
+Let $\hat g'$ be any decoder for $(L',Y')$. Build a randomized decoder $\hat g$ for $(L,Y)$:
+observe $y$, draw $\xi\sim\kappa(\cdot\mid y)$, and output $h^{-1}(\hat g'(g(y,\xi));y,\xi)$, where $h^{-1}$ inverts $h$ in the label variable (it exists by (i)).
+Then
 \[
 \{\hat g(Y)=L\}=\{\hat g'(g(Y,\xi))=h(L,Y,\xi)\}=\{\hat g'(Y'_{\rm sim})=L'_{\rm sim}\},
 \]
-其中 $(L'_{\rm sim},Y'_{\rm sim})=(h(L,Y,\xi),g(Y,\xi))$ 由 (ii) 与 $(L',Y')$ 同分布。故
-$\Prob[\hat g(Y)\neq L]=\Prob[\hat g'(Y')\neq L']$。随机化解码器的错误率是确定性解码器错误率的平均,
-所以存在确定性解码器的错误率不超过它。对 $\hat g'$ 取最优即得结论。
+where $(L'_{\rm sim},Y'_{\rm sim})=(h(L,Y,\xi),g(Y,\xi))$ has the law of $(L',Y')$ by (ii). Hence
+$\Prob[\hat g(Y)\neq L]=\Prob[\hat g'(Y')\neq L']$. The error of a randomized decoder is an average of errors of deterministic decoders,
+so some deterministic decoder does at least as well. Optimizing over $\hat g'$ gives the claim.
 \end{proof}
 
-\begin{remark}[数据处理不等式的形式]
-$1-\err(L\mid Y)=2^{-H_{\min}(L\mid Y)}$($H_{\min}$ 为条件最小熵)。当 $h=\mathrm{id}$
-(只处理观测)时,定理~\ref{thm:monotone} 就是 $H_{\min}(L\mid Y)\le H_{\min}(L\mid g(Y,\xi))$,
-即条件最小熵(Sibson--R\'enyi $\infty$ 阶互信息)的数据处理不等式。其余 R\'enyi/Hellinger 型泛函同样单调,
-见命题~\ref{prop:hellinger}。
+\begin{remark}[The data-processing form]
+$1-\err(L\mid Y)=2^{-H_{\min}(L\mid Y)}$, where $H_{\min}$ is the conditional min-entropy. When $h=\mathrm{id}$
+(only the observation is processed), Theorem~\ref{thm:monotone} says $H_{\min}(L\mid Y)\le H_{\min}(L\mid g(Y,\xi))$,
+which is the data-processing inequality for the conditional min-entropy (the Sibson--R\'enyi mutual information of order $\infty$). Other R\'enyi/Hellinger-type functionals are
+monotone as well; see Proposition~\ref{prop:hellinger}.
 \end{remark}
 
-\subsection{三类自由操作}
+\subsection{The three free operations}
 
-下面三类操作都是定义~\ref{def:reduction} 的特例,从而由定理~\ref{thm:monotone} 得到单调性。
-设 $(E,F)$ 是线性解码结构 $\mathfrak D$ 上的噪声实例。
+The following three operations are special cases of Definition~\ref{def:reduction}, so Theorem~\ref{thm:monotone} gives monotonicity for each.
+Let $(E,F)$ be a noise instance on a linear decoding structure $\mathfrak D$.
 
-\begin{description}[leftmargin=2.2em,style=nextline]
-\item[(F1) 综合征粗粒化]
-$Y'=g(Y,\xi)$,$h=\mathrm{id}$,$g$ 为任意(可随机)函数,例如合并检测器、取子集。\\
-\emph{特例}:丢弃标记(\textbf{(F1$'$)}):$F'=\varphi(F,\xi)$,仍是噪声实例 $(E,F')$。
-\item[(F2) 叠加可经典采样的独立噪声]
-设 $(E',F'')$ 是与 $(E,F)$ 独立、分布已知的随机对。新实例为
-$(E+E',\,(F,F''))$(或经 (F1$'$) 进一步粗粒化的版本)。
-取 $\xi=(E',F'')$,$g(y,\xi)=(\sigma(E')+s,\,f,\,F'')$,$h(\ell,y,\xi)=\ell+L(E')$。
-\item[(F2$'$) 依赖已观测标记的独立噪声]
-$\xi\sim\kappa(\cdot\mid y)$ 可依赖观测 $y=(s,f)$;例如只对未被标记的比特叠加去极化噪声。
-$h(\ell,y,\xi)=\ell+L(N)$,$N$ 为处理器自己抽出的叠加故障。
-\end{description}
+\paragraph{(F1) Syndrome coarse-graining.}
+$Y'=g(Y,\xi)$, $h=\mathrm{id}$, with $g$ an arbitrary (possibly randomized) function, for example merging detectors or taking subsets.
+\emph{Special case}: discarding flags (\textbf{(F1$'$)}): $F'=\varphi(F,\xi)$, which is again a noise instance $(E,F')$.
 
-\begin{proposition}[(F1)(F2)(F2$'$) 为可模拟约化]\label{prop:free-ops}
-设 $(E,F)$ 为噪声实例,按 (F2) 或 (F2$'$) 得到 $(E_{\rm new},F_{\rm new})$,其中叠加的故障 $N$ 满足:
-给定 $F$ 时 $N$ 与 $E$ 条件独立(特别地,(F2) 中 $N=E'$ 与 $(E,F)$ 独立)。则
+\paragraph{(F2) Superposing independent, classically samplable noise.}
+Let $(E',F'')$ be a random pair independent of $(E,F)$ with known law. The new instance is
+$(E+E',\,(F,F''))$ (or a further coarse-graining of it by (F1$'$)).
+Take $\xi=(E',F'')$, $g(y,\xi)=(\sigma(E')+s,\,f,\,F'')$, and $h(\ell,y,\xi)=\ell+L(E')$.
+
+\paragraph{(F2$'$) Independent noise that depends on the observed flags.}
+$\xi\sim\kappa(\cdot\mid y)$ may depend on the observation $y=(s,f)$; for example, superpose depolarizing noise only on qubits that are not flagged.
+$h(\ell,y,\xi)=\ell+L(N)$, where $N$ is the superposed fault drawn by the processor itself.
+
+\begin{proposition}[(F1), (F2), (F2$'$) are simulable reductions]\label{prop:free-ops}
+Let $(E,F)$ be a noise instance and let $(E_{\rm new},F_{\rm new})$ arise by (F2) or (F2$'$), where the superposed fault $N$ satisfies:
+given $F$, $N$ is conditionally independent of $E$ (in particular, in (F2) $N=E'$ is independent of $(E,F)$). Then
 \[
 \err(E,F)\;\le\;\err(E+N,\,F_{\rm new}),
 \]
-其中 $F_{\rm new}$ 是 $(F,\text{附加标记})$ 的任一(随机)函数。特别地,叠加噪声永不降低 $\err$。
+where $F_{\rm new}$ is any (randomized) function of $(F,\text{additional flags})$. In particular, superposing noise never decreases $\err$.
 \hfill\st{PROVED}
 \end{proposition}
 \begin{proof}
-新问题的标签为 $L(E+N)=L(E)+L(N)$(线性性),观测为 $(\sigma(E)+\sigma(N),F_{\rm new})$。
-处理器由 $(\sigma(E),F)$ 与自己抽取的 $(N,\text{附加标记})$ 算出新观测,并用已知的 $L(N)$ 做标签平移。
-这是定义~\ref{def:reduction} 的约化,其中 (i) 因平移是双射,(ii) 因 $N$ 条件独立于 $E$ 且分布已知
-给出正确联合分布。再应用定理~\ref{thm:monotone}。
+The label of the new problem is $L(E+N)=L(E)+L(N)$ (linearity) and the observation is $(\sigma(E)+\sigma(N),F_{\rm new})$.
+The processor computes the new observation from $(\sigma(E),F)$ and the $(N,\text{additional flags})$ it drew itself, and shifts the label by the known $L(N)$.
+This is a reduction in the sense of Definition~\ref{def:reduction}: (i) holds because a shift is a bijection, and (ii) because $N$ is conditionally independent of $E$ with known law,
+which gives the correct joint law. Now apply Theorem~\ref{thm:monotone}.
 \end{proof}
 
-\begin{corollary}[指数的单调性]\label{cor:alpha}
-若对每个 $d$,$P'_d$ 由 $P_d$ 经(同类型的)自由操作得到,则
-$\alpha_\pm(\Nn')\le\alpha_\pm(\Nn)$。\hfill\st{PROVED}
+\begin{corollary}[Monotonicity of the exponent]\label{cor:alpha}
+If for every $d$ the instance $P'_d$ arises from $P_d$ by a free operation of the same type, then
+$\alpha_\pm(\Nn')\le\alpha_\pm(\Nn)$.\hfill\st{PROVED}
 \end{corollary}
 
-\begin{remark}[独立性不可去掉]\label{rem:independence}
-取 $N=E$(叠加的噪声是已有故障的拷贝):$E+N=0$,$\err=0<\err(E,F)$。所以
-处理器必须能在\emph{不知道隐变量 $E$} 的情况下抽出 $N$——这正是“叠加\emph{独立}噪声”的含义。
-第~\ref{sec:repr} 节据此划定模型类的边界。
+\begin{remark}[Independence cannot be dropped]\label{rem:independence}
+Take $N=E$ (the superposed noise is a copy of the existing fault): $E+N=0$ and $\err=0<\err(E,F)$. So
+the processor must be able to draw $N$ \emph{without knowing the hidden variable $E$}; this is the meaning of ``superposing \emph{independent} noise''.
+Section~\ref{sec:repr} uses this to draw the boundary of the model class.
 \end{remark}
 
-\begin{remark}[只对最优解码器成立]\label{rem:ml-only}
-定理~\ref{thm:monotone} 刻画的是 Bayes 最优(最大似然)解码。对次优解码器(如固定权重的 MWPM),
-叠加噪声并不保证提高其失败率的单调性,也没有现成的数据处理不等式;因此单调性的\emph{数值}检验必须使用精确 ML
-(见 \texttt{theory/checks/exact\_small\_codes.py}),不能用 MWPM 结果代替。
-反过来,由最优性始终有 $\err\le p_{\rm L}^{\rm MWPM}$,即 $\alpha_{\rm ML}\ge\alpha_{\rm MWPM}$。
+\begin{remark}[Valid only for the optimal decoder]\label{rem:ml-only}
+Theorem~\ref{thm:monotone} concerns Bayes-optimal (maximum-likelihood) decoding. For suboptimal decoders (for example MWPM with fixed weights),
+superposing noise does not guarantee monotonicity of their failure rates, and there is no ready-made data-processing inequality; therefore the \emph{numerical} checks of monotonicity must use exact ML
+(see \texttt{theory/checks/exact\_small\_codes.py}) and cannot be replaced by MWPM results.
+Conversely, optimality always gives $\err\le p_{\rm L}^{\rm MWPM}$, that is, $\alpha_{\rm ML}\ge\alpha_{\rm MWPM}$.
 \end{remark}

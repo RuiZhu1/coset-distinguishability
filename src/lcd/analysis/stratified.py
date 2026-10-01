@@ -1,6 +1,6 @@
 """Weight-stratified estimation of the logical failure probability p_L(p, e).
 
-Scheme (README sec. 2, "采样方案"):
+Scheme (README sec. 2, "Sampling scheme"):
 
     p_L(p, e) = sum_{(k,w)} P_{p,e}(k, w) * f(k, w)
 

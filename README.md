@@ -1,207 +1,229 @@
 # Logical Coset Distinguishability (LCD)
 
-**表面码噪声的资源理论:噪声预序、局域汇率、解码器余量与有限数据外推认证**
+**A resource theory of surface-code noise: noise preorder, local exchange rates, decoder margins, and finite-data extrapolation certificates**
 
-研究计划全文见 [`ABSTRACT.md`](ABSTRACT.md)。本 README 同时是代码实现的任务说明,供开发者(包括 Claude Code)直接据此开工。
+The full research plan is in [`ABSTRACT.md`](ABSTRACT.md). This README is also the task specification for the code, so that developers (including Claude Code) can start work directly from it.
 
-**理论线与数值线并行推进**:证明与笔记在 [`theory/`](theory/README.md)(见第 7 节),数值部分(第 2 节)用来检验理论。
+**The theory track and the numerics track advance in parallel**: proofs and notes are in [`theory/`](theory/README.md) (see Section 7), and the numerics (Section 2) are used to test the theory.
 
 ---
 
-## 1. 核心思想(一段话)
+## 1. Core idea (one paragraph)
 
-在最大似然(陪集)解码下,逻辑失败概率等于"给定综合征、区分逻辑陪集"这一假设检验问题的贝叶斯错误率。因此,**逻辑陪集的可区分性**可以作为资源;综合征粗粒化、丢弃经典边信息、叠加可经典采样的独立噪声是自由操作,资源在其下不增。错误压制指数
+Under maximum-likelihood (coset) decoding, the logical failure probability equals the Bayes error of the hypothesis-testing problem "given the syndrome, distinguish the logical cosets". Hence the **distinguishability of logical cosets** can serve as a resource; syndrome coarse-graining, discarding classical side information, and superposing independent, classically samplable noise are free operations, under which the resource does not increase. The error-suppression exponent
 
 ```
-α = lim_{d→∞} −(1/d) · log p_L(d)
+alpha = lim_{d -> inf} -(1/d) * log p_L(d)
 ```
 
-是该区分问题的大偏差错误指数,也等于统计力学映射中畴壁的自由能张力。本仓库的数值部分用来验证并量化这一框架的推论。
+is the large-deviation error exponent of this distinguishing problem, and also equals the free-energy tension of a domain wall in the statistical-mechanics mapping. The numerical part of this repository verifies and quantifies the consequences of this framework.
 
-## 2. 当前目标:两个初步结果
+## 2. Current goals: two preliminary results
 
-研究计划已基本定稿,当前最重要的是产出**具体数字**。按优先级:
+The research plan is essentially settled; what matters most now is to produce **concrete numbers**. In order of priority:
 
-### P1:码容量噪声下,擦除与泡利噪声的局域汇率
+### P1: local exchange rate between erasure and Pauli noise under code-capacity noise
 
-**设定**
-- 旋转表面码,码距 d ∈ {5, 7, 9, 11, 13, 15}(张量网络能承受的话继续加大)。
-- 码容量噪声:每个数据比特独立地,以概率 e 被擦除(施加均匀随机泡利 I/X/Y/Z,位置已知);否则以概率 p 发生去极化错误。
-- 两种解码器:
-  - **ML**:张量网络最大似然(陪集)解码,即 Bravyi–Suchara–Vargo 方法。擦除比特的先验设为 I/X/Y/Z 各 1/4,其他比特按去极化先验。可先尝试 `qecsim` 的 `PlanarMPSDecoder`,如不支持逐比特先验则自行实现。
-  - **MWPM**:PyMatching,擦除比特边权设为 0(或极小)。
+**Setting**
+- Rotated surface code, distances d in {5, 7, 9, 11, 13, 15} (larger if the tensor network can afford it).
+- Code-capacity noise: each data qubit independently is erased with probability e (a uniformly random Pauli I/X/Y/Z is applied, location known); otherwise it suffers depolarizing noise with probability p.
+- Two decoders:
+  - **ML**: maximum-likelihood (coset) decoding, i.e. the Bravyi-Suchara-Vargo method. Erased qubits get the prior 1/4 for each of I/X/Y/Z, the other qubits the depolarizing prior. `qecsim`'s MPS decoder takes a single prior for all qubits and has no erasure support (checked on qecsim 1.0b9), so this is implemented here (`src/lcd/decoders/tn_ml.py`, see "ML decoder" below).
+  - **MWPM**: PyMatching; erased qubits get edge weight 0 (or very small). Implemented for e = 0; erasure is still to do.
 
-**要算的量**
-1. 在 (p, e) 网格上估计 p_L(d; p, e),附 Wilson 置信区间。
-2. 对每个 (p, e),拟合 `log p_L(d) ≈ a − α·d`,得到 α(p, e)。报告拟合所用 d 范围,并检查去掉最小码距后 α 是否稳定(有限尺寸修正的诊断)。
-3. **局域汇率**:在工作点 (p₀, e₀) 处
+**Quantities to compute**
+1. Estimate p_L(d; p, e) on a (p, e) grid, with confidence intervals (see "Sampling scheme").
+2. For each (p, e), fit `log p_L(d) ~ a - alpha*d` to get alpha(p, e). Report the range of d used for the fit, and check whether alpha is stable after dropping the smallest distance (a diagnostic for finite-size corrections).
+3. **Local exchange rate**: at a work point (p0, e0)
 
    ```
-   R_{e→p}(p₀, e₀) = −(∂α/∂e) / (∂α/∂p)
+   R_{e->p}(p0, e0) = -(d alpha/d e) / (d alpha/d p)
    ```
 
-   含义:沿等 α 曲线,增加一个单位的擦除率,等价于增加多少泡利错误率。用有限差分或等 α 曲线斜率计算,并给出误差估计。
-4. **解码器余量**:α_ML(p, e) − α_MWPM(p, e)。
+   Meaning: along a level curve of alpha, increasing the erasure rate by one unit is equivalent to increasing the Pauli error rate by how much. Compute it from the analytic derivatives of the stratified estimator (see "Sampling scheme"), and give error estimates.
+4. **Decoder margin**: alpha_ML(p, e) - alpha_MWPM(p, e).
 
-**工作点建议**:e₀ ∈ {0, 0.02, 0.05},p₀ ∈ {0.02, 0.04, 0.06}。具体视统计量和计算时间调整。
+**Suggested work points**: e0 in {0, 0.02, 0.05}, p0 in {0.02, 0.04, 0.06}. Adjust according to statistics and compute time.
 
-**合理性检验(必须先通过)**
-- 纯去极化噪声,ML 解码阈值约 18.9%。
-- 纯擦除噪声,阈值约 50%。
-- 纯比特翻转噪声,MWPM 阈值约 10.3%。
+**Sanity checks (must pass first)** — script `experiments/p1_erasure_pauli/threshold_check.py`, data in `results/threshold_check_*.{csv,json}`. Finite-size crossings of consecutive distances (weighted straight-line fit of the difference of the two curves; the estimates depend on the fit window at the level of 0.3-0.5 percentage points):
 
-数值结果与上述已知值偏差明显时,先排查实现,不得继续往下做。
+| Check | Known value | Measured crossings | Verdict |
+|---|---|---|---|
+| Pure depolarizing noise, exact ML | about 18.9% | 18.44 +- 0.21% (d = 5, 7), 18.69 +- 0.23% (d = 7, 9) | consistent; drifting up with d |
+| Pure erasure, exact ML | 50% | 50.10 +- 0.31% (d = 5, 7), 50.01 +- 0.36% (d = 7, 9) | pass |
+| Pure bit-flip noise, MWPM | about 10.3% | 9.46%, 9.71%, 9.61%, 9.63%, 9.82% (d = 5 to 15, consecutive pairs; +- 0.1%) | **approaches from below, 5-8% under 10.3% at d <= 15**; no finite-size-scaling fit yet, so this check is not closed |
+| Depolarizing noise, MWPM (X/Z independent) | about 15% (literature value, not verified here) | 13.99 +- 0.18%, 14.19 +- 0.26% (d = 5, 7, 9) | no claim |
 
-**来自理论线的检验**(见 `theory/`,定理 3.1/3.2):
-- 单调性:ML 的 p_L(d; p, e) 对 p、e 不降;对任意 δ,p_L(p, e₀+δ) ≤ p_L(p″, e₀),其中 p″ = p + δ(3/4 − p)/(1 − e₀)。
-- 汇率上界:`R_{e→p}(p₀, e₀) ≤ c(p₀, e₀) = (3/4 − p₀)/(1 − e₀)`。注意这不是单纯的 3/4:当 p₀ < (3/4)e₀ 时 c > 3/4(例如工作点 (0.02, 0.05) 处 c = 0.768)。
-- 报告缺口 Δ = c − R,并与解析参照值 R_B(Bhattacharyya)、R_hash(量子 hashing 容量)比较;参照值表见 `theory/sec5-information.tex`。
-- 小码精确 oracle:`theory/checks/exact_small_codes.py` 给出 n ≤ 9 的码上精确的 ML p_L(p, e)。M1 的张量网络解码器在 d = 3 旋转表面码上必须与它在机器精度内一致。
+If numerical results deviate noticeably from the known values, debug the implementation first and do not continue.
 
-**采样方案(已敲定;代码 `src/lcd/analysis/stratified.py`,基准 `experiments/p1_erasure_pauli/sampling_benchmark.py`,数据 `results/p1_sampling_benchmark.*`)**
+**Checks from the theory track** (see `theory/`, Theorems 3.1/3.2):
+- Monotonicity: the ML p_L(d; p, e) is nondecreasing in p and e; for any delta, p_L(p, e0+delta) <= p_L(p'', e0), where p'' = p + delta(3/4 - p)/(1 - e0).
+- Exchange-rate bound: `R_{e->p}(p0, e0) <= c(p0, e0) = (3/4 - p0)/(1 - e0)`. Note that this is not simply 3/4: for p0 < (3/4) e0 we have c > 3/4 (for example c = 0.768 at the work point (0.02, 0.05)).
+- Report the gap Delta = c - R, and compare with the analytic reference values R_B (Bhattacharyya) and R_hash (quantum hashing capacity); the table of reference values is in `theory/sec5-information.tex`.
+- Small-code exact oracle: `theory/checks/exact_small_codes.py` gives the exact ML p_L(p, e) for codes with n <= 9. The ML decoder agrees with it on the d = 3 rotated surface code to machine precision (`tests/test_tn_ml.py`).
 
-*为什么需要。* 朴素蒙特卡洛达到相对误差 ε 需要约 1/(ε²·p_L) 次解码。p₀ = 0.02、d = 15 时 p_L ≈ 4×10⁻⁷,10% 相对误差需要约 2×10⁸ 次(MWPM 已经勉强,ML 张量网络不可行)。
+**ML decoder (M1; code `src/lcd/decoders/tn_ml.py`)**
 
-*方案。*
-1. **按错误权重分层。** p_L(p, e) = Σ_{k,w} P_{p,e}(k, w) · f(k, w):k 为擦除数,w 为非擦除比特上的泡利错误数,P = Binom(n, e)(k) · Binom(n−k, p)(w) 精确计算,**只对 f(k, w) 做蒙特卡洛**(给定 (k, w) 时错误在位置与泡利类型上均匀,与 (p, e) 无关)。f(k, w) 在 2w + k < d 时严格为 0,这些层不采样。
-2. **样本分配。** 每个非零层先试采样 1000 次,再分 3 轮 Neyman 分配(正比于 P·√(f(1−f)))到总预算。**每个 (d, p₀, e₀) 目标点单独分配**;同一批样本要服务多个目标时取各目标归一化权重的最大值。
-3. **误差棒。** 报告点估计、Jeffreys 平滑的相对标准误,以及**可证区间**:逐层 Clopper–Pearson(Bonferroni 校正),失败数为 0 的层贡献其上限,被截断的概率质量并入上限。困难角落里可证区间比标准误宽得多(d = 15、p = 0.02 时约一个数量级),这是认证的真实成本,不是缺陷。拟合量(α、汇率)的误差用参数化 bootstrap(`StratifiedEstimator.bootstrap`)。
-4. **汇率不做有限差分。** 对与 (p, e) 无关的解码器(MWPM,均匀权重)一张 f 表给出整个 (p, e) 平面,∂p_L/∂p、∂p_L/∂e 由 P 的解析导数直接得到(`derivatives`)。对 ML(解码器依赖先验),表只对其匹配的 (p, e) 有效,导数公式依赖包络论证(`theory/` 注 3.13):ML 的导数等于冻结在工作点的解码器失败率的导数,因此每个工作点只需解码一次。该恒等式已在 n ≤ 9 的三个码上用精确 ML 验证到相对 2×10⁻¹⁰(`theory/checks` 的 C8,观察 3.14),**张量网络 ML(含截断误差)上尚未验证**。
-5. **开销与 ML 的 d 范围。** 下表是达到 10% 相对误差所需的解码次数(MWPM,e = 0;分层数据由 1.5×10⁶ 次的实测按 1/ε² 外推,Jeffreys 标准误偏保守):
+The coset sums Z_c = sum_{g in S} P(R_c g) are a two-dimensional classical partition function (qubit j carries the Pauli R_j X^x Z^z, with x and z the XOR of the X-type and Z-type stabilizer variables touching j). The decoder contracts it **exactly** by a row-by-row transfer matrix whose frontier has d + 3 binary variables: cost O(n 2^(d+3)) per decode, no bond-dimension truncation, per-qubit priors (hence erasures) built in, and the batch of samples is vectorized. Ties between classes (which have positive probability under erasures) are broken uniformly at random, which attains the Bayes optimum.
 
-   | | p = 0.02 朴素 → 分层 | p = 0.04 | p = 0.06 |
+Measured cost per decode (single core, batched, depolarizing noise at the dominant stratum): 
+
+| d | 5 | 7 | 9 | 11 | 13 |
+|---|---|---|---|---|---|
+| ms per decode | 0.07 | 0.27 | 1.2 | 8.6 | 51 |
+
+d = 15 is extrapolated at about 0.25 s (not measured). Beyond d ~ 11-13 a truncated MPS contraction (Bravyi-Suchara-Vargo) is needed; the exact decoder will then serve as its oracle.
+
+Validation (all passing): coset sums equal brute-force enumeration at d = 3 including erasures (asserted to 1e-12, observed 1e-15); the Bayes error summed over all 4^9 errors equals the exact value (`tests/test_tn_ml.py`); stratified ML estimates with erasures agree with the exact oracle at (p, e) = (0.05, 0.10) and (0.15, 0.30) (|z| < 1.3, certified intervals cover); an independent implementation (qecsim 1.0b9, `RotatedPlanarMPSDecoder`, chi = 16) agrees at d = 3 and d = 5, p = 0.10 (|z| < 1.6). Details in `results/ml_crosscheck.json` (script `experiments/p1_erasure_pauli/crosscheck_ml.py`).
+
+**Sampling scheme (settled; code `src/lcd/analysis/stratified.py`, benchmark `experiments/p1_erasure_pauli/sampling_benchmark.py`, data `results/p1_sampling_benchmark.*`)**
+
+*Why it is needed.* Naive Monte Carlo needs about 1/(eps^2 p_L) decodes to reach relative error eps. At p0 = 0.02, d = 15 we have p_L ~ 4e-7, so 10% relative error needs about 2e8 decodes (already marginal for MWPM, and infeasible for a tensor-network ML decoder).
+
+*Scheme.*
+1. **Stratify by error weight.** p_L(p, e) = sum_{k,w} P_{p,e}(k, w) * f(k, w), where k is the number of erased qubits and w the number of Pauli errors on non-erased qubits; P = Binom(n, e)(k) * Binom(n-k, p)(w) is computed exactly, and **only f(k, w) is estimated by Monte Carlo** (given (k, w), the errors are uniform in position and Pauli type, independent of (p, e)). f(k, w) = 0 exactly when 2w + k < d, so those strata are never sampled.
+2. **Allocation.** Each nonzero stratum gets a pilot of 1000 samples, then 3 rounds of Neyman allocation (proportional to P*sqrt(f(1-f))) up to the total budget. **Each (d, p0, e0) target is allocated separately**; when one batch of samples must serve several targets, take the maximum of the normalized weights.
+3. **Error bars.** Report the point estimate, the Jeffreys-smoothed relative standard error, and a **certified interval**: per-stratum Clopper-Pearson (Bonferroni-corrected), where strata with zero observed failures contribute their upper limit and the truncated probability mass is added to the upper limit. In the hard corner the certified interval is much wider than the standard error (about an order of magnitude at d = 15, p = 0.02); this is the real cost of certification, not a defect. Errors of fitted quantities (alpha, exchange rate) come from a parametric bootstrap (`StratifiedEstimator.bootstrap`).
+4. **No finite differences for the exchange rate.** For decoders independent of (p, e) (MWPM, uniform weights) one table f serves the whole (p, e) plane, and dp_L/dp, dp_L/de follow from the analytic derivatives of P (`derivatives`). For ML (the decoder depends on the prior) the table is valid only at its matched (p, e); the derivative formula rests on the envelope argument (`theory/` Remark 3.13): the derivative of the ML error equals the derivative of the failure rate of the decoder frozen at the working point, so each work point needs a single decode. This identity has been verified to relative 2e-10 with exact ML on three codes with n <= 9 (check C8 in `theory/checks`, Observation 3.14); **it has not been verified at d >= 5, nor for truncated tensor-network ML**.
+5. **Cost and the d range of ML.** The table gives the decodes needed for 10% relative error (MWPM, e = 0; stratified numbers are extrapolated by 1/eps^2 from measured runs with 1.5e6 decodes, with a conservative Jeffreys standard error):
+
+   | | p = 0.02 naive -> stratified | p = 0.04 | p = 0.06 |
    |---|---|---|---|
-   | d = 11 | 9.7e6 → 1.9e5 | 2.0e5 → 3.1e4 | 2.2e4 → 7.5e3 |
-   | d = 13 | 5.6e7 → 1.3e6 | 5.1e5 → 1.0e5 | 4.0e4 → 1.6e4 |
-   | d = 15 | 2.4e8 → 1.3e7 | 1.4e6 → 3.5e5 | 7.4e4 → 3.2e4 |
+   | d = 11 | 9.7e6 -> 1.9e5 | 2.0e5 -> 3.1e4 | 2.2e4 -> 7.5e3 |
+   | d = 13 | 5.6e7 -> 1.3e6 | 5.1e5 -> 1.0e5 | 4.0e4 -> 1.6e4 |
+   | d = 15 | 2.4e8 -> 1.3e7 | 1.4e6 -> 3.5e5 | 7.4e4 -> 3.2e4 |
 
-   分层的收益在 p = 0.02 约 20–50 倍,在 p ≥ 0.04 只有 2–6 倍。**ML 的 d_max(p₀, e₀) 由预算决定:** 先在 M1 测出张量网络每次解码耗时,再取满足上表需求(要 5% 则乘 4)不超过 ML 预算的最大 d。预算取 10⁶ 次解码时,大致是 p = 0.02 到 d = 11(13 勉强),p ≥ 0.04 到 d = 15。MWPM 不受此限制。若坚持 p = 0.02、d ≥ 13 的 ML,需要 Bravyi–Vargo 的稀有事件 MCMC(PRA 88, 062308),不在主线。
+   Stratification gains about 20-50x at p = 0.02 and only 2-6x at p >= 0.04. Combining with the measured ML cost per decode (and assuming the ML strata profile is similar to MWPM's, to be re-measured): with the exact decoder on one core, d = 11 takes at most about 30 minutes per target; d = 13 takes about 1.4 h at p = 0.04 and 18 h at p = 0.02; d = 15 takes about 2 h at p = 0.06 (extrapolated) and a day at p = 0.04. (Multiply the decode counts by 4 for 5% relative error.) So **the exact decoder covers d <= 11 at every work point, d = 13 for p >= 0.04, and little beyond; p = 0.02 at d >= 13 and p = 0.04 at d = 15 need the truncated MPS decoder** (or the Bravyi-Vargo rare-event MCMC, PRA 88, 062308). MWPM is not limited in this way.
 
-*已验证与未验证。* 已验证(`tests/`):已知 f 的玩具解码器(一维与含擦除的二维层)上估计、导数、区间覆盖率;MWPM 在 d = 5 上与朴素蒙特卡洛一致;解码器不会在 2w < d 的层上失败。**未验证:** 张量网络 ML 解码器(尚未实现,采样方案对 ML 的成立依赖上面的包络恒等式);含擦除的真实解码器(MWPM 擦除需逐样本零权重边,尚未实现);二维 (k, w) 层的试采样开销(层数约比一维多一个数量级)。
+*Verified and not verified.* Verified (`tests/`): estimates, derivatives, and interval coverage on toy decoders with exactly known f (one-dimensional and with erasure strata); the stratified MWPM estimate agrees with naive Monte Carlo at d = 5; stratified ML with erasures agrees with the exact oracle at d = 3 (`results/ml_crosscheck.json`); decoders never fail on strata with 2w + k < d. **Not verified:** the envelope identity beyond n <= 9; MWPM with erasure (it needs per-sample zero-weight edges and is not implemented); the pilot overhead of two-dimensional (k, w) strata with a real decoder at larger d (the number of strata is about an order of magnitude larger than in one dimension).
 
-### P2:局域突发事件的检测,时空模式区分与泊松计数的对比
+### P2: detection of local burst events; space-time pattern discrimination versus Poisson counting
 
-**设定**
-- 用 stim 生成旋转表面码存储实验(memory experiment),电路级均匀去极化噪声 p = 1e-3 作为背景,码距 d ∈ {5, 7, 9},轮数可调。
-- **突发事件注入**:以率 r(每比特每轮)在随机时空位置触发突发事件,事件影响半径 R 内的比特、持续 T_b 轮,期间这些位置的错误率升到 p_b(例如 0.1 到 0.3)。
+**Setting**
+- Use stim to generate rotated surface-code memory experiments, with uniform circuit-level depolarizing noise p = 1e-3 as the background, distances d in {5, 7, 9}, and a tunable number of rounds.
+- **Burst-event injection**: burst events are triggered at rate r (per qubit per round) at random space-time locations; qubits within radius R of the event are affected for T_b rounds, during which the error rate at those locations rises to p_b (for example 0.1 to 0.3).
 
-  实现提示:对泡利噪声,检测事件对错误是线性的(综合征是泡利帧的奇偶校验)。因此可以分别采样"背景"和"仅突发区域有噪声的电路"所产生的检测事件,再按位异或叠加,不必在单个 stim 电路里表达随机的空间关联。
+  Implementation hint: for Pauli noise, detection events are linear in the errors (the syndrome is the parity check of the Pauli frame). One can therefore sample separately the detection events produced by the "background" and by "circuits with noise only in the burst regions" and superpose them by bitwise XOR, without expressing random spatial correlations in a single stim circuit.
 
-**对比两种方法**
-- **基准(泊松计数)**:只统计逻辑失败次数或"高权重综合征"次数,据此检验 H₀(无突发)与 H₁(有突发,率 r)。
-- **模式方法**:利用检测事件在时空上的聚集特征,例如滑动窗口内的局部检测事件计数、似然比或匹配滤波统计量,做同一检验,并估计 r 和 R。
+**Comparing two methods**
+- **Baseline (Poisson counting)**: count only logical failures or "high-weight syndromes", and test H0 (no burst) against H1 (bursts at rate r).
+- **Pattern method**: exploit the space-time clustering of detection events, for example local detection-event counts in sliding windows, likelihood ratios, or matched-filter statistics, to do the same test and to estimate r and R.
 
-**要报告的量**
-- 在给定显著性 δ 和检验功效下,两种方法所需的轮数(或 shots),以及二者的比值。
-- r 与 R 的估计偏差和方差。
-- 明确对照泊松极限 ln(1/δ)/r:模式方法的优势体现在常数和对事件类别的区分上,**不应声称突破 1/r 标度**。
+**Quantities to report**
+- For a given significance delta and power, the number of rounds (or shots) needed by each method, and their ratio.
+- Bias and variance of the estimates of r and R.
+- Compare explicitly with the Poisson limit ln(1/delta)/r: the advantage of the pattern method shows up in constants and in distinguishing event classes; **do not claim to beat the 1/r scaling**.
 
-## 3. 仓库结构(建议)
+## 3. Repository layout
 
 ```
 .
 ├── ABSTRACT.md
 ├── README.md
 ├── pyproject.toml
-├── theory/                 # 理论线:LaTeX 笔记、证明状态看板、精确小码检验(见第 7 节)
+├── theory/                 # theory track: LaTeX notes, proof-status board, exact small-code checks (Section 7)
 │   ├── main.tex, sec*.tex
-│   ├── README.md           # 状态看板:每条命题 PROVED / SKETCH / NUMERICAL / CONJECTURE / PLAN
-│   └── checks/             # 精确 ML 检验脚本(理论的数值证伪测试)
+│   ├── README.md           # status board: every statement is PROVED / SKETCH / NUMERICAL / CONJECTURE / PLAN
+│   └── checks/             # exact ML check script (numerical falsification tests of the theory)
 ├── src/lcd/
-│   ├── noise/              # 噪声模型:去极化、擦除、局域突发、芯片尺度事件(已有:code_capacity.py)
-│   ├── codes/              # 旋转表面码的构造、校验矩阵、逻辑算符
+│   ├── noise/              # noise models: depolarizing, erasure, bit flip (done: code_capacity.py); local bursts, chip-scale events (to do)
+│   ├── codes/              # rotated surface code: construction, check matrices, logical operators (done)
 │   ├── decoders/
-│   │   ├── tn_ml.py        # 张量网络最大似然解码(码容量)
-│   │   └── mwpm.py         # PyMatching 封装,支持擦除(已有 e = 0 版本;擦除待做)
-│   ├── circuits/           # stim 电路生成与突发事件注入
+│   │   ├── tn_ml.py        # exact transfer-matrix ML decoder with per-qubit priors (done; d <= ~11-13); truncated MPS (to do)
+│   │   └── mwpm.py         # PyMatching wrapper (done for e = 0; erasure to do)
+│   ├── circuits/           # stim circuit generation and burst-event injection (to do)
 │   └── analysis/
-│       ├── stratified.py   # 分层采样估计器、可证区间、解析导数(已实现,见 2 节采样方案)
-│       ├── fit_alpha.py    # α 拟合与有限尺寸诊断
-│       ├── exchange.py     # 局域汇率
-│       └── detection.py    # 泊松基准与模式方法的检验统计量
+│       ├── stratified.py   # stratified estimator, certified intervals, analytic derivatives (done)
+│       ├── crossing.py     # threshold crossing of two curves (done)
+│       ├── fit_alpha.py    # fit of alpha and finite-size diagnostics (to do)
+│       ├── exchange.py     # local exchange rate (to do)
+│       └── detection.py    # test statistics of the Poisson baseline and the pattern method (to do)
 ├── experiments/
-│   ├── p1_erasure_pauli/   # 运行脚本与配置
+│   ├── p1_erasure_pauli/   # sampling_benchmark.py, crosscheck_ml.py, threshold_check.py
 │   └── p2_burst_detection/
-├── results/                # 原始数据(CSV)与图
-└── tests/                  # 单元测试与阈值合理性检验
+├── results/                # raw data (CSV/JSON/NPZ) with configuration, seeds and code version
+└── tests/                  # unit tests (26+); threshold sanity checks are run by experiments/.../threshold_check.py
 ```
 
-## 4. 环境
+## 4. Environment
 
-Python ≥ 3.10。
+Python >= 3.10.
 
 ```bash
 pip install stim sinter pymatching numpy scipy matplotlib pandas
-pip install qecsim        # 可选,用于张量网络 ML 解码的对照
-pip install quimb         # 可选,自行实现张量网络时使用
+pip install qecsim        # optional: independent MPS ML decoder, used for cross-checks
+pip install quimb         # optional: if implementing the truncated tensor-network decoder with it
 ```
 
-开发安装与测试:`pip install -e ".[dev]" && pytest`(`tests/` 约 5 秒)。
+Development install and tests: `pip install -e ".[dev]" && pytest` (about 10 seconds).
 
-理论线:`make -C theory check` 只需要 numpy;`make -C theory pdf` 需要 TeX Live(xelatex、latexmk、ctex、中文字体)。
+Theory track: `make -C theory check` needs only numpy; `make -C theory pdf` needs a minimal TeX Live: `sudo apt-get install -y --no-install-recommends texlive-latex-recommended latexmk` (about 120 MB; plain `pdflatex`, no CJK fonts).
 
-## 5. 工程规范
+**Cloud sessions.** A Claude Code cloud session runs in an ephemeral container: anything installed with `apt-get` or `pip` disappears when the container is reclaimed. To avoid reinstalling, add the install commands above to the **setup script** of the cloud environment (environment menu in the session title bar, then Edit); it runs when each new session starts. Files committed and pushed to the repository persist.
 
-- **可复现**:所有随机过程使用显式种子;每次运行把配置(码距、噪声参数、shots、种子、代码版本)和结果一起写入 `results/`。
-- **统计**:每个 p_L 都附区间。分层估计报告点估计、相对标准误和逐层 Clopper–Pearson(Bonferroni)可证区间,**相对标准误大于 10% 的点在图中标注**;朴素蒙特卡洛的点用 Wilson 区间,失败次数少于约 100 的点标注(这条旧规则只适用于朴素蒙特卡洛,对分层估计没有意义)。拟合给出参数误差(参数化 bootstrap)。报告里写明解码器(MWPM 或 ML)和采样方式。
-- **测试先行**:第 2 节的阈值合理性检验写成 `tests/` 中的测试,通过后再跑正式实验。
-- **数据采集**:电路级实验优先用 `sinter` 并行采集。
-- **不过度声明**:报告中区分"严格结论"和"数值估计";MWPM 结果不得表述为 ML 结果;码容量结论不得外推到电路级噪声。
-- **理论—数值闭环**:`theory/` 中每条定理配一个数值证伪测试(对照表见 `theory/sec6-map.tex`)。单调性、联合上界、认证定理都是对 Bayes 最优(ML)解码的陈述,**MWPM 的数据既不能证实也不能证伪它们**;下界类结论(地板、泊松下限)对任何解码器成立,可用 stim + MWPM 检验。
-- **证明状态要标明**:引用理论结论时注明状态标签,`PROVED` 仍是未经独立复核的初稿。
+## 5. Engineering rules
 
-## 6. 里程碑
+- **Reproducible**: every random process uses an explicit seed; every run writes its configuration (distance, noise parameters, shots, seeds, code version) together with its results into `results/`.
+- **Statistics**: every p_L comes with an interval. Stratified estimates report the point estimate, the relative standard error, and the per-stratum Clopper-Pearson (Bonferroni) certified interval, and **points with relative standard error above 10% are flagged in plots**; points from naive Monte Carlo use Wilson intervals, and points with fewer than about 100 failures are flagged (this old rule applies only to naive Monte Carlo and is meaningless for stratified estimates). Fits report parameter errors (parametric bootstrap). Reports state the decoder (MWPM or ML) and the sampling method.
+- **Tests first**: the threshold sanity checks of Section 2 are run before the production experiments.
+- **Data collection**: for circuit-level experiments prefer `sinter` for parallel collection.
+- **No overclaiming**: reports distinguish "rigorous conclusions" from "numerical estimates"; MWPM results must not be presented as ML results; code-capacity conclusions must not be extrapolated to circuit-level noise.
+- **Theory-numerics loop**: every theorem in `theory/` comes with a numerical falsification test (the correspondence table is in `theory/sec6-map.tex`). Monotonicity, the union bound, and the certification theorem are statements about Bayes-optimal (ML) decoding, and **MWPM data can neither confirm nor refute them**; lower-bound statements (floor, Poisson bound) hold for any decoder and can be tested with stim + MWPM.
+- **State the proof status**: when citing a theoretical conclusion, give its status tag; `PROVED` is still a draft that has not been independently reviewed.
 
-| 阶段 | 内容 | 验收标准 |
+## 6. Milestones
+
+| Stage | Content | Acceptance criterion |
 |---|---|---|
-| M0 | 码构造、噪声模型、MWPM 解码、合理性检验 | 三项阈值检验通过(已有:旋转表面码、MWPM(e = 0)、分层采样模块与测试;阈值检验与擦除待做) |
-| M1 | 张量网络 ML 解码(码容量,含擦除先验) | 去极化 ML 阈值约 18.9%,与 MWPM 结果趋势一致 |
-| M2 | P1 完整结果 | 在至少 3 个工作点给出 R_{e→p} 和 ML−MWPM 余量,附误差 |
-| M3 | 突发事件注入与泊松基准 | 注入的事件率能被无偏估计 |
-| M4 | P2 完整结果 | 给出模式方法相对泊松计数所需实验时长的比值,附误差 |
-| M5 | 汇总 | `results/SUMMARY.md`:关键数字、图、局限 |
+| M0 | Code construction, noise models, MWPM decoding, sanity checks | Three threshold checks pass. Status: rotated surface code, MWPM (e = 0), stratified sampling module and tests are done; pure erasure and depolarizing-ML crossings are consistent with 50% and 18.9%; the bit-flip MWPM crossing is 5-8% below 10.3% at d <= 15 and needs a finite-size-scaling fit; MWPM with erasure is to do |
+| M1 | ML decoding (code capacity, with erasure priors) | Depolarizing ML threshold about 18.9%, trend consistent with MWPM. Status: **exact transfer-matrix decoder done and validated** (oracle, qecsim cross-check, thresholds), usable to d ~ 11-13; truncated MPS for d = 13, 15 and the envelope identity at d >= 5 are to do |
+| M2 | Full P1 result | R_{e->p} and the ML-MWPM margin at at least 3 work points, with errors |
+| M3 | Burst-event injection and Poisson baseline | The injected event rate can be estimated without bias |
+| M4 | Full P2 result | Ratio of the experiment time needed by the pattern method relative to Poisson counting, with errors |
+| M5 | Summary | `results/SUMMARY.md`: key numbers, figures, limitations |
 
-理论线里程碑与上表**并行**(从第一周开始,不等数值完成):
+The theory-track milestones run **in parallel** with the table above (from week one, without waiting for the numerics):
 
-| 阶段 | 内容 | 与数值线的咬合 / 验收标准 |
+| Stage | Content | Interlock with the numerics / acceptance criterion |
 |---|---|---|
-| T0 | 单调性引理(三类自由操作)、擦除/泄漏/事件的表示、精确小码检验 | 已有初稿与 `theory/checks`(全部通过);M1 以其为 oracle |
-| T1 | 汇率上界 R ≤ (3/4−p₀)/(1−e₀)、泡利+擦除类预序定理 | M2 报告 R ≤ c 与缺口 Δ;P1 结果决定缺口来自码相关性还是自由操作不完备 |
-| T2 | 码通用序 = 局域自由序(猜想)的反例搜索;观察 3.5 的证明 | 随机稳定子码库上的精确计算,无需大规模算力 |
-| T3 | 条件认证定理:码容量版(已有)→ 含突发与芯片事件版(缺 O1–O3) | M3/M4:地板标度、参数估计、证书 ≥ 精确/TN-ML 失败率 |
-| T4 | 汇率的信息论界、实验设计定理(Stein/Chernoff 指数) | M4:T_count / T_pattern 对照泊松下限 ln(1/δ)/r |
+| T0 | Monotonicity lemma (three free operations), representation of erasure/leakage/events, exact small-code checks | First draft and `theory/checks` exist (all pass); M1 uses them as the oracle (done) |
+| T1 | Exchange-rate bound R <= (3/4-p0)/(1-e0); preorder theorem for the Pauli+erasure class | M2 reports R <= c and the gap Delta; P1 decides whether the gap comes from code dependence or incompleteness of the free operations |
+| T2 | Counterexample search for "code-universal order = local free order"; proof of Observation 3.5 | Exact computation on a library of random stabilizer codes; no large compute needed |
+| T3 | Conditional certification: code-capacity version (done) -> bursts + chip events (needs O1-O3) | M3/M4: floor scaling, parameter estimation, certificate >= exact/TN-ML failure rate |
+| T4 | Information-theoretic bounds on the exchange rate; experimental-design theorem (Stein/Chernoff exponents) | M4: T_count / T_pattern against the Poisson bound ln(1/delta)/r |
 
-## 7. 理论线与范围之外
+## 7. Theory track and out of scope
 
-### 7.1 理论线:在 `theory/` 中与数值并行推进
+### 7.1 The theory track: advanced in parallel in `theory/`
 
-理论不等数值做完再开始,而是从第一周就并行,并且由理论带路、数值检验理论(包括单调性引理)。笔记在 `theory/`(LaTeX,`make -C theory pdf`),状态看板见 [`theory/README.md`](theory/README.md)。内容与顺序:
+Theory does not wait for the numerics to finish; it starts in week one, theory leads, and the numerics test the theory (including the monotonicity lemma). The notes are in `theory/` (LaTeX, `make -C theory pdf`); the status board is in [`theory/README.md`](theory/README.md). Contents and order:
 
-1. **三个自由操作下的单调性**(严格证明):粗粒化与丢弃边信息用数据处理不等式;叠加可经典采样的独立噪声用模拟论证;说明擦除与泄漏在模型中如何表示,论证在什么假设下仍然成立、在哪里失效。
-2. **最简单子类里的预序定理。**
-3. **码容量下泡利加擦除噪声的充要条件。** 切入点:擦除比特带有位置标记,丢掉标记是自由操作,丢掉之后它是速率 3/4 的去极化错误。由单调性得到汇率的严格上界 `R_{e→p}(p₀, e₀) ≤ (3/4 − p₀)/(1 − e₀)`(一阶、小 p₀、e₀ 时即 3/4)。P1 的数值算出真实汇率;已知擦除阈值约 50%、去极化 ML 阈值约 18.9%,真实汇率应远低于上界。**这个缺口本身是研究问题**:它度量"丢弃标记"这种转换遗漏了多少擦除的价值,即预序还需要哪些更精细的单调量。
-4. **条件认证定理。** 在含局域突发事件和芯片尺度事件的模型类里,直接对 p_L(d) 给有限样本上界;P2 的数值为它提供检验。
-5. **汇率的信息论上下界与实验设计定理**:用信道散度与 Stein、Chernoff 指数。
+1. **Monotonicity under the three free operations** (rigorous proofs): coarse-graining and discarding side information by the data-processing inequality; superposing independent, classically samplable noise by a simulation argument; how erasure and leakage are represented in the model, under which assumptions the argument still holds and where it fails.
+2. **The preorder theorem in the simplest subclass.**
+3. **A necessary and sufficient condition for Pauli plus erasure noise at code capacity.** Entry point: an erased qubit carries a location flag; discarding the flag is a free operation, and after discarding it the qubit is a depolarizing error of rate 3/4. Monotonicity then gives a rigorous upper bound on the exchange rate, `R_{e->p}(p0, e0) <= (3/4 - p0)/(1 - e0)` (equal to 3/4 to first order for small p0, e0). The numerics of P1 compute the true exchange rate; given the erasure threshold of about 50% and the depolarizing ML threshold of about 18.9%, the true rate should be far below the bound. **This gap is itself a research question**: it measures how much of the value of erasure the "discard the flag" conversion leaves out, that is, which finer monotones the preorder still needs.
+4. **Conditional certification theorem.** In the model class with local burst events and chip-scale events, give finite-sample upper bounds directly on p_L(d); the numerics of P2 provide the tests.
+5. **Information-theoretic upper and lower bounds on the exchange rate, and the experimental-design theorem**: using channel divergences and Stein and Chernoff exponents.
 
-当前进展与未完成部分(哪些已写出完整证明、哪些只有陈述和路线)见 `theory/README.md`。
+Current progress and what is unfinished (which parts have a complete written proof and which only have statements and routes) is in `theory/README.md`.
 
-### 7.2 范围之外(当前阶段不做)
+### 7.2 Out of scope (not for the current stage)
 
-- 相干误差(框架依赖旋转化近似,见 ABSTRACT 的局限部分)。
-- qLDPC 码。
-- 电路级噪声下的精确 ML 解码。
+- Coherent errors (the framework relies on the twirling approximation; see the limitations part of ABSTRACT).
+- qLDPC codes.
+- Exact ML decoding under circuit-level noise.
 
-## 8. 参考文献
+## 8. References
 
 - E. Dennis, A. Kitaev, A. Landahl, J. Preskill, *Topological quantum memory*, J. Math. Phys. (2002).
 - S. Bravyi, M. Suchara, A. Vargo, *Efficient algorithms for maximum likelihood decoding in the surface code*, Phys. Rev. A (2014).
-- C. T. Chubb, S. T. Flammia, *Statistical mechanical models for quantum codes with correlated noise*, Ann. Inst. Henri Poincaré D (2021).
+- S. Bravyi, A. Vargo, *Simulation of rare events in quantum error correction*, Phys. Rev. A 88, 062308 (2013).
+- C. T. Chubb, S. T. Flammia, *Statistical mechanical models for quantum codes with correlated noise*, Ann. Inst. Henri Poincare D (2021).
 - C. Gidney, *Stim: a fast stabilizer circuit simulator*, Quantum (2021).
 - O. Higgott, C. Gidney, *Sparse Blossom: correcting a million errors per core second with minimum-weight matching* (PyMatching v2).
 - Y. Wu, S. Kolkowitz, S. Puri, J. D. Thompson, *Erasure conversion for fault-tolerant quantum computing in alkaline earth Rydberg atom arrays*, Nat. Commun. (2022).
 - M. McEwen et al., *Resolving catastrophic error bursts from cosmic rays in large arrays of superconducting qubits*, Nat. Phys. (2022).
 - Google Quantum AI, *Quantum error correction below the surface code threshold*, Nature (2025).
 
-## 9. 许可证
+## 9. License
 
-待定。
+To be decided.

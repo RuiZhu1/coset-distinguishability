@@ -1,67 +1,67 @@
-\section{信息论界与实验设计}\label{sec:info}
+\section{Information-theoretic bounds and experimental design}\label{sec:info}
 
-\subsection{$\alpha$ 的夹逼:Chernoff 上界与联合下界}
+\subsection{A sandwich for $\alpha$: the Chernoff upper bound and the union lower bound}
 
-\begin{proposition}[Chernoff 上界]\label{prop:genie}
-设 $d\ge3$ 为奇数,考虑旋转表面码族,噪声 $\Nn_{\rm cc}(p,e)$。则
+\begin{proposition}[Chernoff upper bound]\label{prop:genie}
+Let $d\ge3$ be odd, consider the rotated surface-code family and noise $\Nn_{\rm cc}(p,e)$. Then
 \[
 \alpha_+(p,e)\;\le\;\ln\frac1{B(p,e)},\qquad B(p,e)=e+(1-e)\Big(2\sqrt{\tfrac{p(1-p)}3}+\tfrac{2p}3\Big).
 \]
-更精确地,对每个 $d$ 有 $\err_d\ge\varepsilon_{\rm genie}(d)$,其中
+More precisely, for every $d$ we have $\err_d\ge\varepsilon_{\rm genie}(d)$, where
 $\varepsilon_{\rm genie}(d)=\tfrac12\bigl(1-\mathrm{TV}(P_1^{\otimes d},Q_1^{\otimes d})\bigr)$,
-$P_1$ 是单比特 $(a,f)$ 的联合分布,$Q_1=P_1(\cdot+X)$ 是平移后的分布。\hfill\st{SKETCH}
+$P_1$ is the joint law of a single qubit's $(a,f)$ and $Q_1=P_1(\cdot+X)$ is the shifted law.\hfill\st{SKETCH}
 \end{proposition}
 \begin{proof}
-取一列内部的 $d$ 个比特 $T$(列号 $c_0$,$1\le c_0\le d-2$),$\bar X_T$ 为这一列上的 $X$ 型逻辑算符。
+Take $d$ qubits $T$ in an interior column (column index $c_0$, $1\le c_0\le d-2$), and let $\bar X_T$ be the $X$-type logical operator on this column.
 
-\emph{步骤 1:$\ker\sigma\cap\mathcal P_T=\{I,\bar X_T\}$。}设 $(x,z)$ 支撑于 $T$ 且综合征为零。每个触及第 $c_0$ 列的体 $Z$ 型方格与这一列恰交于
-两个竖直相邻的比特 $(r',r'+1)$,且 $r'=0,\dots,d-2$ 各出现一次(第 $c_0$ 列与第 $c_0-1$ 列的奇偶互补,
-内部列两侧方格都存在);故 $x_{r'}=x_{r'+1}$,$x\in\{0,\mathbf 1_T\}$。对 $X$ 型方格同理得 $z$ 为常数;
-又顶边的 $X$ 型边界检测器与该列恰交于一个比特 $(0,c_0)$,强制 $z_0=0$,故 $z=0$。(小码 $d=3$ 已由枚举验证。)
+\emph{Step 1: $\ker\sigma\cap\mathcal P_T=\{I,\bar X_T\}$.} Let $(x,z)$ be supported on $T$ with zero syndrome. Every bulk $Z$-type plaquette touching column $c_0$ meets this column in exactly
+two vertically adjacent qubits $(r',r'+1)$, and each $r'=0,\dots,d-2$ occurs once (the parities of column $c_0$ and column $c_0-1$ are complementary,
+and for an interior column the plaquettes on both sides exist); hence $x_{r'}=x_{r'+1}$ and $x\in\{0,\mathbf 1_T\}$. The same argument for the $X$-type plaquettes shows that $z$ is constant;
+moreover the $X$-type boundary detector on the top edge meets the column in exactly one qubit $(0,c_0)$, which forces $z_0=0$, so $z=0$. (For the small code $d=3$ this was verified by enumeration.)
 
-\emph{步骤 2:先知。}先知知道 $F$、$E_{T^c}$ 与 $\sigma(E)$,等价于知道 $\sigma(E_T)$。由步骤 1,$E_T$ 只可能是 $a$ 或 $a+\bar X_T$,
-二者标签不同。先知的 Bayes 错误率为 $\tfrac12\sum_{a,f_T}\min\big(P_T(a,f_T),P_T(a+\bar X_T,f_T)\big)=\varepsilon_{\rm genie}$。
-真实观测 $(\sigma(E),F)$ 是先知观测的粗粒化 (F1),故 $\err_d\ge\varepsilon_{\rm genie}$(定理~\ref{thm:monotone})。
+\emph{Step 2: the genie.} The genie knows $F$, $E_{T^c}$, and $\sigma(E)$, which is equivalent to knowing $\sigma(E_T)$. By Step 1, $E_T$ can only be $a$ or $a+\bar X_T$,
+and the two have different labels. The genie's Bayes error is $\tfrac12\sum_{a,f_T}\min\big(P_T(a,f_T),P_T(a+\bar X_T,f_T)\big)=\varepsilon_{\rm genie}$.
+The real observation $(\sigma(E),F)$ is a coarse-graining (F1) of the genie's observation, so $\err_d\ge\varepsilon_{\rm genie}$ (Theorem~\ref{thm:monotone}).
 
-\emph{步骤 3:指数。}$\varepsilon_{\rm genie}$ 是在 $d$ 个 i.i.d.\ 样本上区分 $P_1$ 与 $Q_1$ 的等先验 Bayes 错误率,
-其指数为 Chernoff 信息 $C(P_1,Q_1)=-\ln\min_{s\in[0,1]}b_s$ \cite[\S11.9]{CT}。由 $b_s=b_{1-s}$ 的凸性,
-最小值在 $s=1/2$,得 $C=-\ln B$。注意标记在联合字母表 $(a,f)$ 中,先知看到它们,所以在 $F=1$ 的位置上两个假设\emph{完全相同},
-对 $B$ 贡献 $e\cdot1$,这就是 $B$ 中 $e$ 项的来源。
+\emph{Step 3: the exponent.} $\varepsilon_{\rm genie}$ is the equal-prior Bayes error for distinguishing $P_1$ from $Q_1$ on $d$ i.i.d.\ samples,
+whose exponent is the Chernoff information $C(P_1,Q_1)=-\ln\min_{s\in[0,1]}b_s$ \cite[\S11.9]{CT}. Since $b_s=b_{1-s}$ and $b_s$ is convex,
+the minimum is at $s=1/2$, giving $C=-\ln B$. Note that the flags live in the joint alphabet $(a,f)$ and the genie sees them, so at positions with $F=1$ the two hypotheses are \emph{identical},
+contributing $e\cdot1$ to $B$; this is the origin of the $e$ term in $B$.
 \end{proof}
 
-\noindent 上述证明依赖标准的 Chernoff 渐近结果(引用),步骤 1 对一般奇数 $d$ 的几何论证已写出;因此标 \st{SKETCH}。
-$d=3$ 时 $\err\ge\varepsilon_{\rm genie}$ 已由精确计算验证(检验 C6)。
+\noindent The proof above relies on the standard asymptotic Chernoff result (cited), and the geometric argument of Step 1 is written out for general odd $d$; hence the \st{SKETCH} tag.
+For $d=3$, $\err\ge\varepsilon_{\rm genie}$ has been verified by exact computation (check C6).
 
-\begin{proposition}[联合下界]\label{prop:lower}
-令 $\Phi(x)=\limsup_{d\to\infty}\tfrac1d\ln\widetilde W_d(x)$(推论~\ref{cor:product})。则
-$\alpha_-(p,e)\ge-\Phi\big(B(p,e)\big)$。\hfill\st{PROVED}
+\begin{proposition}[Union lower bound]\label{prop:lower}
+Let $\Phi(x)=\limsup_{d\to\infty}\tfrac1d\ln\widetilde W_d(x)$ (Corollary~\ref{cor:product}). Then
+$\alpha_-(p,e)\ge-\Phi\big(B(p,e)\big)$.\hfill\st{PROVED}
 \end{proposition}
 \begin{proof}
-推论~\ref{cor:product}:$\err_d\le\tfrac12\widetilde W_d(B)$,取 $-\tfrac1d\ln$ 并取 $\liminf$。
+Corollary~\ref{cor:product}: $\err_d\le\tfrac12\widetilde W_d(B)$; take $-\tfrac1d\ln$ and then $\liminf$.
 \end{proof}
 
-\begin{corollary}[夹在两个仅依赖 $B$ 的函数之间]\label{cor:sandwich}
-$-\Phi(B(p,e))\le\alpha_-\le\alpha_+\le-\ln B(p,e)$。\hfill\st{PROVED}(对 \ref{prop:genie} 的前提)
+\begin{corollary}[Sandwiched between two functions of $B$ only]\label{cor:sandwich}
+$-\Phi(B(p,e))\le\alpha_-\le\alpha_+\le-\ln B(p,e)$.\hfill\st{PROVED} given Proposition~\ref{prop:genie}
 \end{corollary}
 
-夹逼并不约束 $\alpha$ 的导数,因此不能由它直接推出汇率的上下界;它的作用是给出可检验的假设 $H_B$
-(猜想~\ref{conj:HB}):若 $\alpha$ 在邻域内是 $B$ 的函数,则 $R_\alpha=R_B$。
+The sandwich does not constrain the derivatives of $\alpha$, so it does not directly give upper and lower bounds on the exchange rate; its role is to give the testable hypothesis $H_B$
+(Conjecture~\ref{conj:HB}): if $\alpha$ is a function of $B$ in a neighborhood, then $R_\alpha=R_B$.
 
-\subsection{汇率的参照值}
+\subsection{Reference values for the exchange rate}
 
-下表列出 README 工作点处的三个量,均可由解析式直接计算。其中 $c$ 是严格的上界(定理~\ref{thm:rate});
-$R_B$ 与 $R_{\rm hash}$ 是\emph{启发式参照},\textbf{不是}对表面码 $R_\alpha$ 的定理,仅用于给 P1 数值一个量级预期:
+The table below lists three quantities at the README work points, all computable from closed-form expressions. Here $c$ is the rigorous upper bound (Theorem~\ref{thm:rate});
+$R_B$ and $R_{\rm hash}$ are \emph{heuristic references}, \textbf{not} theorems about the $R_\alpha$ of the surface code, and serve only to give the P1 numerics an order-of-magnitude expectation:
 \[
 R_{\rm hash}(p,e)=\frac{2-H_4(p)}{(1-e)\,\log_2\!\frac{3(1-p)}{p}},\quad
 H_4(p)=-(1-p)\log_2(1-p)-p\log_2\tfrac p3,
 \]
-是量子 hashing 容量 $Q_{\rm hash}=1-2e-(1-e)H_4(p)$ 的等值线斜率(其零等值线在 $e=0$ 给出 $p\approx18.9\%$,
-在 $p=0$ 给出 $e=50\%$)。
+the slope of the level curves of the quantum hashing capacity $Q_{\rm hash}=1-2e-(1-e)H_4(p)$ (whose zero level curve gives $p\approx18.9\%$ at $e=0$
+and $e=50\%$ at $p=0$).
 
 \begin{center}
 \begin{tabular}{cc ccc}
 \toprule
-$p_0$ & $e_0$ & $c=\frac{3/4-p_0}{1-e_0}$ (上界) & $R_B$ & $R_{\rm hash}$ \\
+$p_0$ & $e_0$ & $c=\frac{3/4-p_0}{1-e_0}$ (upper bound) & $R_B$ & $R_{\rm hash}$ \\
 \midrule
 0.02 & 0    & 0.7300 & 0.1784 & 0.2537 \\
 0.02 & 0.02 & 0.7449 & 0.1820 & 0.2589 \\
@@ -75,53 +75,53 @@ $p_0$ & $e_0$ & $c=\frac{3/4-p_0}{1-e_0}$ (上界) & $R_B$ & $R_{\rm hash}$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-(这些数值由 \texttt{theory/checks/exact\_small\_codes.py} 的检验 C7 输出。同一脚本也给出 $d=3$ 码的有限尺寸汇率
-$R^{(3)}$,如表面码 $0.54$($p_0=0.02,e_0=0$),它满足 $R^{(d)}\le c$ 但高于 $R_B$、$R_{\rm hash}$;
-有限尺寸的 $R^{(d)}$ 随 $d$ 的演化正是 P1 要测的。)
+(These values are printed by check C7 of \texttt{theory/checks/exact\_small\_codes.py}. The same script also gives the finite-size exchange rates $R^{(3)}$ of the $d=3$ codes,
+for example $0.54$ for the surface code ($p_0=0.02,e_0=0$); it satisfies $R^{(d)}\le c$ but lies above $R_B$ and $R_{\rm hash}$;
+how the finite-size $R^{(d)}$ evolves with $d$ is exactly what P1 is to measure.)
 
-\begin{remark}[阈值割线]
-若采用已知阈值 $p_c\approx0.189$($e=0$)与 $e_c=0.5$($p=0$),零等值线的割线斜率为 $0.189/0.5\approx0.38$,
-远低于 $c\approx0.75$。这只是割线的启发式比较(阈值处 $\alpha=0$,与工作点处的局域导数不同),不是定理。
-作为严格的一致性检验:推论~\ref{cor:worth} 给出 $p_{\rm eq}\le3e/4$,因此纯擦除阈值必须满足
-$e_c\ge\tfrac43p_c\approx0.25$,与 $e_c=0.5$ 相容。
+\begin{remark}[Threshold secant]
+Using the known thresholds $p_c\approx0.189$ (at $e=0$) and $e_c=0.5$ (at $p=0$), the secant slope of the zero level curve is $0.189/0.5\approx0.38$,
+far below $c\approx0.75$. This is only a heuristic comparison of a secant (at threshold $\alpha=0$, and the local derivative at a work point is different), not a theorem.
+As a rigorous consistency check: Corollary~\ref{cor:worth} gives $p_{\rm eq}\le3e/4$, so the pure-erasure threshold must satisfy
+$e_c\ge\tfrac43p_c\approx0.25$, which is compatible with $e_c=0.5$.
 \end{remark}
 
-\subsection{实验设计与检测极限}\label{sec:design}
+\subsection{Experimental design and detection limits}\label{sec:design}
 
-这一部分对应 P2。记 $T$ 为总观测时长(轮数),事件为速率 $r$ 的泊松过程。
+This part corresponds to P2. Let $T$ be the total observation time (number of rounds) and let events be a Poisson process of rate $r$.
 
-\begin{proposition}[泊松下限]\label{prop:poisson}
-设 $H_0$:无突发事件;$H_1$:突发事件为强度 $r$ 的泊松过程(任意形状),其余各层独立且相同。
-对任何基于总时长 $T$ 的全部数据的检验 $\varphi$,若 $H_0$ 下第一类错误 $\le a$,则 $H_1$ 下的功效
+\begin{proposition}[Poisson lower bound]\label{prop:poisson}
+Let $H_0$: no burst events; $H_1$: burst events form a Poisson process of intensity $r$ (of arbitrary shape), with all other layers independent and identical.
+For any test $\varphi$ based on all data over the total time $T$, if the type-I error under $H_0$ is $\le a$, then the power under $H_1$ satisfies
 \[
 \Prob_1[\varphi=1]\;\le\;1-e^{-rT}(1-a).
 \]
-因此要达到功效 $1-\delta$ 必须 $T\ge\ln\!\big((1-a)/\delta\big)/r$。任何利用时空模式的方法都不能突破 $1/r$ 标度。\hfill\st{PROVED}
+Therefore reaching power $1-\delta$ requires $T\ge\ln\!\big((1-a)/\delta\big)/r$. No method that exploits space-time patterns can beat the $1/r$ scaling.\hfill\st{PROVED}
 \end{proposition}
 \begin{proof}
-$H_1$ 下以概率 $e^{-rT}$ 一次事件都不发生,此时数据与 $H_0$ 下同分布。于是
-$\Prob_1[\varphi=1]\le(1-e^{-rT})+e^{-rT}\Prob_0[\varphi=1]\le1-e^{-rT}(1-a)$。
+Under $H_1$, with probability $e^{-rT}$ no event occurs at all, and then the data have the same law as under $H_0$. Hence
+$\Prob_1[\varphi=1]\le(1-e^{-rT})+e^{-rT}\Prob_0[\varphi=1]\le1-e^{-rT}(1-a)$.
 \end{proof}
 
-\begin{proposition}[类别区分的指数链]\label{prop:exponents}
-设事件带标记 $a\in\mathcal A$(类别),两个假设的各类强度为 $r_a^{(0)},r_a^{(1)}$。完全观测事件时,
-每单位时间的 Stein 指数与 Chernoff 指数为
+\begin{proposition}[Chain of exponents for class discrimination]\label{prop:exponents}
+Let events carry a label $a\in\mathcal A$ (the class), and let the class intensities under the two hypotheses be $r_a^{(0)},r_a^{(1)}$. With events fully observed,
+the Stein exponent and the Chernoff exponent per unit time are
 \[
 D=\sum_a\Big[r^{(1)}_a\ln\frac{r^{(1)}_a}{r^{(0)}_a}-r^{(1)}_a+r^{(0)}_a\Big],\qquad
 C=\max_{s\in[0,1]}\sum_a\Big[s\,r^{(1)}_a+(1-s)\,r^{(0)}_a-(r^{(1)}_a)^s(r^{(0)}_a)^{1-s}\Big]
 \]
-(泊松过程的相对熵与 Chernoff 信息)。设实际数据 $Z$ 是事件过程经检测器信道 $W$ 的输出,则
+(the relative entropy and Chernoff information of Poisson processes). If the actual data $Z$ are the output of the event process through a detector channel $W$, then
 \[
 D_{\rm count}\ \le\ D_{\rm pattern}\ \le\ D_{\rm event}=D,\qquad C_{\rm count}\le C_{\rm pattern}\le C,
 \]
-其中 count 指只用被检测到的事件总数,pattern 指用全部时空模式的最优检验。因此达到同一误差所需轮数之比
-$T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}\ (\delta\to0)$,并以
-$D_{\rm event}/D_{\rm count}$ 为上限。\hfill 不等式链 \st{PROVED}(相对熵/R\'enyi 散度的数据处理不等式与泊松的闭式);轮数之比的渐近形式依赖 Stein 引理 \st{SKETCH}
+where ``count'' means using only the total number of detected events and ``pattern'' means the optimal test using the full space-time pattern. Hence the ratio of the numbers of rounds needed to reach the same error satisfies
+$T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}\ (\delta\to0)$, bounded above by
+$D_{\rm event}/D_{\rm count}$.\hfill The chain of inequalities is \st{PROVED} (data-processing inequality for relative entropy/R\'enyi divergences and the Poisson closed forms); the asymptotic form of the ratio of rounds relies on Stein's lemma \st{SKETCH}
 \end{proposition}
 
-\begin{problem}[O4:实验设计定理]\label{prob:O4}
-在预算约束下选择码距 $d$、轮数、(自适应)策略,使 $D_{\rm pattern}(d,\text{策略})$ 或 Chernoff 指数最大;
-并刻画 $D_{\rm pattern}/D_{\rm count}$ 对检测器信道 $W$ 的依赖。\hfill\st{PLAN}
+\begin{problem}[O4: experimental-design theorem]\label{prob:O4}
+Under a budget constraint choose the code distance $d$, the number of rounds, and the (adaptive) strategy so as to maximize $D_{\rm pattern}(d,\text{strategy})$ or the Chernoff exponent;
+and characterize the dependence of $D_{\rm pattern}/D_{\rm count}$ on the detector channel $W$.\hfill\st{PLAN}
 \end{problem}
-\noindent P2 的数值分别估计 $D_{\rm count}$ 与 $D_{\rm pattern}$(Monte Carlo 或解析),报告 $T_{\rm count}/T_{\rm pattern}$ 并对照命题~\ref{prop:poisson}
-(任何方法的轮数下限 $\ln(1/\delta)/r$)。
+\noindent The numerics of P2 estimate $D_{\rm count}$ and $D_{\rm pattern}$ separately (by Monte Carlo or analytically), report $T_{\rm count}/T_{\rm pattern}$, and compare with Proposition~\ref{prop:poisson}
+(the lower bound $\ln(1/\delta)/r$ on the number of rounds for any method).

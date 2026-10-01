@@ -17,6 +17,23 @@ def sample_iid(n: int, p: float, N: int, rng: np.random.Generator):
     return (err & (typ <= 1)).astype(np.uint8), (err & (typ >= 1)).astype(np.uint8)
 
 
+def sample_iid_erasure(n: int, p: float, e: float, N: int, rng: np.random.Generator):
+    """N i.i.d. samples of N(p, e): returns (ex, ez, erased); erased qubits carry a uniform Pauli in {I, X, Y, Z}."""
+    erased = rng.random((N, n)) < e
+    t = rng.integers(0, 4, (N, n))                                   # 0=I 1=X 2=Z 3=Y
+    err = (~erased) & (rng.random((N, n)) < p)
+    typ = rng.integers(0, 3, (N, n))                                 # 0=X 1=Y 2=Z
+    ex = (np.where(erased, t & 1, err & (typ <= 1))).astype(np.uint8)
+    ez = (np.where(erased, t >> 1, err & (typ >= 1))).astype(np.uint8)
+    return ex, ez, erased
+
+
+def sample_bitflip(n: int, p: float, N: int, rng: np.random.Generator):
+    """N i.i.d. bit-flip (X-only) samples. Returns (ex, ez) with ez = 0."""
+    ex = (rng.random((N, n)) < p).astype(np.uint8)
+    return ex, np.zeros_like(ex)
+
+
 def sample_stratum(n: int, k: int, w: int, N: int, rng: np.random.Generator):
     """N samples conditioned on exactly k erased qubits and exactly w Pauli errors on non-erased qubits.
 

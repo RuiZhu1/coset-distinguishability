@@ -1,6 +1,6 @@
-% 逻辑陪集可区分性(LCD)理论笔记 —— 主文件
-% 编译:  cd theory && latexmk -xelatex main.tex     (需要 ctex;见 theory/README.md)
-\documentclass[UTF8,a4paper,11pt]{ctexart}
+% Logical Coset Distinguishability (LCD): theory notes -- main file
+% Build:  cd theory && latexmk -pdf main.tex      (plain pdflatex; see theory/README.md for packages)
+\documentclass[a4paper,11pt]{article}
 
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{booktabs}
@@ -8,58 +8,58 @@
 \usepackage[margin=2.6cm]{geometry}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
 \usepackage{xcolor}
-\usepackage{enumitem}
+\usepackage{enumerate}
 
-% ---------- 定理环境 ----------
+% ---------- theorem environments ----------
 \theoremstyle{plain}
-\newtheorem{theorem}{定理}[section]
-\newtheorem{lemma}[theorem]{引理}
-\newtheorem{proposition}[theorem]{命题}
-\newtheorem{corollary}[theorem]{推论}
-\newtheorem{conjecture}[theorem]{猜想}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
 \theoremstyle{definition}
-\newtheorem{definition}[theorem]{定义}
-\newtheorem{problem}[theorem]{开放问题}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{problem}[theorem]{Open problem}
 \theoremstyle{remark}
-\newtheorem{remark}[theorem]{注}
-\newtheorem{observation}[theorem]{数值观察}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{observation}[theorem]{Numerical observation}
 
-% ---------- 状态标签(可 grep):PROVED / SKETCH / NUMERICAL / CONJECTURE / PLAN ----------
-%  PROVED     笔记中给出完整论证(仍需作者逐行复核,见 theory/README.md)
-%  SKETCH     论证框架完整,个别步骤引用标准结果或尚未展开
-%  NUMERICAL  由 theory/checks 中的精确计算观察到,尚无证明
-%  CONJECTURE 明确的猜想
-%  PLAN       只有陈述与证明路线
+% ---------- status tags (greppable): PROVED / SKETCH / NUMERICAL / CONJECTURE / PLAN ----------
+%  PROVED     a complete argument is in the notes (still to be checked line by line by the author; see theory/README.md)
+%  SKETCH     the argument is complete in outline; some steps cite standard results or are not yet expanded
+%  NUMERICAL  observed in the exact computations of theory/checks; no proof yet
+%  CONJECTURE an explicit conjecture
+%  PLAN       only a statement and a proof route
 \newcommand{\st}[1]{{\small\textsc{[\textcolor{red!60!black}{#1}]}}}
 
-% ---------- 记号 ----------
+% ---------- notation ----------
 \newcommand{\F}{\mathbb{F}_2}
 \newcommand{\Prob}{\mathbb{P}}
 \newcommand{\E}{\mathbb{E}}
-\newcommand{\err}{\varepsilon^{\star}}           % Bayes (最大似然) 错误率 = 逻辑失败概率
+\newcommand{\err}{\varepsilon^{\star}}           % Bayes (maximum-likelihood) error = logical failure probability
 \newcommand{\pL}{p_{\mathrm{L}}}
 \newcommand{\Dep}{\mathrm{Dep}}
 \newcommand{\Nn}{\mathcal{N}}
 \newcommand{\supp}{\operatorname{supp}}
 \newcommand{\wt}{\operatorname{wt}}
-\newcommand{\BC}{\mathfrak{B}}                    % Bhattacharyya / Hellinger 系数
+\newcommand{\BC}{\mathfrak{B}}                    % Bhattacharyya / Hellinger coefficient
 \renewcommand{\Pr}{\Prob}
 
-\title{逻辑陪集可区分性的理论笔记\\\large 单调性引理、局域汇率上界、预序、条件认证与实验设计}
-\author{LCD 项目\ (theory 线)}
-\date{\today\ \ ——\ 草稿,持续更新}
+\title{Notes on logical coset distinguishability\\\large Monotonicity lemma, local exchange-rate bound, preorder, conditional certification, and experimental design}
+\author{LCD project (theory track)}
+\date{\today\ --- draft, continuously updated}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}\noindent
-本笔记是 \texttt{ABSTRACT.md} 中四类理论结果的工作底稿。每个命题都带有状态标签
-(\st{PROVED}、\st{SKETCH}、\st{NUMERICAL}、\st{CONJECTURE}、\st{PLAN}),并在 §\ref{sec:map}
-中与仓库里的数值检验一一对应:\textbf{理论带路,数值检验理论}。
-已写出完整证明的结果:(i) 三类自由操作下的单调性;(ii) 擦除/泄漏/突发事件在模型中的表示及适用边界;
-(iii) 局域汇率的精确上界
-$R_{e\to p}\le (3/4-p_0)/(1-e_0)$;(iv) 码容量泡利加擦除类中局域自由操作预序的完整刻画;
-(v) 代数可计算的有限样本认证(码容量)。其余为带证明路线的陈述。
+These notes are the working draft of the four classes of theoretical results in \texttt{ABSTRACT.md}. Every statement carries a status tag
+(\st{PROVED}, \st{SKETCH}, \st{NUMERICAL}, \st{CONJECTURE}, \st{PLAN}) and is matched in \S\ref{sec:map}
+with a numerical check in the repository: \textbf{theory leads, numerics test the theory}.
+Results with a complete written proof: (i) monotonicity under the three free operations; (ii) the representation of erasure, leakage, and burst events in the model, and the boundary of validity;
+(iii) the exact upper bound on the local exchange rate
+$R_{e\to p}\le (3/4-p_0)/(1-e_0)$; (iv) a complete characterization of the preorder of local free operations on the code-capacity Pauli-plus-erasure class;
+(v) a finite-sample certificate that can be computed in closed form (code capacity). The remaining items are statements with proof routes.
 \end{abstract}
 
 \tableofcontents
