@@ -1,0 +1,108 @@
+{
+  "script": "experiments/p1_erasure_pauli/envelope_check.py",
+  "seed": 20241004,
+  "results": [
+    {
+      "d": 9,
+      "p": 0.06,
+      "e": 0.0,
+      "h": 0.01,
+      "decoder": "exact",
+      "samples_per_stratum": 20000,
+      "strata": 18,
+      "A_analytic_frozen": 0.19712472682669133,
+      "step_1h": {
+        "B_frozen": 0.2059024814770509,
+        "B_matched": 0.2058563184923568,
+        "discretisation_rel": 0.04452893754966023,
+        "matched_minus_frozen": -4.6162984694092524e-05,
+        "matched_minus_frozen_rel": -0.00023418160388715835,
+        "se": 0.00016717656372063037,
+        "z": -0.2761331114045132,
+        "passed": true
+      },
+      "step_2h": {
+        "B_frozen": 0.23198158299904767,
+        "B_matched": 0.2319850060409342,
+        "discretisation_rel": 0.17682640191051166,
+        "matched_minus_frozen": 3.423041886524425e-06,
+        "matched_minus_frozen_rel": 1.7364852911293592e-05,
+        "se": 0.00021531067522925616,
+        "z": 0.015898152206710956,
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "d": 9,
+      "p": 0.06,
+      "e": 0.05,
+      "h": 0.01,
+      "decoder": "exact",
+      "samples_per_stratum": 1000,
+      "strata": 314,
+      "A_analytic_frozen": 0.44326130207727166,
+      "step_1h": {
+        "B_frozen": 0.4533648889460903,
+        "B_matched": 0.45327136725697575,
+        "discretisation_rel": 0.022793749017723446,
+        "matched_minus_frozen": -9.352168911452852e-05,
+        "matched_minus_frozen_rel": -0.00021098545863637181,
+        "se": 0.0006684995196819612,
+        "z": -0.13989791519823602,
+        "passed": true
+      },
+      "step_2h": {
+        "B_frozen": 0.48327846944868,
+        "B_matched": 0.48361474002408367,
+        "discretisation_rel": 0.09027895551421804,
+        "matched_minus_frozen": 0.000336270575403641,
+        "matched_minus_frozen_rel": 0.0007586283165883508,
+        "se": 0.0007453795520868336,
+        "z": 0.45114005939951907,
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "d": 9,
+      "p": 0.06,
+      "e": 0.0,
+      "h": 0.01,
+      "decoder": "mps8",
+      "samples_per_stratum": 4000,
+      "strata": 18,
+      "A_analytic_frozen": 0.1832009658636015,
+      "step_1h": {
+        "B_frozen": 0.19268518750513627,
+        "B_matched": 0.1917383565601761,
+        "discretisation_rel": 0.051769495847505884,
+        "matched_minus_frozen": -0.0009468309449601753,
+        "matched_minus_frozen_rel": -0.005168263936256312,
+        "se": 0.000756244950919447,
+        "z": -1.2520162201532885,
+        "passed": true
+      },
+      "step_2h": {
+        "B_frozen": 0.22072306528723443,
+        "B_matched": 0.22020893647671513,
+        "discretisation_rel": 0.2048138733699103,
+        "matched_minus_frozen": -0.0005141288105192932,
+        "matched_minus_frozen_rel": -0.0028063651744176786,
+        "se": 0.0008603907924752606,
+        "z": -0.5975526644586637,
+        "passed": true
+      },
+      "passed": true
+    }
+  ],
+  "criterion": "|B_matched - B_frozen| < 3 s.e. and < 1% of A (step h)",
+  "versions": {
+    "lcd": "0.0.1",
+    "numpy": "2.5.3"
+  },
+  "git_commit": "92627e42849fe66315fbc12060805b6179548f76",
+  "git_dirty_src": false,
+  "date": "2026-10-02T08:59:15+00:00",
+  "all_passed": true
+}
