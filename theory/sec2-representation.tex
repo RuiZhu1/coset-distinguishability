@@ -115,6 +115,6 @@ Apply Proposition~\ref{prop:free-ops}.
 Increasing $p_b$ (or $R$, $T_b$) amounts to superposing further noise \emph{inside the burst regions that have occurred}. When burst events are invisible to the decoder (unflagged),
 this additional layer depends on a hidden variable (the event locations), the processor cannot sample it independently, and the argument fails.
 If burst events are \emph{flagged} (the locations and times of events enter $F$), the additional layer depends on the observed $F$, which is of type (F2$'$), and monotonicity holds.
-For unflagged bursts, monotonicity in the shape parameters is an open problem (\ref{prob:O1}). It decides directly whether the certification theorem
-(\S\ref{sec:cert}) can give robust upper bounds under uncertainty in the shape.
+For unflagged bursts, monotonicity in the shape parameters \emph{fails} in general: Proposition~\ref{prob:O1} gives an exact counterexample in the strength $p_b$ on the $d=3$ surface code (open problem O1, answered negatively).
+The certification theorem does not need it: Theorem~\ref{thm:burst-cert} is uniform over burst strengths (\S\ref{sec:cert}).
 \end{remark}

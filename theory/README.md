@@ -17,7 +17,8 @@ theory/
 ├── checks/structures.py         exact eps*(p, e) of any linear decoding structure (nested subspaces S < N of F_2^{2n}), enumeration of all structures
 ├── checks/universal_order_search.py  counterexample search for the single-loss form of Conjecture 3.11 (about 8 min; `make -C theory search`)
 ├── checks/hardened_structures_search.py  obstruction lemmas on all structures with n <= 3, small-p marginal rates, n = 6 hill-climbing (about 15 min)
-└── checks/exponent_criterion.py  channel-coding exponent criterion for large structures (seconds)
+├── checks/exponent_criterion.py  channel-coding exponent criterion for large structures (seconds)
+└── checks/completion_checks.py   checks K1-K7 of the theory-completion results (genie, burst bound, O1 counterexample, [[5,1,3]] certificate)
 ```
 
 ## Build and run
@@ -66,13 +67,13 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Proposition 2.1 | Erasure = flagged completely depolarizing noise (Pauli twirl); the maximally mixed model is conservative for real noise | PROVED | -- |
 | Proposition 2.7 | Monotonicity under leakage given assumption (L); where (L) fails | PROVED (under the assumption) | -- |
 | Proposition 2.10 | Monotonicity in the event-layer rate directions (Poisson superposition) | PROVED | -- |
-| Remark 2.11 / Open problem 4.9 (O1) | Monotonicity in the shape parameters $(R,T_b,p_b)$: **not** given by free operations when unflagged | open | -- |
+| Remark 2.11 / Proposition 4.11 (O1) | Monotonicity in the shape parameters fails for unflagged bursts: exact counterexample in $p_b$ on the $d=3$ surface code ($\varepsilon^\star$ drops by 26% from $p_b=1/2$ to $3/4$); radius and duration untested | PROVED (exact computation) | K4 |
 | Theorem 3.1 | Partial flag-discarding inequality $\varepsilon^\star(p,e_0{+}\delta)\le\varepsilon^\star(p'',e_0)$ | PROVED | C3 |
 | Theorem 3.2 | Exchange-rate bound $R_{e\to p}\le(3/4-p_0)/(1-e_0)$ | PROVED | C7; **P1 (M2)** |
 | Observation 3.5 | The bound is attained by $[[5,1,3]]$ at $e_0{=}0$ (8 significant digits) | NUMERICAL | C7 |
 | Theorem 3.7 | Necessary and sufficient condition for the local-free-operation preorder on the code-capacity Pauli+erasure class | PROVED | C4 |
 | Open problem 3.10 | The gap $c-R_\alpha$: code dependence or incompleteness of the free operations | open | **P1 (M2)** |
-| Remark 3.13 / Observation 3.14 | Envelope argument for ML derivatives (the P1 sampling scheme gets $\partial p_L/\partial p$, $\partial p_L/\partial e$ from one table $f$); exact check on small codes and at d = 5, 7 | SKETCH / NUMERICAL | C8; `envelope_check.py` |
+| Remark 3.13 / Observation 3.14 | Envelope argument for ML derivatives (the P1 sampling scheme gets $\partial p_L/\partial p$, $\partial p_L/\partial e$ from one table $f$); exact check on small codes and at d = 5, 7 | PROVED via Lemma 3.29 / NUMERICAL | C8; `envelope_check.py` |
 | Proposition 3.15 | The local free order is cut out by two scalars: $p'\ge p$ and $\mu'\le\mu$ | PROVED | N1 (LP), `tests/test_theory_structures.py` |
 | Proposition 3.16 | Uncoded qubit: $\varepsilon^\star=\tfrac34(1-\mu)$; two-qubit structure $F_2$: $\varepsilon^\star=\tfrac34(1-\nu)$, $\nu=(1-e^2)\lambda$; $\nu_k=(1-e^k)\lambda$ are free-order monotones separating all unreachable pairs | PROVED | S1 (closed forms to 2e-16) |
 | Observation 3.17 | Exhaustive search over all linear structures on $n\le3$ qubits, hill-climbing for $n=4,5$: minimal marginal rate ($0$ at $e_0=0$, positive for $e_0>0$); trade pairs (less Pauli, more erasure) are not reversed by any structure found | NUMERICAL | `checks/universal_order_search.py` (S2-S4) |
@@ -83,13 +84,21 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Lemma 3.21 / Corollary 3.22 | Failure of order $j$ in $p$ needs a logical of weight $\le2j$; hence no erasure hardening beyond order $2j$ | PROVED | S3 ($j=1$, all structures, $n\le3$) |
 | Proposition 3.23 | Marginal rate of $\mathrm{Rep}_k$ at $p\to0$ is $c\cdot2e/(2e+(k-1)(1-e))$; the infimum over structures tends to 0 as $p_0\to0$ | PROVED | S4 (all structures, $n\le3$: $0.0523\,c$, $0.2003\,c$ at $p_0=10^{-4}$) |
 | Observation 3.24 / Remark 3.25 | Checks of the lemmas; channel-coding exponent criterion for large $S=0$ structures (sufficient for reversal) is not met by any of the six trade pairs | NUMERICAL | `checks/exponent_criterion.py` |
+| Lemmas 3.28, 3.29 | One qubit: failure rates affine and $\varepsilon^\star$ concave in its rate, rate $3/4$ = erased; Danskin form of the envelope identity (one-sided derivatives = min over ML rules) | PROVED | K6 |
+| Theorem 3.30 | Rate bound with one-sided derivatives, $\partial_e\varepsilon^\star\le c\,\partial_p^+\varepsilon^\star$, no differentiability assumption | PROVED | K6, C7 |
+| Theorem 3.31 (O6) | Equality in the rate bound iff one extra flag never changes the ML decision (E1), plus a tie condition (E2) | PROVED | `checks/sharp_codes_scan.py` |
+| Proposition 3.32 | $[[5,1,3]]$: (E1) and unique ML decision for all $0<p<3/4$, so $R^{(d)}=c$ exactly at $e_0=0$; Steane and $d=3$ surface violate (E1) | PROVED (computer-assisted, exact integers) | K5 |
 | Observation 3.26 / Remark 3.27 | P1/M2: ML exchange rate of the surface code, $d=5$--$11$, six work points: $R^{(d)}\le c$ everywhere; $R_\alpha/c\approx0.3$ at $e_0>0$, $R_\alpha\approx R_B$ | NUMERICAL | `results/p1_exchange_rate.json` |
 | Lemma 4.1 / Corollary 4.2 | Union (Bhattacharyya) bound $\varepsilon^\star\le\tfrac12\widetilde W(B)$ | PROVED | C5 |
 | Theorem 4.5 | Finite-sample certification at code capacity (independent of $p_L$ data) | PROVED | coverage simulation (to do) |
 | Lemma 4.6 | Floor from chip-scale events, $\varepsilon^\star\ge q_c(1-2^{-q})$, and upper bound | PROVED | **P2 (M3-M4)** |
 | Lemma 4.7 | Union bound for burst mixtures | PROVED | -- |
-| Theorem 4.8 | Conditional certification with bursts + chip events | PLAN (needs O1-O3) | P2 + exact ML at small $d$ |
-| Proposition 5.1 | Chernoff upper bound $\alpha_+\le\ln(1/B)$ | SKETCH | C6 ($d{=}3$) |
+| Lemma 4.8 | Tilted Bhattacharyya bound $\mathfrak B(P;G)\le\mathbb E_P\sqrt{Q(X+G)/Q(X)}$ | PROVED | K3 |
+| Theorem 4.10 (O3) | Single-sum product bound for unflagged burst mixtures, $\varepsilon^\star\le\tfrac12\widetilde W(B_{\rm burst})$, uniform in the burst strength; no floor | PROVED | K3 |
+| Lemma 4.12, Proposition 4.13 (O2) | Limits for $p,e$ robust to contamination; burst-rate limits need a detection efficiency; impossible without a strength floor | PROVED | K7 |
+| Theorem 4.14 | Conditional certification with bursts + chip events (code capacity), uniform over burst strengths | PROVED | coverage simulation (to do) |
+| Theorem 4.15, Corollary 4.16 (O5) | Peierls bound and finite-sample certificate for MWPM with erasures, $p_L^{\rm MWPM}\le 2dB_M(3B_M)^{d-1}/(1-3B_M)$ | PROVED | MWPM simulation (to do) |
+| Proposition 5.1 | Chernoff upper bound $\alpha_+\le\ln(1/B)$, with explicit finite-$d$ form $\varepsilon_{\rm genie}\ge\tfrac12B^de^{-\sqrt{d\sigma^2}/2}$; Step 1 proved for all odd $d$ | PROVED | C6 ($d{=}3$), K1, K2, `checks/genie_large_d.py` |
 | Proposition 5.2 | Union lower bound $\alpha_-\ge-\Phi(B)$ | PROVED | -- |
 | Proposition 5.5 | Poisson bound $T\ge\ln((1-a)/\delta)/r$ (pattern methods cannot beat $1/r$) | PROVED | **P2 (M4)** |
 | Proposition 5.6 | Chain of exponents $D_{\rm count}\le D_{\rm pattern}\le D_{\rm event}$ | PROVED (chain of inequalities) | **P2 (M4)** |

@@ -2,35 +2,50 @@
 
 \subsection{A sandwich for $\alpha$: the Chernoff upper bound and the union lower bound}
 
-\begin{proposition}[Chernoff upper bound]\label{prop:genie}
-Let $d\ge3$ be odd, consider the rotated surface-code family and noise $\Nn_{\rm cc}(p,e)$. Then
+\begin{proposition}[Chernoff upper bound, with an explicit finite-$d$ form]\label{prop:genie}
+Let $d\ge3$ be odd, consider the rotated surface-code family (conventions of \texttt{lcd.codes.RotatedSurfaceCode}) and noise $\Nn_{\rm cc}(p,e)$ with $0\le p\le\tfrac34$, $0\le e\le1$, $(p,e)\ne(0,0)$. Then
 \[
 \alpha_+(p,e)\;\le\;\ln\frac1{B(p,e)},\qquad B(p,e)=e+(1-e)\Big(2\sqrt{\tfrac{p(1-p)}3}+\tfrac{2p}3\Big).
 \]
 More precisely, for every $d$ we have $\err_d\ge\varepsilon_{\rm genie}(d)$, where
 $\varepsilon_{\rm genie}(d)=\tfrac12\bigl(1-\mathrm{TV}(P_1^{\otimes d},Q_1^{\otimes d})\bigr)$,
-$P_1$ is the joint law of a single qubit's $(a,f)$ and $Q_1=P_1(\cdot+X)$ is the shifted law.\hfill\st{SKETCH}
+$P_1$ is the joint law of a single qubit's $(a,f)$ and $Q_1=P_1(\cdot+X)$ is the shifted law, and
+\[
+\varepsilon_{\rm genie}(d)\;\ge\;\tfrac12\,B^d\exp\!\Big(-\tfrac12\sqrt{d\,\sigma^2}\Big),\qquad
+\sigma^2=\frac{2(1-e)\sqrt{(1-p)p/3}}{B}\,\ln^2\!\frac{3(1-p)}{p}\quad(\sigma^2=0\text{ if }p=0).
+\]
+\hfill\st{PROVED}
 \end{proposition}
 \begin{proof}
-Take $d$ qubits $T$ in an interior column (column index $c_0$, $1\le c_0\le d-2$), and let $\bar X_T$ be the $X$-type logical operator on this column.
+Take the $d$ qubits $T$ of an interior column $c_0$, $1\le c_0\le d-2$, and let $\bar X_T$ be the $X$-type operator on this column.
 
-\emph{Step 1: $\ker\sigma\cap\mathcal P_T=\{I,\bar X_T\}$.} Let $(x,z)$ be supported on $T$ with zero syndrome. Every bulk $Z$-type plaquette touching column $c_0$ meets this column in exactly
-two vertically adjacent qubits $(r',r'+1)$, and each $r'=0,\dots,d-2$ occurs once (the parities of column $c_0$ and column $c_0-1$ are complementary,
-and for an interior column the plaquettes on both sides exist); hence $x_{r'}=x_{r'+1}$ and $x\in\{0,\mathbf 1_T\}$. The same argument for the $X$-type plaquettes shows that $z$ is constant;
-moreover the $X$-type boundary detector on the top edge meets the column in exactly one qubit $(0,c_0)$, which forces $z_0=0$, so $z=0$. (For the small code $d=3$ this was verified by enumeration.)
+\emph{Step 1: $\ker\sigma\cap\mathcal P_T=\{I,\bar X_T\}$, and $\bar X_T\notin S$.} A plaquette with top-left corner $(r,c)$ covers $(r,c),(r,c+1),(r+1,c),(r+1,c+1)$ and is of $Z$ type iff $r+c$ is odd.
+For each $r\in\{0,\dots,d-2\}$ the two bulk plaquettes with corners $(r,c_0-1)$ and $(r,c_0)$ exist (because $1\le c_0\le d-2$) and have opposite types; each meets column $c_0$ exactly in $\{(r,c_0),(r+1,c_0)\}$.
+Let $(x,z)$ be supported on $T$ with zero syndrome. The $Z$-type plaquette of the pair forces $x_r=x_{r+1}$ for every $r$, so $x\in\{0,\mathbf 1_T\}$; the $X$-type one forces $z_r=z_{r+1}$, so $z$ is constant.
+The weight-$2$ $X$-type checks on the top edge have corners $(-1,c)$ with $c$ odd and cover $(0,c),(0,c+1)$; exactly one of them ($c=c_0$ if $c_0$ is odd, $c=c_0-1$ if $c_0$ is even) contains $(0,c_0)$, and it meets $T$ only there. Hence $z_0=0$ and $z=0$.
+Conversely $\bar X_T$ has zero syndrome: bulk $Z$ plaquettes meet the column in $0$ or $2$ qubits and the $Z$-type boundary checks lie on columns $0$ and $d-1$. It anticommutes with the $Z$-type logical on row $0$ (overlap $1$), so $\bar X_T\notin S$ and it flips the label.
+(Check K1 of \texttt{checks/completion\_checks.py} verifies the statement over $\F$ for every interior column, $d=3,\dots,41$.)
 
 \emph{Step 2: the genie.} The genie knows $F$, $E_{T^c}$, and $\sigma(E)$, which is equivalent to knowing $\sigma(E_T)$. By Step 1, $E_T$ can only be $a$ or $a+\bar X_T$,
 and the two have different labels. The genie's Bayes error is $\tfrac12\sum_{a,f_T}\min\big(P_T(a,f_T),P_T(a+\bar X_T,f_T)\big)=\varepsilon_{\rm genie}$.
 The real observation $(\sigma(E),F)$ is a coarse-graining (F1) of the genie's observation, so $\err_d\ge\varepsilon_{\rm genie}$ (Theorem~\ref{thm:monotone}).
 
-\emph{Step 3: the exponent.} $\varepsilon_{\rm genie}$ is the equal-prior Bayes error for distinguishing $P_1$ from $Q_1$ on $d$ i.i.d.\ samples,
-whose exponent is the Chernoff information $C(P_1,Q_1)=-\ln\min_{s\in[0,1]}b_s$ \cite[\S11.9]{CT}. Since $b_s=b_{1-s}$ and $b_s$ is convex,
-the minimum is at $s=1/2$, giving $C=-\ln B$. Note that the flags live in the joint alphabet $(a,f)$ and the genie sees them, so at positions with $F=1$ the two hypotheses are \emph{identical},
+\emph{Step 3: the explicit bound.} Write $P=P_1^{\otimes d}$, $Q=Q_1^{\otimes d}$ and $\Lambda=\ln(P/Q)$ where $PQ>0$. Since $\min(P,Q)=\sqrt{PQ}\,e^{-|\Lambda|/2}$ (both sides vanish where $PQ=0$) and $\sum_x\sqrt{P(x)Q(x)}=B^d$
+($B$ is the Bhattacharyya coefficient of $P_1$ and $Q_1$, \S\ref{sec:exchange}),
+\[
+\varepsilon_{\rm genie}=\tfrac12B^d\,\E_R\big[e^{-|\Lambda|/2}\big],\qquad R:=\sqrt{PQ}/B^d=R_1^{\otimes d},\quad R_1=\sqrt{P_1Q_1}/B .
+\]
+Under $R$, $\Lambda=\sum_i\lambda(x_i)$ with $x_i$ i.i.d.\ $\sim R_1$. The involution $x\mapsto x+X$ exchanges $P_1$ and $Q_1$, so it preserves $R_1$ and maps $\lambda$ to $-\lambda$; hence $\E_{R_1}\lambda=0$ and $\E_R\Lambda^2=d\,\E_{R_1}\lambda^2=d\sigma^2$.
+On an unflagged qubit $\lambda=\pm\ln\frac{3(1-p)}p$ for $a\in\{I,X\}$ (each of $R_1$-mass $(1-e)\sqrt{(1-p)p/3}/B$) and $\lambda=0$ for $a\in\{Y,Z\}$; on a flagged qubit $\lambda=0$; this gives the stated $\sigma^2$.
+By Jensen's inequality (convexity of $\exp$) and Cauchy--Schwarz, $\E_R e^{-|\Lambda|/2}\ge e^{-\E_R|\Lambda|/2}\ge e^{-\sqrt{\E_R\Lambda^2}/2}=e^{-\sqrt{d\sigma^2}/2}$.
+Finally $-\tfrac1d\ln\err_d\le\ln\tfrac1B+\tfrac{\ln2}d+\tfrac{\sigma}{2\sqrt d}$, whose $\limsup$ is $\ln(1/B)$.
+Note that the flags live in the joint alphabet $(a,f)$ and the genie sees them, so at positions with $F=1$ the two hypotheses are \emph{identical},
 contributing $e\cdot1$ to $B$; this is the origin of the $e$ term in $B$.
 \end{proof}
 
-\noindent The proof above relies on the standard asymptotic Chernoff result (cited), and the geometric argument of Step 1 is written out for general odd $d$; hence the \st{SKETCH} tag.
-For $d=3$, $\err\ge\varepsilon_{\rm genie}$ has been verified by exact computation (check C6).
+\noindent The finite-$d$ bound replaces the earlier appeal to the asymptotic Chernoff theorem \cite[\S11.9]{CT}; its exponent is the Chernoff information $-\ln B$ (the minimum over $s$ of $b_s$ is at $s=\tfrac12$, \S\ref{sec:exchange}).
+Check K2 compares the bound with the exact $\varepsilon_{\rm genie}(d)$ for $d\le61$ (ratio $\ge1.67$ on the tested grid) and the slope of $-\ln\varepsilon_{\rm genie}$ with $\ln(1/B)$ (within $2\%$ between $d=101$ and $201$).
+For $d=3$, $\err\ge\varepsilon_{\rm genie}$ has been verified by exact computation (check C6); \texttt{checks/genie\_large\_d.py} tests it against the ML data of P1 for $d=5$--$13$.
 
 \begin{proposition}[Union lower bound]\label{prop:lower}
 Let $\Phi(x)=\limsup_{d\to\infty}\tfrac1d\ln\widetilde W_d(x)$ (Corollary~\ref{cor:product}). Then
@@ -41,7 +56,7 @@ Corollary~\ref{cor:product}: $\err_d\le\tfrac12\widetilde W_d(B)$; take $-\tfrac
 \end{proof}
 
 \begin{corollary}[Sandwiched between two functions of $B$ only]\label{cor:sandwich}
-$-\Phi(B(p,e))\le\alpha_-\le\alpha_+\le-\ln B(p,e)$.\hfill\st{PROVED} given Proposition~\ref{prop:genie}
+$-\Phi(B(p,e))\le\alpha_-\le\alpha_+\le-\ln B(p,e)$.\hfill\st{PROVED}
 \end{corollary}
 
 The sandwich does not constrain the derivatives of $\alpha$, so it does not directly give upper and lower bounds on the exchange rate; its role is to give the testable hypothesis $H_B$

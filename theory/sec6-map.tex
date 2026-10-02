@@ -62,6 +62,20 @@ P2 / M4 & to do \\
 Proposition~\ref{prop:exponents}\ (chain of exponents) &
 estimate $D_{\rm count}$ and $D_{\rm pattern}$ and verify $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ &
 P2 / M4 & to do \\
+\multicolumn{4}{l}{\emph{Results of the theory-completion pass (checks K1--K7 in \texttt{theory/checks/completion\_checks.py})}} \\
+Proposition~\ref{prop:genie}, Step 1 and the finite-$d$ bound &
+$\ker\sigma$ on every interior column, $d\le41$ (K1); exact $\varepsilon_{\rm genie}(d)\ge\tfrac12B^de^{-\sqrt{d\sigma^2}/2}$, $d\le61$, and slope $\to\ln(1/B)$ (K2) &
+\texttt{completion\_checks.py} & passes \\
+Lemmas~\ref{lem:concave}, \ref{lem:danskin}, Theorem~\ref{thm:rate-right} &
+concavity along one qubit; $\partial_e\err\le c\,\partial_p^+\err$ on 3 codes (K6) & same & written, to run \\
+Theorem~\ref{thm:equality}, Proposition~\ref{prop:five-sharp} (O6) &
+exact integer certificate of (E1) for $[[5,1,3]]$, $0<p<\tfrac34$; violation for Steane and $d=3$ surface (K5); (E1)$\Leftrightarrow R^{(d)}=c$ on a code library (\texttt{sharp\_codes\_scan.py}) & same & K5 passes \\
+Lemma~\ref{lem:tilted}, Theorem~\ref{thm:burst-product} (O3) &
+$\BC\le\E_P[h]\le B_{\rm burst}^{\wt G}$ per logical, $\err\le\tfrac12\sum\BC\le\tfrac12\widetilde W(B_{\rm burst})$, exact ML on $[[5,1,3]]$ and $d=3$ surface (K3) & same & passes \\
+Proposition~\ref{prob:O1} (O1 negative) & exact rational $\err$ at $p_b=\tfrac12$ and $\tfrac34$ (K4) & same & passes \\
+Lemma~\ref{lem:robust}(b) (O2) & exact parity expectation under burst contamination $\le\lambda^{w_0}$ (K7) & same & written, to run \\
+Theorem~\ref{thm:burst-cert} & coverage simulation with bursts; compare with exact ML at $d=3$ & \texttt{experiments/} & to do \\
+Theorem~\ref{thm:mwpm-peierls}, Corollary~\ref{cor:mwpm-cert} (O5) & simulated MWPM failure rate must lie below the bound ($e=0$; $e>0$ with the erasure-aware MWPM) & \texttt{lcd} + pymatching & to do \\
 \bottomrule
 \end{longtable}
 }
@@ -84,12 +98,12 @@ Lower bounds (the floor, the Poisson lower bound, the genie lower bound) hold fo
 \item \textbf{Single-loss form of Conjecture~\ref{conj:universal}} (Remark~\ref{rem:conj-reform}, \S\ref{sec:single-loss}): does the code-universal order of $\err=1-\Phi_{\max}$ alone coincide with the local free order? The all-losses form is proved (Proposition~\ref{prop:local-level1}); the single-loss form is proved on $\{\mu'>\mu\}\cup\{\nu'>\nu\}$ and the search gives evidence against it on the trade region. \emph{To settle it:} a proof of non-reversal for all $n$, or structures with $\err_A\approx p$ for all $|A|<k$ for every $k$. 
   \emph{Prerequisite numerics}: counterexample search over a library of stabilizer codes; for orders of the surface code, the nesting $\succeq_{\rm local}\subseteq\succeq_{\mathrm{L1}}\subseteq\succeq_{\err}$.
 \item \textbf{Asymptotic rates in the tensor-power sense} (R-c of \S\ref{sec:rates}): not computed; needs the large-sample Blackwell order.
-\item \textbf{O1} (Problem~\ref{prob:O1}): monotonicity of $\err$ in the shape parameters $p_b,R,T_b$ for unflagged bursts.
-\item \textbf{O2} (Problem~\ref{prob:O2}): confidence upper limits for the parameters under contamination by burst/chip events.
-\item \textbf{O3} (Problem~\ref{prob:O3}): explicit estimates for the union bound for burst mixtures (cluster expansion).
-\item \textbf{O4} (Problem~\ref{prob:O4}): the experimental-design theorem.
-\item \textbf{O5}: certification for \emph{suboptimal decoders} (MWPM): this needs a Peierls-type upper bound for that decoder; the bounds of these notes are for ML only.
-\item \textbf{O6}: a proof of Observation~\ref{obs:sharp}: for which classes of codes (perfect codes, transitive codes) does flagging a single qubit leave the ML decision unchanged?
+\item \textbf{O1} (Proposition~\ref{prob:O1}): \emph{answered negatively}: $\err$ is not monotone in the burst strength $p_b$ (exact counterexample on the $d=3$ surface code). Not needed for certification (Theorem~\ref{thm:burst-cert}). The radius and duration directions are untested.
+\item \textbf{O2} (Lemma~\ref{lem:robust}, Proposition~\ref{prop:no-rate-limit}): \emph{partly settled}. Limits for $p$ and $e$ are robust to contamination; limits for burst rates need a detection efficiency, and without a strength floor no uniformly valid limit exists. Open: a certificate uniform over weak bursts, and the circuit-level version.
+\item \textbf{O3} (Theorem~\ref{thm:burst-product}): \emph{settled at code capacity}: a single-sum product bound $\tfrac12\widetilde W(B_{\rm burst})$, with no floor. Open: the written space-time version.
+\item \textbf{O4} (Problem~\ref{prob:O4}): the experimental-design theorem (open).
+\item \textbf{O5} (Theorem~\ref{thm:mwpm-peierls}, Corollary~\ref{cor:mwpm-cert}): \emph{settled for code-capacity MWPM with erasures} by a Peierls bound; crude constants. Open: phenomenological and circuit-level MWPM, and sharper constants.
+\item \textbf{O6} (Theorem~\ref{thm:equality}, Proposition~\ref{prop:five-sharp}): \emph{first half settled}: equality in the rate bound holds iff one extra flag never changes the ML decision (plus a tie condition); proved for $[[5,1,3]]$ at all $p$. Open: which code classes satisfy the criterion.
 \item \textbf{O7}: tightening the union bound (calibrating with measured small-$d$ failure rates) so that certification is no longer vacuous at realistic parameters.
 \end{enumerate}
 
