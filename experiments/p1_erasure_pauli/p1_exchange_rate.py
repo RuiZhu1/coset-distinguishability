@@ -37,6 +37,8 @@ from lcd.noise import sample_stratum
 REPO = Path(__file__).resolve().parents[2]
 OUT = Path(os.environ.get("P1_M2_OUT", REPO / "results" / "p1_m2"))
 WORK_POINTS = [(0.06, 0.0), (0.06, 0.02), (0.06, 0.05), (0.04, 0.0), (0.04, 0.02), (0.04, 0.05)]
+# fit windows in d: (d_min, d_max, inverse-variance weighted)
+FITS = [(5, 9, False), (5, 9, True), (5, 11, True), (7, 11, True), (5, 13, True)]
 DS = [5, 7, 9, 11, 13]
 CUTOFF = 1e-10
 # decodes of the first pass (before --scale); about 4 core-hours in total
@@ -170,7 +172,6 @@ def R_B(p0, e0):
 def cmd_analyze(a):
     rng = np.random.default_rng(a.seed)
     result = dict(points=[])
-    windows = [(5, 13), (7, 13), (9, 13)]
     print("p0     e0    c      R_B    | d: p_L (se)  R^(d) +- se   [decodes]")
     for (p0, e0) in WORK_POINTS:
         have = [d for d in DS if table_path(d, p0, e0).exists()]
@@ -198,17 +199,23 @@ def cmd_analyze(a):
         gp0 = np.array([r["dp"] for r in point["per_d"]])
         ge0 = np.array([r["de"] for r in point["per_d"]])
         point["fits"] = []
-        for (lo, hi) in windows:
+        with np.errstate(divide="ignore", invalid="ignore"):
+            lnp_b, gp_rel_b, ge_rel_b = np.log(pl_b), gp_b / pl_b, ge_b / pl_b
+        fin = lambda a: np.where(np.isfinite(a), a, np.nan)
+        sigma = dict(lnp=np.nanstd(fin(lnp_b), axis=0), gp=np.nanstd(fin(gp_rel_b), axis=0), ge=np.nanstd(fin(ge_rel_b), axis=0))
+        point["sigma_per_d"] = {k: [float(x) for x in v] for k, v in sigma.items()}
+        for (lo, hi, weighted) in FITS:
             if sum(lo <= d <= hi for d in have) < 3:
                 continue
-            f0 = fit_rates(have, pl0, gp0, ge0, (lo, hi))
-            fb = fit_rates(have, pl_b, gp_b, ge_b, (lo, hi))
-            rec = dict(window=[lo, hi], **{k: float(v) for k, v in f0.items()},
-                       **{k + "_se": float(np.nanstd(v)) for k, v in fb.items()},
-                       R_alpha_pct16_84=[float(x) for x in np.nanpercentile(fb["R_alpha"], [16, 84])])
+            sg = sigma if weighted else None
+            f0 = fit_rates(have, pl0, gp0, ge0, (lo, hi), sg)
+            fb = fit_rates(have, pl_b, gp_b, ge_b, (lo, hi), sg)
+            rec = dict(window=[lo, hi], weighted=weighted, **{k: float(v) for k, v in f0.items()},
+                       **{k + "_se": float(np.nanstd(v[np.isfinite(v)])) for k, v in fb.items()},
+                       R_alpha_pct16_84=[float(x) for x in np.nanpercentile(fb["R_alpha"][np.isfinite(fb["R_alpha"])], [16, 84])])
             point["fits"].append(rec)
-            print(f"        fit d in [{lo},{hi}]: alpha = {rec['alpha']:.3f} +- {rec['alpha_se']:.3f},  R_alpha = {rec['R_alpha']:.3f} +- {rec['R_alpha_se']:.3f}"
-                  f"   (c = {c:.3f}, R_B = {R_B(p0, e0):.3f})")
+            print(f"        fit d in [{lo},{hi}] {'weighted ' if weighted else 'unweighted'}: alpha = {rec['alpha']:.3f} +- {rec['alpha_se']:.3f},  "
+                  f"R_alpha = {rec['R_alpha']:.3f} +- {rec['R_alpha_se']:.3f}   (c = {c:.3f}, R_B = {R_B(p0, e0):.3f})")
         result["points"].append(point)
     try:
         commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip()

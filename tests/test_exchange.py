@@ -62,3 +62,23 @@ def test_bootstrap_is_centred_on_the_point_estimate():
     assert rep[:, 0].mean() == pytest.approx(pl, rel=0.05)
     assert rep[:, 1].mean() == pytest.approx(dp, rel=0.05)
     assert rep[:, 2].mean() == pytest.approx(de, rel=0.05)
+
+
+def test_weighted_fit_with_equal_weights_equals_the_unweighted_fit_and_ignores_noisy_points():
+    p0, e0 = 0.04, 0.05
+    pl, dp, de = quant(p0, e0, tables(p0, e0))
+    ones = np.ones(len(DS))
+    a = fit_rates(DS, pl, dp, de)
+    b = fit_rates(DS, pl, dp, de, sigma=dict(lnp=ones, gp=ones, ge=ones))
+    for k in a:
+        assert a[k] == pytest.approx(b[k], rel=1e-12)
+    # a corrupted last point with a huge standard error must not move the weighted fit
+    pl2, dp2, de2 = pl.copy(), dp.copy(), de.copy()
+    pl2[-1] *= 3.0
+    dp2[-1] *= 2.0
+    de2[-1] *= 0.5
+    sig = dict(lnp=np.array([1, 1, 1, 1, 1e6]), gp=np.array([1, 1, 1, 1, 1e6]), ge=np.array([1, 1, 1, 1, 1e6]))
+    c = fit_rates(DS, pl2, dp2, de2, sigma=sig)
+    d4 = fit_rates(DS[:4], pl[:4], dp[:4], de[:4])
+    for k in d4:
+        assert c[k] == pytest.approx(d4[k], rel=1e-4)

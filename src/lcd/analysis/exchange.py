@@ -48,24 +48,33 @@ def bootstrap_quantities(strata: Strata, fails: np.ndarray, N: np.ndarray, p: fl
     return out
 
 
-def _slope(x: np.ndarray, y: np.ndarray) -> np.ndarray:
-    """Least-squares slope of y (last axis) against x; y may carry leading replicate axes."""
-    xc = x - x.mean()
-    return (y * xc).sum(axis=-1) / (xc ** 2).sum()
+def _slope(x: np.ndarray, y: np.ndarray, w: np.ndarray | None = None) -> np.ndarray:
+    """(Weighted) least-squares slope of y (last axis) against x; y may carry leading replicate axes; w are fixed weights."""
+    if w is None:
+        w = np.ones_like(x)
+    w = w / w.sum()
+    xm = (w * x).sum()
+    xc = x - xm
+    ym = (y * w).sum(axis=-1, keepdims=True)
+    return (w * (y - ym) * xc).sum(axis=-1) / (w * xc ** 2).sum()
 
 
-def fit_rates(ds, pL, dpL_dp, dpL_de, window: tuple[int, int] | None = None) -> dict:
+def fit_rates(ds, pL, dpL_dp, dpL_de, window: tuple[int, int] | None = None, sigma: dict | None = None) -> dict:
     """alpha, d alpha/dp, d alpha/de and R_alpha from arrays over distances (last axis); leading axes are replicates.
 
-    window = (d_min, d_max) restricts the fit to those distances."""
+    window = (d_min, d_max) restricts the fit to those distances.  sigma = dict(lnp=..., gp=..., ge=...) of per-distance standard
+    errors (arrays aligned with ds) switches to inverse-variance weights, separately for the three slopes (fixed across replicates)."""
     ds = np.asarray(ds, float)
     sel = np.ones(ds.size, bool) if window is None else (ds >= window[0]) & (ds <= window[1])
     x = ds[sel]
     pL, dpL_dp, dpL_de = (np.asarray(a, float)[..., sel] for a in (pL, dpL_dp, dpL_de))
     with np.errstate(divide="ignore", invalid="ignore"):
         lnp, gp, ge = np.log(pL), dpL_dp / pL, dpL_de / pL
-    s_p, s_e = _slope(x, gp), _slope(x, ge)
-    alpha = -_slope(x, lnp)
+    wl = wp = we = None
+    if sigma is not None:
+        wl, wp, we = (1.0 / np.maximum(np.asarray(sigma[k], float)[sel], 1e-12) ** 2 for k in ("lnp", "gp", "ge"))
+    s_p, s_e = _slope(x, gp, wp), _slope(x, ge, we)
+    alpha = -_slope(x, lnp, wl)
     return dict(alpha=alpha, dalpha_dp=-s_p, dalpha_de=-s_e, R_alpha=s_e / s_p)
 
 
