@@ -50,7 +50,7 @@ Second, **local noise exchange rates**: from the sensitivity of the domain-wall 
 > **Status: PARTIAL.**
 > - The quantity computed is the marginal rate R = (∂α/∂e)/(∂α/∂p) of the exponent (both derivatives are negative, R > 0). The domain-wall-tension representation is not used.
 > - Upper bound R ≤ c = (3/4 − p₀)/(1 − e₀) (not simply 3/4: c > 3/4 when p₀ < (3/4)e₀): **PROVED (draft)**, Theorem 3.2. It is the sharp bound for the marginal rate of every monotone of the free order (Proposition 0.11). The [[5,1,3]] code attains it at e₀ = 0: **NUMERICAL**, Observation 3.5.
-> - The marginal rate of the surface code itself (P1, M2): **NUMERICAL, see `results/p1_exchange_rate.json`** (status line filled in below once the run is analysed).
+> - The marginal rate of the surface code itself (P1, M2, Bayes-optimal decoder at code capacity, d = 5–11 at p₀ ∈ {0.04, 0.06}, e₀ ∈ {0, 0.02, 0.05}): **NUMERICAL** (`results/p1_exchange_rate.json`, theory Observation 3.26). R^(d) ≤ c in every entry (Theorem 3.2 is never violated, R^(d)/c ≈ 0.3–0.6); at e₀ > 0 the exponent rate is R_α = 0.20–0.24 (± 0.03–0.04), i.e. R_α/c ≈ 0.3, within about one standard error of the Bhattacharyya reference R_B. The e₀ = 0 points and d = 13 are statistically weak; p₀ = 0.02 was not run.
 > - Lower bounds "using channel divergences": α is sandwiched by −Φ(B) ≤ α ≤ ln(1/B) in the Bhattacharyya parameter B (Proposition 5.2 **PROVED (draft)**, Proposition 5.1 SKETCH), but a sandwich does not bound derivatives; the reference rates R_B and R_hash are **heuristics**, not theorems. A universal lower bound on marginal rates over decoding structures is **OPEN** and cannot be uniform in p₀: the infimum over structures tends to 0 as p₀ → 0 at fixed e₀ (**PROVED (draft)**, Proposition 3.23), while at p₀ = 0.0213 the smallest rate found is positive (exhaustive up to 3 qubits, hill-climbing up to 6; **NUMERICAL**, Observations 3.17, 3.24).
 
 Third, **decoder margins**: any practical decoder is a further processing of the syndrome, so its suppression exponent cannot exceed the maximum-likelihood exponent. We will give computable estimates of the gap between the two, to judge how much room remains for decoder improvements.
@@ -90,7 +90,7 @@ The numerics are organized in layers: under code-capacity and phenomenological n
 | Preorder: sufficient condition; free reachability for Pauli + erasure | PROVED (draft) | theory 1.7, 3.7, 3.15 |
 | Preorder: converse for the failure rate ε\* alone | OPEN; numerical evidence against; obstructions to hardened structures proved | theory 3.11, 3.17, 3.19–3.25 |
 | Exchange rate upper bound (3/4 − p₀)/(1 − e₀) | PROVED (draft) | theory 3.2, 0.11 |
-| Surface-code exchange rate | NUMERICAL (M2) | `results/p1_exchange_rate.json` |
+| Surface-code exchange rate | NUMERICAL: R_α/c ≈ 0.3 at e₀ > 0, d = 5–11 | theory 3.26, `results/p1_exchange_rate.json` |
 | Lower bound on exchange rates | OPEN; cannot be uniform in p₀ | theory 3.23, 3.24 |
 | Decoder margin | NOT STARTED with erasures | — |
 | Code-capacity certificate | PROVED (draft); loose; coverage test not done | theory 4.5 |

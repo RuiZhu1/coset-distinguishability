@@ -325,3 +325,21 @@ So if $\max_R[\max(E_r,E_{\rm ex})(R;P')-E_{\rm sp}(R;P)]>0$, large structures r
 This strengthens the evidence of Remark~\ref{rem:search}, but only for non-degenerate ($S=0$) structures: the sphere-packing converse does not cover degenerate structures, and the criterion is sufficient for a reversal, not necessary.
 It also shows what a decisive analysis needs: the order of the whole family of exponent curves $R\mapsto E(R;P)$, not a single Rényi parameter.
 \end{remark}
+
+
+\begin{observation}[P1/M2: the ML exchange rate of the surface code at code capacity]\label{obs:m2}
+\texttt{experiments/p1\_erasure\_pauli/p1\_exchange\_rate.py} (data \texttt{results/p1\_exchange\_rate.json}) gives, for the rotated surface code with the Bayes-optimal decoder (exact for $d\le11$, truncated MPS at $d=13$),
+the finite-distance marginal rate $R^{(d)}=\partial_e\pL/\partial_p\pL$ and the exponent rate $R_\alpha=\partial_e\alpha/\partial_p\alpha$ (inverse-variance weighted fit over $d=5$--$11$) at $p_0\in\{0.04,0.06\}$, $e_0\in\{0,0.02,0.05\}$.
+\begin{itemize}
+\item Theorem~\ref{thm:rate} is never violated: $R^{(d)}\le c$ for every $d\le11$, with $R^{(d)}/c\approx0.3$--$0.6$.
+\item At $e_0=0.02,0.05$: $R_\alpha=0.205\pm0.039,\ 0.237\pm0.024$ ($p_0=0.06$; $c=0.704,\ 0.726$) and $0.196\pm0.043,\ 0.231\pm0.028$ ($p_0=0.04$; $c=0.724,\ 0.747$), i.e.\ $R_\alpha/c\approx0.3$ and a gap $c-R_\alpha\approx0.5$.
+These values lie within about one standard error of the Bhattacharyya reference $R_B=0.249,\ 0.257,\ 0.226,\ 0.233$: hypothesis $H_B$ (Conjecture~\ref{conj:HB}) is consistent with the data and not confirmed.
+\item The points with $e_0=0$ are imprecise (the $e$-derivative at $e=0$ is a difference of strata with one erasure and none); at $d=13$ the relative error of $\pL$ is $54\%$--$870\%$ and the point carries almost no weight in the fits.
+\end{itemize}
+\hfill\st{NUMERICAL}
+\end{observation}
+
+\begin{remark}[Reading of the gap]\label{rem:gap-m2}
+The measured rate lies inside the range spanned by other structures: the uncoded qubit has $R=c$, the Pauli repetition structures $\mathrm{Rep}_k$ approach $R_B$ as $k\to\infty$ ($R_B/c\approx0.25$ at $p_0=0.0213$, about $0.31$--$0.35$ at $p_0=0.04$--$0.06$; \S\ref{sec:hardened}, \texttt{checks/universal\_order\_search.py}), and the surface code sits at $R_{\rm surface}/c\approx0.3$, that is, at about the same value as these large structures.
+Since every monotone of the local free order has marginal rate in $[0,c]$ (Proposition~\ref{prop:marginal}), nothing in these data calls for further free operations: the gap $c-R_\alpha$ is where the surface-code monotone sits, a property of the code (case (A) of Problem~\ref{prob:gap}), not evidence of missing free operations. This is a reading of numbers, not a proof of (A).
+\end{remark}

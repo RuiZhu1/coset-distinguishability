@@ -36,8 +36,8 @@ Proposition~\ref{prop:genie}\ (genie lower bound) &
 $\err_{d=3}\ge\varepsilon_{\rm genie}$ (C6); recheck with exact ML for $d\ge5$ &
 same / M1 & passes at $d=3$ \\
 Theorem~\ref{thm:rate}\ (exchange-rate bound) &
-finite $d$: $R^{(d)}\le c$ (C7); \textbf{P1: $R_{e\to p}\le c(p_0,e_0)$, and report $\Delta=c-R$, $R_B$, $R_{\rm hash}$} &
-\texttt{theory/checks}; P1 / M2 & passes at finite $d$; P1 pending \\
+finite $d$: $R^{(d)}\le c$ (C7); \textbf{P1: $R_{e\to p}\le c(p_0,e_0)$, and report $\Delta=c-R$, $R_B$, $R_{\rm hash}$} (done for $d\le11$, Observation~\ref{obs:m2}) &
+\texttt{theory/checks}; P1 / M2 & passes at finite $d$ and in P1 ($R^{(d)}/c\approx0.3$--$0.6$) \\
 Remark~\ref{rem:envelope}\ (envelope argument for ML derivatives) &
 $\partial_\theta\err$ equals the derivative of the frozen-decoder failure rate (C8); verified with the exact ML decoder at $d=5,7$ (\texttt{envelope\_check.py}); truncated-MPS ML (decisions equal to exact on all tested samples) not yet tested directly &
 \texttt{theory/checks}; M1 & passes on 3 small codes and at $d=5,7$ \\
@@ -49,7 +49,7 @@ for unreachable pairs, search all linear structures on $n\le3$ qubits (exhaustiv
 \texttt{theory/checks/universal\_order\_search.py} & evidence against; $n\ge6$ not searched \\
 Conjecture~\ref{conj:HB}\ ($H_B$) &
 compare the $R_\alpha$ of P1 with the analytic $R_B$ &
-P1 / M2 & awaits P1 \\
+P1 / M2 & consistent within about one standard error at $e_0>0$ (Observation~\ref{obs:m2}); not confirmed \\
 Theorem~\ref{thm:cc-cert}\ (code-capacity certificate) &
 (i) simulate calibration data and check that the coverage of $\bar e,\bar p$ is $\ge1-\delta$; (ii) compare with the $\err_d$ of exact/TN ML (the certificate must be $\ge$) &
 \texttt{experiments/}\ / M1 & to do \\
