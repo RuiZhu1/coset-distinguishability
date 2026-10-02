@@ -1,0 +1,46 @@
+{
+  "script": "experiments/p1_erasure_pauli/threshold_check.py",
+  "scenario": "bitflip",
+  "swept": "p",
+  "reference": "MWPM ~0.103",
+  "args": {
+    "scenario": "bitflip",
+    "ds": "[11, 15, 21, 27, 33, 41]",
+    "shots": "400000",
+    "seed": "20241003",
+    "xs": "[0.094, 0.096, 0.098, 0.1, 0.102, 0.104, 0.106]",
+    "reanalyze": "False",
+    "resume": "True",
+    "out": "results/threshold_check_bitflip_large"
+  },
+  "crossings": {
+    "MWPM_d11_d15": {
+      "crossing": 0.09973209241742176,
+      "se": 0.0003537027515660228
+    },
+    "MWPM_d15_d21": {
+      "crossing": 0.10067160036101545,
+      "se": 0.0002371020529330015
+    },
+    "MWPM_d21_d27": {
+      "crossing": 0.1009365537991985,
+      "se": 0.00029851418389241355
+    },
+    "MWPM_d27_d33": {
+      "crossing": 0.10136873367427801,
+      "se": 0.0003007897346670654
+    },
+    "MWPM_d33_d41": {
+      "crossing": 0.10227354675265238,
+      "se": 0.00034943681029123743
+    }
+  },
+  "versions": {
+    "lcd": "0.0.1",
+    "numpy": "2.5.3"
+  },
+  "git_commit": "120dc0129fd240fb98a5cbde791eca794bcfeebf",
+  "git_dirty_src": true,
+  "date": "2026-10-02T07:47:08+00:00",
+  "note": "finite-size crossings of small d from a weighted linear fit of the difference; sanity check only (no finite-size scaling)"
+}

@@ -90,7 +90,7 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Proposition 3.32 | $[[5,1,3]]$: (E1) and unique ML decision for all $0<p<3/4$, so $R^{(d)}=c$ exactly at $e_0=0$; Steane and $d=3$ surface violate (E1) | PROVED (computer-assisted, exact integers) | K5 |
 | Observation 3.26 / Remark 3.27 | P1/M2: ML exchange rate of the surface code, $d=5$--$11$, six work points: $R^{(d)}\le c$ everywhere; $R_\alpha/c\approx0.3$ at $e_0>0$, $R_\alpha\approx R_B$ | NUMERICAL | `results/p1_exchange_rate.json` |
 | Lemma 4.1 / Corollary 4.2 | Union (Bhattacharyya) bound $\varepsilon^\star\le\tfrac12\widetilde W(B)$ | PROVED | C5 |
-| Theorem 4.5 | Finite-sample certification at code capacity (independent of $p_L$ data) | PROVED | coverage simulation (to do) |
+| Theorem 4.5 | Finite-sample certification at code capacity (independent of $p_L$ data) | PROVED | `experiments/certification/cc_certificate.py`: coverage 0.95-1.00 (target 0.95), certificate >= exact ML at d = 3, 5 |
 | Lemma 4.6 | Floor from chip-scale events, $\varepsilon^\star\ge q_c(1-2^{-q})$, and upper bound | PROVED | **P2 (M3-M4)** |
 | Lemma 4.7 | Union bound for burst mixtures | PROVED | -- |
 | Lemma 4.8 | Tilted Bhattacharyya bound $\mathfrak B(P;G)\le\mathbb E_P\sqrt{Q(X+G)/Q(X)}$ | PROVED | K3 |

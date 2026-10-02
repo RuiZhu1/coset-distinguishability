@@ -51,7 +51,8 @@ The research plan is essentially settled; what matters most now is to produce **
 |---|---|---|---|
 | Pure depolarizing noise, exact ML | about 18.9% | 18.74 +- 0.15% (d = 5, 7), 18.54 +- 0.32% (d = 7, 9) | consistent (about 1 sigma) |
 | Pure erasure, exact ML | 50% | 50.10 +- 0.31% (d = 5, 7), 50.01 +- 0.36% (d = 7, 9) | pass |
-| Pure bit-flip noise, MWPM | about 10.3% | 9.46%, 9.71%, 9.61%, 9.63%, 9.82% (d = 5 to 15, consecutive pairs; +- 0.1%) | **approaches from below, 5-8% under 10.3% at d <= 15**; no finite-size-scaling fit yet, so this check is not closed |
+| Pure bit-flip noise, MWPM | about 10.3% | d <= 15: 9.46% to 9.82% (+- 0.1%); d = 15 to 41 (4e5 shots, `threshold_check_bitflip_large`): 10.07, 10.09, 10.14, 10.23% (+- 0.03%), rising monotonically; finite-size-scaling fit with a boundary term (`threshold_fss.py`): 10.33 +- 0.07% (d >= 5), 10.30 +- 0.09% (d >= 9), nu = 1.50 +- 0.04, chi2/dof 0.8 | pass: the d <= 15 deficit is finite-size drift (fits without the boundary term have chi2/dof 1.2-6 and drift upward with d_min) |
+| Pure erasure, MWPM (erased edges weight 0) | 50% | 50.20, 50.09, 50.66, 50.64% (+- 0.2%; d = 5 to 21, pairs 5/9, 9/13, 13/17, 17/21) | consistent at the 1% level (the last two pairs are about 3 sigma high, presumably finite size); MWPM equals ML exactly on pure erasure (test) |
 | Depolarizing noise, MWPM (X/Z independent) | about 15% (literature value, not verified here) | 13.63 +- 0.21%, 14.47 +- 0.17% (d = 5, 7, 9) | no claim |
 
 If numerical results deviate noticeably from the known values, debug the implementation first and do not continue.
@@ -143,8 +144,25 @@ Validation of the MPS decoder (`tests/test_mps_ml.py`, 21 tests, plus two experi
    * At e0 = 0.02 and 0.05 `R_alpha` agrees with the Bhattacharyya reference `R_B` within about one standard error (ratios 0.82-0.99): hypothesis H_B (theory Conjecture 3.12) is **consistent with the data, not confirmed** (the fits cover d = 5-11 only, and the fit window matters at the level of the quoted errors).
    * The e0 = 0 points are poor: dp_L/de at e = 0 is a difference between the strata with one erasure and without, with large variance; `R_alpha` at e0 = 0 is window-dependent (0.06 to 0.64) and carries no information beyond `R^(d) <= c`.
    * **The cost estimates of item 5 were too optimistic for ML.** They assumed the MWPM strata profile (not re-measured at the time); the ML failure fractions in the dominant strata are far smaller (for example 0.2% in the dominant stratum k = 0, w = 15 at d = 13, p0 = 0.04, where 92 failures were seen in 6.0e4 decodes). At d = 13 the relative standard error of p_L is 54% (p0 = 0.06, e0 = 0.05, 3.0e4 decodes) to 870% (p0 = 0.04, e0 = 0, 6.0e4 decodes); extrapolating by 1/eps^2, 10% needs about 10^6 to 10^7 decodes (10-100 core-hours per point at 40 ms per decode). d = 13 therefore enters the fits only with its negligible inverse-variance weight, and d = 11 had to be raised to 2e5-4e5 decodes (relative standard errors 4-12%). p0 = 0.02 was not run.
-   * Not done / not verified: the ML-MWPM margin (MWPM with erasure is not implemented); the envelope identity for ML at d >= 9 and for the MPS decoder (the d = 13 data carry almost no weight); finite-size drift beyond d = 11.
+   * Not done / not verified (at the time of the first pass): the ML-MWPM margin (now item 7); the envelope identity for ML at d >= 9 and for the MPS decoder (the d = 13 data carry almost no weight); finite-size drift beyond d = 11.
    * Two decoder bugs fixed on the way: a production run aborted at d = 13 because a class whose true weight is below the truncation noise of the best class stays non-positive even at chi = 64; such classes are now dropped as non-maximal (`last_unrepaired`: 2 samples among the 2.7e5 d = 13 decodes of the production run, none in the validation runs); see `results/mps_invalid_check.json`.
+
+
+7. **M2 result: MWPM exchange rate and the ML-MWPM decoder margin.** `experiments/p1_erasure_pauli/p1_mwpm_margin.py`, data `results/p1_mwpm_margin.json`, tables `results/p1_mwpm/tables/`. MWPM decodes X and Z separately with edge weight 1 and weight 0 on erased qubits, so it does not depend on (p, e): **one** stratified table per distance (d = 5-21, 4e5-2e6 decodes, Neyman allocation over all six work points) serves every work point, and its derivatives are exact for this decoder. Margin = ML minus MWPM on the same fit window d = 5-11 (inverse-variance weighted; the ML and MWPM samples are independent, errors in quadrature):
+
+   | (p0, e0) | alpha_ML | alpha_MWPM | Delta alpha | p_L^MWPM / p_L^ML at d = 5 / 11 | R_alpha^MWPM (d = 5-11) | R_alpha^ML |
+   |---|---|---|---|---|---|---|
+   | (0.06, 0) | 0.482 +- 0.009 | 0.295 +- 0.002 | 0.187 +- 0.009 | 1.63 / 4.9 | 0.70 +- 0.06 | 0.15 +- 0.11 |
+   | (0.06, 0.02) | 0.458 +- 0.007 | 0.249 +- 0.002 | 0.209 +- 0.007 | 1.84 / 6.5 | 0.191 +- 0.013 | 0.205 +- 0.039 |
+   | (0.06, 0.05) | 0.406 +- 0.005 | 0.220 +- 0.002 | 0.185 +- 0.006 | 1.82 / 5.6 | 0.166 +- 0.009 | 0.237 +- 0.024 |
+   | (0.04, 0) | 0.741 +- 0.014 | 0.474 +- 0.004 | 0.267 +- 0.015 | 1.57 / 6.9 | 0.77 +- 0.07 | 0.53 +- 0.13 |
+   | (0.04, 0.02) | 0.663 +- 0.010 | 0.407 +- 0.003 | 0.256 +- 0.010 | 2.10 / 9.5 | 0.164 +- 0.012 | 0.196 +- 0.043 |
+   | (0.04, 0.05) | 0.579 +- 0.008 | 0.365 +- 0.003 | 0.214 +- 0.008 | 2.03 / 7.2 | 0.156 +- 0.009 | 0.231 +- 0.028 |
+
+   * **Decoder margin**: on d = 5-11 MWPM loses Delta alpha = 0.19-0.27 per unit distance against ML at every work point (p_L ratio growing from about 1.6-2.1 at d = 5 to 5-10 at d = 11); MWPM ignores the Y correlations of depolarizing noise.
+   * **Not converged in d**: alpha_MWPM drifts upward with the fit window (for example 0.249 -> 0.300 at (0.06, 0.02) from d = 5-11 to d = 11-21), so Delta alpha on d = 5-11 carries a systematic error beyond the quoted statistical one; the ML side cannot be fitted beyond d = 11 (item 6).
+   * **MWPM exchange rate**: at e0 > 0, R_alpha^MWPM = 0.16-0.19, slightly below the ML values. At e0 = 0, R^(d) of MWPM is 0.66-0.88, around and partly above c (within 2 sigma at every d). This is not a violation: Theorem 3.2 holds for Bayes-optimal decoding only (Remark 1.12); MWPM is not matched to (p, e), so the flag-discarding argument does not apply to it.
+   * Weak entries: the d = 13 ratios (ML d = 13 is weak, item 6) and MWPM at d = 21 for p0 = 0.04 (relative standard error 1-8; negligible weight in the fits).
 
 *Verified and not verified.* Verified (`tests/`): estimates, derivatives, and interval coverage on toy decoders with exactly known f (one-dimensional and with erasure strata); the stratified MWPM estimate agrees with naive Monte Carlo at d = 5; stratified ML with erasures agrees with the exact oracle at d = 3 (`results/ml_crosscheck.json`); decoders never fail on strata with 2w + k < d. **Not verified:** the envelope identity for truncated tensor-network ML and at d >= 9; MWPM with erasure (it needs per-sample zero-weight edges and is not implemented); the pilot overhead of two-dimensional (k, w) strata with a real decoder at larger d (the number of strata is about an order of magnitude larger than in one dimension).
 
@@ -227,9 +245,9 @@ Theory track: `make -C theory check` needs numpy and scipy (both are core depend
 
 | Stage | Content | Acceptance criterion |
 |---|---|---|
-| M0 | Code construction, noise models, MWPM decoding, sanity checks | Three threshold checks pass. Status: rotated surface code, MWPM (e = 0), stratified sampling module and tests are done; pure erasure and depolarizing-ML crossings are consistent with 50% and 18.9%; the bit-flip MWPM crossing is 5-8% below 10.3% at d <= 15 and needs a finite-size-scaling fit; MWPM with erasure is to do |
+| M0 | Code construction, noise models, MWPM decoding, sanity checks | Three threshold checks pass. Status: rotated surface code, MWPM (e = 0), stratified sampling module and tests are done; pure erasure and depolarizing-ML crossings are consistent with 50% and 18.9%; the bit-flip MWPM check is closed by a finite-size-scaling fit to d = 41 (10.30-10.33%); MWPM with erasure is done (pure-erasure crossings consistent with 50%) |
 | M1 | ML decoding (code capacity, with erasure priors) | Depolarizing ML threshold about 18.9%, trend consistent with MWPM. Status: **done**: exact transfer-matrix decoder (d <= ~11) and truncated-MPS decoder (d >= 11, validated against the exact decoder at e = 0 and with erasures; chi = 6 / 8 recommended), thresholds consistent with 50% and 18.9%. Open: the envelope identity tested directly with the MPS decoder and at d >= 9; d = 15 with erasures; limited test power at d = 15 |
-| M2 | Full P1 result | R_{e->p} and the ML-MWPM margin at at least 3 work points, with errors |
+| M2 | Full P1 result | R_{e->p} and the ML-MWPM margin at at least 3 work points, with errors. Status: **met** (P1 items 6, 7: ML and MWPM rates and the margin Delta alpha at six work points, d = 5-11); open: ML beyond d = 11, p0 = 0.02, e0 = 0 statistics |
 | M3 | Burst-event injection and Poisson baseline | The injected event rate can be estimated without bias |
 | M4 | Full P2 result | Ratio of the experiment time needed by the pattern method relative to Poisson counting, with errors |
 | M5 | Summary | `results/SUMMARY.md`: key numbers, figures, limitations |
