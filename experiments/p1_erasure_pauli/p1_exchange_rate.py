@@ -10,6 +10,10 @@ Tables are stored in results/p1_m2/tables/ after every round, so a run can be ex
     python experiments/p1_erasure_pauli/p1_exchange_rate.py run --workers 3 [--scale 1.0] [--ds 5 7 9 11 13] [--points 0.04:0.05 ...]
     python experiments/p1_erasure_pauli/p1_exchange_rate.py analyze [--boot 500]
 
+Sharding (GitHub Actions, .github/workflows/compute-p1-ml.yml): `run --shard i --nshards K` starts from the stored table and adds
+only its share (budget - N0)/K of the missing decodes, with its own random stream; experiments/p1_erasure_pauli/merge_shards.py
+adds the shards' new counts back onto the table. With --nshards 1 (default) the behaviour and the random stream are as before.
+
 ``analyze`` writes results/p1_exchange_rate.json and prints the table: p_L(d), R^(d) = (dp_L/de)/(dp_L/dp) with errors
 (bound: R^(d) <= c = (3/4 - p0)/(1 - e0)), and alpha, d alpha/dp, d alpha/de, R_alpha = (d alpha/de)/(d alpha/dp) for
 three fit windows in d.  See lcd.analysis.exchange for the formulas and the sign convention.
@@ -76,7 +80,7 @@ class MultiTargetEstimator(StratifiedEstimator):
 
 
 def run_job(args) -> dict:
-    d, p0, e0, scale, seed = args
+    d, p0, e0, scale, seed, shard, nshards = args
     t_start = time.time()
     code = RotatedSurfaceCode(d)
     S = make_strata(code, d, p0, e0)
@@ -110,8 +114,13 @@ def run_job(args) -> dict:
         seconds0 = float(z["seconds"])
     else:
         seconds0 = 0.0
+    N0 = int(est.N.sum())
     budget = int(BASE[d][p0] * scale)
-    rng = np.random.default_rng(np.random.SeedSequence([seed, d, int(round(p0 * 1e4)), int(round(e0 * 1e4)), int(est.N.sum())]))
+    key = [seed, d, int(round(p0 * 1e4)), int(round(e0 * 1e4)), N0]
+    if nshards > 1:                       # this shard adds only its share of the missing decodes, with its own stream
+        budget = N0 + -(-max(budget - N0, 0) // nshards)
+        key += [shard, nshards]
+    rng = np.random.default_rng(np.random.SeedSequence(key))
 
     def save():
         tmp = path.with_suffix(".tmp.npz")
@@ -146,7 +155,7 @@ def run_job(args) -> dict:
 
 def cmd_run(a):
     pts = [tuple(map(float, s.split(":"))) for s in a.points] if a.points else WORK_POINTS
-    jobs = [(d, p, e, a.scale, a.seed) for d in a.ds for (p, e) in pts]
+    jobs = [(d, p, e, a.scale, a.seed, a.shard, a.nshards) for d in a.ds for (p, e) in pts]
     jobs.sort(key=lambda j: -MS_PER_DECODE[j[0]] * BASE[j[0]][j[1]])
     print(f"{len(jobs)} jobs, estimated {sum(MS_PER_DECODE[j[0]] * BASE[j[0]][j[1]] * a.scale for j in jobs) / 3.6e6:.1f} core-hours", flush=True)
     with ProcessPoolExecutor(a.workers) as ex:
@@ -239,6 +248,8 @@ def main():
     r.add_argument("--ds", type=int, nargs="+", default=DS)
     r.add_argument("--points", nargs="*")
     r.add_argument("--seed", type=int, default=20241101)
+    r.add_argument("--shard", type=int, default=0, help="index of this shard, 0 <= shard < nshards")
+    r.add_argument("--nshards", type=int, default=1, help="number of independent shards sharing the missing decodes")
     r.set_defaults(fn=cmd_run)
     an = sub.add_parser("analyze")
     an.add_argument("--boot", type=int, default=500)

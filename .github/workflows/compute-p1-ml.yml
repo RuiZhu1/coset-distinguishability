@@ -1,10 +1,11 @@
 # Heavy compute on GitHub-hosted runners: extend the ML failure tables of P1 (M2) and redo the analysis.
 #
-# Trigger by hand (Actions tab -> "Compute: P1 ML tables" -> Run workflow). Each (distance, work point) pair is one job;
-# the tables in results/p1_m2/tables/ are resumed (experiments/p1_erasure_pauli/p1_exchange_rate.py saves after every
-# round), so a job stopped by the time cap keeps its progress and the next run continues from it. The last job merges
-# the tables, runs `analyze`, and pushes everything to a new branch compute/p1-ml-<run id> (with a pull request if the
-# repository allows Actions to open one). Nothing is pushed to main.
+# Trigger by hand (Actions tab -> "Compute: P1 ML tables" -> Run workflow). Every (distance, work point) table is split
+# into shards: `runners` machines per table, 4 shards per machine (one per core), each shard adding its share of the
+# missing decodes with its own random stream (p1_exchange_rate.py run --shard/--nshards). A shard saves after every
+# round, so one stopped by the time cap keeps its progress. The last job adds all shards back onto the stored tables
+# (merge_shards.py), runs `analyze`, and pushes to a new branch compute/p1-ml-<run id> (with a pull request if the
+# repository allows Actions to open one). Nothing is pushed to main; a cancelled run pushes nothing.
 name: "Compute: P1 ML tables"
 
 on:
@@ -17,10 +18,13 @@ on:
         description: "Work points p0:e0, space separated"
         default: "0.06:0.0 0.06:0.02 0.06:0.05 0.04:0.0 0.04:0.02 0.04:0.05"
       scale:
-        description: "Decode budget as a multiple of the first pass (existing tables count towards it)"
+        description: "Decode budget as a multiple of the first pass (existing decodes count towards it)"
         default: "2"
+      runners:
+        description: "Machines per table (each runs 4 shards, one per core)"
+        default: "4"
       minutes:
-        description: "Time cap per job in minutes (GitHub stops a job at 360)"
+        description: "Time cap per machine in minutes (GitHub stops a job at 360)"
         default: "330"
 
 permissions:
@@ -40,15 +44,20 @@ jobs:
         env:
           DS: ${{ inputs.ds }}
           POINTS: ${{ inputs.points }}
+          RUNNERS: ${{ inputs.runners }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import json, os
           ds = [int(x) for x in os.environ["DS"].split()]
-          pts = os.environ["POINTS"].split()
-          for s in pts:
-              p, e = (float(v) for v in s.split(":"))
-          inc = [{"d": d, "point": s, "tag": f"d{d}-p{float(s.split(':')[0]):.4f}-e{float(s.split(':')[1]):.4f}"}
-                 for d in ds for s in pts]
+          runners = int(os.environ["RUNNERS"])
+          inc = []
+          for d in ds:
+              for s in os.environ["POINTS"].split():
+                  p, e = (float(v) for v in s.split(":"))
+                  for r in range(runners):
+                      inc.append({"d": d, "point": s, "r": r, "table": f"d{d}_p{p:.4f}_e{e:.4f}.npz",
+                                  "tag": f"d{d}-p{p:.4f}-e{e:.4f}-r{r}"})
+          assert 0 < len(inc) <= 256, f"{len(inc)} jobs (GitHub allows 256 per matrix)"
           print("matrix=" + json.dumps({"include": inc}))
           EOF
 
@@ -68,21 +77,42 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
       - run: pip install -e .
-      # The step's own timeout stops it like a cancel; continue-on-error keeps the job going so the table (saved after
-      # every round) is still uploaded. A cancel of the run skips the upload. `exec` makes python the step's process, so
-      # the runner's interrupt reaches it directly.
-      - name: Run ${{ matrix.tag }}
+      # Four shards side by side, each in its own copy of the tables. The step's timeout stops it like a cancel; the
+      # trap passes the interrupt on, and continue-on-error keeps the job going so the shards are still uploaded.
+      - name: Run ${{ matrix.tag }} (4 shards)
         timeout-minutes: ${{ fromJSON(inputs.minutes) }}
         continue-on-error: true
         env:
           D: ${{ matrix.d }}
           POINT: ${{ matrix.point }}
+          R: ${{ matrix.r }}
           SCALE: ${{ inputs.scale }}
-        run: exec python experiments/p1_erasure_pauli/p1_exchange_rate.py run --workers 1 --ds "$D" --points "$POINT" --scale "$SCALE"
+          RUNNERS: ${{ inputs.runners }}
+        run: |
+          set +e
+          NS=$((RUNNERS * 4))
+          pids=()
+          for c in 0 1 2 3; do
+            out="shard_$c"
+            mkdir -p "$out"
+            cp -r results/p1_m2/tables "$out/"
+            P1_M2_OUT="$out" python experiments/p1_erasure_pauli/p1_exchange_rate.py run --workers 1 --ds "$D" \
+              --points "$POINT" --scale "$SCALE" --shard $((R * 4 + c)) --nshards "$NS" > "$out/log.txt" 2>&1 &
+            pids+=($!)
+          done
+          trap 'kill -INT "${pids[@]}" 2>/dev/null; wait' INT TERM
+          wait
+          for c in 0 1 2 3; do echo "== shard $((R * 4 + c)) of $NS"; tail -n 3 "shard_$c/log.txt"; done
+      - name: Keep only this table
+        env:
+          TABLE: ${{ matrix.table }}
+        run: find shard_* -name '*.npz' ! -name "$TABLE" -delete
       - uses: actions/upload-artifact@v4
         with:
           name: table-${{ matrix.tag }}
-          path: results/p1_m2/tables/
+          path: |
+            shard_*/tables/
+            shard_*/log.txt
           retention-days: 30
 
   collect:
@@ -99,35 +129,15 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
       - run: pip install -e .
-      - name: Merge the tables of the matrix jobs
-        env:
-          MATRIX: ${{ needs.plan.outputs.matrix }}
-        run: |
-          mkdir -p downloaded
-          echo "$MATRIX" > downloaded/matrix.json
       - uses: actions/download-artifact@v4
         with:
           pattern: table-*
           path: downloaded
-      - name: Keep, for each job, only the table it worked on
+      - name: Add the shards onto the stored tables
         id: merge
         run: |
-          python3 - <<'EOF'
-          import json, shutil
-          from pathlib import Path
-          inc = json.loads(Path("downloaded/matrix.json").read_text())["include"]
-          dst = Path("results/p1_m2/tables")
-          for j in inc:
-              d = j["d"]; p, e = (float(v) for v in j["point"].split(":"))
-              name = f"d{d}_p{p:.4f}_e{e:.4f}.npz"
-              src = Path("downloaded") / f"table-{j['tag']}" / name
-              if src.exists():
-                  shutil.copy(src, dst / name)
-                  print("updated", name)
-              else:
-                  print("missing (job failed or produced nothing):", name)
-          EOF
-          if git diff --quiet -- results/p1_m2/tables; then
+          python experiments/p1_erasure_pauli/merge_shards.py downloaded --tables results/p1_m2/tables
+          if git diff --quiet -- results/p1_m2/tables && [ -z "$(git ls-files --others --exclude-standard results/p1_m2/tables)" ]; then
             echo "::warning::no table changed; nothing to analyze or push"
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
@@ -146,9 +156,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$BRANCH"
           git add results/p1_m2/tables results/p1_exchange_rate.json
-          git commit -m "P1 ML tables extended by Actions run ${{ github.run_id }} (ds: ${{ inputs.ds }}; scale ${{ inputs.scale }})"
+          git commit -m "P1 ML tables extended by Actions run ${{ github.run_id }} (ds: ${{ inputs.ds }}; scale ${{ inputs.scale }}; ${{ inputs.runners }} machines x 4 shards per table)"
           git push origin "$BRANCH"
           echo "Branch: ${{ github.server_url }}/${{ github.repository }}/tree/$BRANCH" >> "$GITHUB_STEP_SUMMARY"
           gh pr create --base main --head "$BRANCH" --title "P1 ML tables: Actions run ${{ github.run_id }}" \
-            --body "Tables extended on GitHub-hosted runners (ds: ${{ inputs.ds }}; points: ${{ inputs.points }}; scale ${{ inputs.scale }}). Review results/p1_exchange_rate.json before merging." \
+            --body "Tables extended on GitHub-hosted runners (ds: ${{ inputs.ds }}; points: ${{ inputs.points }}; scale ${{ inputs.scale }}; ${{ inputs.runners }} machines x 4 shards per table). Review results/p1_exchange_rate.json before merging." \
             || echo "::warning::could not open a pull request (allow it under Settings > Actions > General); the branch is pushed"
