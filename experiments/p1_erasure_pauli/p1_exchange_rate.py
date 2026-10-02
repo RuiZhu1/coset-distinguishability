@@ -82,7 +82,7 @@ def run_job(args) -> dict:
         dec, kw = ExactTNMLDecoder(code), {}
     else:
         dec, kw = MPSMLDecoder(code, chi=8), dict(refine_chi=16, margin=8.0)
-    stats = dict(refined=0, refine_changed=0, fallback=0)
+    stats = dict(refined=0, refine_changed=0, fallback=0, unrepaired=0)
     rng_holder = {}
 
     def sampler(k, w, N, rng):
@@ -92,6 +92,7 @@ def run_job(args) -> dict:
             stats["refined"] += dec.last_refined
             stats["refine_changed"] += dec.last_refine_changed
             stats["fallback"] += int(getattr(dec, "last_fallback", 0))
+            stats["unrepaired"] += int(getattr(dec, "last_unrepaired", 0))
         return f
 
     est = MultiTargetEstimator(S, sampler)
