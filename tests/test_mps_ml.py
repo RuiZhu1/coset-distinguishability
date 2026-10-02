@@ -154,11 +154,24 @@ def test_invalid_partition_functions_fall_back_to_larger_chi():
     assert abs(fp.mean() - fe.mean()) < 0.1
 
 
-def test_fallback_gives_up_at_max_chi():
+def test_persistent_invalid_classes_are_dropped_not_fatal():
+    """Classes that stay non-positive at max_chi lie below the truncation noise of the best class: they are dropped as
+    non-maximal (counted in last_unrepaired) and the decoder does not raise as long as every sample has a valid class."""
     rng = np.random.default_rng(14)
     code = RotatedSurfaceCode(9)
     ex, ez, er = sample_stratum(code.n, 6, 14, 150, rng)
     pri = make_priors(code.n, 0.05, er)
     mps = MPSMLDecoder(code, chi=2, max_chi=2)                 # no room to grow
+    fp = mps.fail_prob(ex, ez, pri)
+    assert np.isfinite(fp).all() and mps.last_unrepaired > 0
+
+
+def test_sample_without_any_valid_class_raises():
+    class Broken(MPSMLDecoder):
+        def log_class_weights(self, ex, ez, priors):
+            return np.full((ex.shape[0], 4), -np.inf)
+
+    code = RotatedSurfaceCode(5)
+    ex, ez, er = sample_stratum(code.n, 2, 3, 10, np.random.default_rng(0))
     with pytest.raises(FloatingPointError):
-        mps.fail_prob(ex, ez, pri)
+        Broken(code, chi=4, max_chi=4).fail_prob(ex, ez, make_priors(code.n, 0.05, er))

@@ -24,7 +24,8 @@ classes far from the truth can be off by O(1) at moderate chi, so do not use Z_c
 Ties between classes (exact ties occur with positive probability under erasures) are detected with a tolerance
 ``tie_rtol`` on log Z, which must exceed the truncation error; they are then broken uniformly at random.
 A truncated partition function can come out non-positive when chi is too small (dense erasure strata at chi = 3):
-such samples are counted in ``last_invalid`` / ``last_fallback`` and decoded again with doubled chi until valid.
+such samples are counted in ``last_invalid`` / ``last_fallback`` and decoded again with doubled chi until valid; classes that stay
+non-positive up to ``max_chi`` lie below the truncation noise of the best class and are dropped as non-maximal (``last_unrepaired``).
 """
 from __future__ import annotations
 
@@ -72,6 +73,7 @@ class MPSMLDecoder:
         self.last_truncation: np.ndarray | None = None      # per-sample accumulated discarded weight of the last call
         self.last_invalid = 0                                # classes with a non-positive partition function (last call)
         self.last_fallback = 0                               # samples re-decoded with larger chi because a class was invalid
+        self.last_unrepaired = 0                             # samples where classes stayed non-positive at max_chi (dropped as non-maximal)
         self.last_refined = 0                                # samples re-decoded by the convergence monitor (last call)
         self.last_refine_changed = 0                         # ... and how many of their decisions changed
 
@@ -207,19 +209,28 @@ class MPSMLDecoder:
         return out
 
     def _repair_invalid(self, ex, ez, priors, L: np.ndarray) -> np.ndarray:
-        """Re-decode samples with a non-finite class weight (truncated Z <= 0) with doubled chi until all are valid."""
+        """Re-decode samples with a non-finite class weight (truncated Z <= 0) with doubled chi until all are valid or max_chi is reached.
+
+        A class that is still non-positive at max_chi lies below the truncation noise of the best class (its true weight is
+        smaller than a rounding-level fraction of the largest one, e.g. a wrong class of a low-weight error at d = 13 where it
+        is about 1e-24 of the largest), so it cannot be the maximum: it is set to -inf and ``last_unrepaired`` counts the
+        samples where this happened.  Only a sample with NO valid class raises (the best class itself is then unreliable)."""
         bad = ~np.isfinite(L).all(axis=1)
         self.last_fallback = int(bad.sum())
         chi = self.chi
-        while bad.any():
-            if chi >= self.max_chi:
-                raise FloatingPointError(f"partition function still non-positive at chi = {chi} (max_chi)")
+        while bad.any() and chi < self.max_chi:
             chi = min(2 * chi, self.max_chi)
             fine = MPSMLDecoder(self.code, chi=chi, chunk=self.chunk, tie_rtol=self.tie_rtol, threads=self.threads,
                                 max_chi=self.max_chi)
             idx = np.flatnonzero(bad)
             L[idx] = fine.log_class_weights(ex[idx], ez[idx], priors[idx])
             bad[idx] = ~np.isfinite(L[idx]).all(axis=1)
+        self.last_unrepaired = int(bad.sum())
+        if bad.any():
+            sub = L[bad]
+            if (~np.isfinite(sub).any(axis=1)).any():
+                raise FloatingPointError(f"all four partition functions non-positive at chi = {chi} (max_chi) for some sample")
+            L[bad] = np.where(np.isfinite(sub), sub, -np.inf)
         return L
 
     @staticmethod
