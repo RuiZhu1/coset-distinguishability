@@ -44,9 +44,9 @@ $\partial_\theta\err$ equals the derivative of the frozen-decoder failure rate (
 Observation~\ref{obs:sharp}\ ($[[5,1,3]]$ attains equality) &
 scan $R^{(d)}/c$ at $e_0{=}0$ over a library of random stabilizer codes &
 extend \texttt{theory/checks} & observed for 3 codes \\
-Conjecture~\ref{conj:universal}\ (code-universal order = free order) &
-for unreachable pairs $(p,e)\to(p',e')$, search a library of random stabilizer codes for a code that \emph{reverses} the $\err$ order &
-extend \texttt{theory/checks} & not started \\
+Conjecture~\ref{conj:universal}\ (code-universal order = free order), single-loss form &
+for unreachable pairs, search all linear structures on $n\le3$ qubits (exhaustive) and $n=4,5$ (hill-climbing) for one that \emph{reverses} the $\err$ order; proved for $\mu'>\mu$ or $\nu'>\nu$ (Proposition~\ref{prop:two-structures}); no reversal of trade pairs found (Observation~\ref{obs:search}) &
+\texttt{theory/checks/universal\_order\_search.py} & evidence against; $n\ge6$ not searched \\
 Conjecture~\ref{conj:HB}\ ($H_B$) &
 compare the $R_\alpha$ of P1 with the analytic $R_B$ &
 P1 / M2 & awaits P1 \\
@@ -81,7 +81,7 @@ Lower bounds (the floor, the Poisson lower bound, the genie lower bound) hold fo
 \begin{enumerate}
 \item \textbf{The gap problem} (Problem~\ref{prob:gap}): does $c-R_\alpha$ come from code dependence or from incompleteness of the free operations?
   \emph{Prerequisite numerics}: the $R_\alpha$ of P1; \emph{theoretical route}: the Blackwell/R\'enyi route of Conjecture~\ref{conj:universal}.
-\item \textbf{Single-loss form of Conjecture~\ref{conj:universal}} (Remark~\ref{rem:conj-reform}): does the code-universal order of $\err=1-\Phi_{\max}$ alone coincide with the local free order? The all-losses form is proved (Proposition~\ref{prop:local-level1}). 
+\item \textbf{Single-loss form of Conjecture~\ref{conj:universal}} (Remark~\ref{rem:conj-reform}, \S\ref{sec:single-loss}): does the code-universal order of $\err=1-\Phi_{\max}$ alone coincide with the local free order? The all-losses form is proved (Proposition~\ref{prop:local-level1}); the single-loss form is proved on $\{\mu'>\mu\}\cup\{\nu'>\nu\}$ and the search gives evidence against it on the trade region. \emph{To settle it:} a proof of non-reversal for all $n$, or structures with $\err_A\approx p$ for all $|A|<k$ for every $k$. 
   \emph{Prerequisite numerics}: counterexample search over a library of stabilizer codes; for orders of the surface code, the nesting $\succeq_{\rm local}\subseteq\succeq_{\mathrm{L1}}\subseteq\succeq_{\err}$.
 \item \textbf{Asymptotic rates in the tensor-power sense} (R-c of \S\ref{sec:rates}): not computed; needs the large-sample Blackwell order.
 \item \textbf{O1} (Problem~\ref{prob:O1}): monotonicity of $\err$ in the shape parameters $p_b,R,T_b$ for unflagged bursts.

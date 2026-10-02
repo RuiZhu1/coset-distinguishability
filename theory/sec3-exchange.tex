@@ -179,7 +179,7 @@ and the $\alpha$-order of the surface code is merely a coarser order; or
 Within $\Nn_{\rm cc}(p,e)$, the \emph{code-universal finite-$n$ operational order} coincides with the local free order of Theorem~\ref{thm:preorder}.
 \hfill\st{CONJECTURE}
 \end{conjecture}
-\noindent\emph{Reformulation (constitutional audit).} The all-losses version of this conjecture (compare $\Phi(P')\le\Phi(P)$ for all $\varphi\in\Phi_\Lambda$, over all structures) is proved by taking the uncoded qubit (Proposition~\ref{prop:local-level1}, Remark~\ref{rem:conj-reform}); what remains open is the single-loss statement for $\err=1-\Phi_{\max}$.
+\noindent\emph{Reformulation (constitutional audit).} The all-losses version of this conjecture (compare $\Phi(P')\le\Phi(P)$ for all $\varphi\in\Phi_\Lambda$, over all structures) is proved by taking the uncoded qubit (Proposition~\ref{prop:local-level1}, Remark~\ref{rem:conj-reform}); what remains open is the single-loss statement for $\err=1-\Phi_{\max}$. \emph{Status after the search of \S\ref{sec:single-loss}:} it holds (proved) for every unreachable pair with $\mu'>\mu$ or $\nu'>\nu$, in particular whenever $e'<e$; for the remaining ``trade'' pairs the search finds no reversing structure (Observation~\ref{obs:search}), which is evidence that it is false.
 
 \noindent\emph{Evidence and route.} Observation~\ref{obs:sharp} gives first-order evidence at $e_0=0$: the boundary slope $c$ is attained by some code.
 Route to a proof: (S1) for each $n$ and linear structure $(\sigma,L)$, the comparison of $\err$ is a Blackwell comparison of the ``experiments'' given by $n$ independent copies
@@ -226,3 +226,46 @@ so the test compares the finite difference with re-matched decoders ($B_{\rm mat
 Their difference is at most $0.04\%$ of the derivative (within $1.6$ bootstrap standard errors) in four cases, one of which has erasure strata; one deviation of $2.05$ standard errors ($0.1\%$ of the derivative) occurs at step $2h$, $d=7$.
 The identity has not yet been tested directly for the truncated-MPS ML decoder or at $d\ge9$; the MPS decoder's decisions agree with the exact decoder on all tested samples (README, M1), so it is expected to transfer.\hfill\st{NUMERICAL}
 \end{observation}
+
+\subsection{The single-loss form of Conjecture~\ref{conj:universal}: what is proved and what a search shows}\label{sec:single-loss}
+
+A structure $\mathfrak D$ \emph{reverses} a pair $(P,P')$ if $\err_{\mathfrak D}(P')<\err_{\mathfrak D}(P)$. The single-loss form of Conjecture~\ref{conj:universal} says: every pair $(P,P')$ in $\Nn_{\rm cc}$ that is not related by a local free operation is reversed by some linear decoding structure (on any number $n$ of qubits).
+By Remark~\ref{rem:conj-reform} the all-losses form is already proved; this subsection concerns $\err$ alone.
+
+\begin{proposition}[The free order is cut out by two scalars]\label{prop:two-scalars}
+For $p,p'\in[0,\tfrac34)$, $e,e'\in[0,1)$, condition (ii) of Theorem~\ref{thm:preorder} holds if and only if $p'\ge p$ and $\mu(p',e')\le\mu(p,e)$, where $\mu=(1-e)\lambda(p)$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+If $e'\ge e$, then $p'\ge p$ gives $\lambda'\le\lambda$ and $1-e'\le1-e$, hence $\mu'\le\mu$. If $e'<e$ and $\mu'\le\mu$ then $\lambda'\le\lambda(1-e)/(1-e')<\lambda$, hence $p'>p$. Conversely, if $e'\ge e$ the condition is $p'\ge p$, and if $e'<e$ it is $\mu'\le\mu$.
+\end{proof}
+
+\begin{proposition}[Two structures, and a family of monotones]\label{prop:two-structures}
+(a) For the uncoded qubit, $\err=\tfrac34(1-\mu)$. It reverses exactly the pairs with $\mu'>\mu$.
+(b) Let $F_2$ be the two-qubit structure with $S=0$, $N=\langle XX,ZZ\rangle$ (syndrome $E_0+E_1$, label $E_0$). Then $\err=p(1-e^2)+\tfrac34e^2=\tfrac34(1-\nu)$ with $\nu=(1-e^2)\lambda(p)$. It reverses exactly the pairs with $\nu'>\nu$.
+(c) For every $k\ge1$ the function $\nu_k=(1-e^k)\lambda(p)$ is a monotone of the local free order ($\nu_1=\mu$, $\nu_2=\nu$), and every unreachable pair with $e,e'<1$ is separated by some $\nu_k$: $\nu_k'>\nu_k$.
+Consequently the single-loss form holds for every unreachable pair with $\mu'>\mu$ or $\nu'>\nu$; in particular for every unreachable pair with $e'<e$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+(a) For $f=0$ the best guess has probability $(1-e)(1-p)$, for $f=1$ it is $e/4$, so $1-\err=(1-e)(1-p)+e/4=\tfrac34\mu+\tfrac14$ (use $1-p=\tfrac34\lambda+\tfrac14$).
+(b) Write $\err=\sum_A\Pr[A]\,\err_A$ over the erased set $A\subseteq\{0,1\}$. For $A=\emptyset$: $\max_\ell P_0(\ell)P_0(\ell+s)$ equals $(1-p)^2$ for $s=0$ and $(1-p)p/3$ for each of the three $s\ne0$ (the two labels $\ell\in\{I,s\}$ tie), so $1-\err_\emptyset=(1-p)^2+(1-p)p=1-p$.
+For $A=\{0\}$ the maximum over $\ell$ is $\tfrac14(1-p)$ for each of the four syndromes; for $A=\{1\}$ it is $P_0(I)/4=(1-p)/4$; in both cases $\err_A=p$. For $A=\{0,1\}$ all sixteen $(\ell,s)$ have probability $1/16$, so $\err_A=\tfrac34$.
+(c) If $e'\ge e$, $p'\ge p$ then $1-e'^k\le1-e^k$ and $\lambda'\le\lambda$. If $e'<e$ and $\mu'\le\mu$, write $\nu_k=\mu\sum_{i<k}e^i$, which is increasing in $e$ and in $\mu$. By Proposition~\ref{prop:two-scalars} these are all reachable pairs. If a pair is unreachable and $e'<e$ then $\mu'>\mu$; if $e'\ge e$ then $p'<p$, and $\nu_k'-\nu_k\to\lambda'-\lambda>0$ as $k\to\infty$.
+\end{proof}
+
+The unreachable pairs not covered by Proposition~\ref{prop:two-structures} form the \emph{trade region}: $e'\ge e$, $p'<p$, $\mu'\le\mu$, $\nu'\le\nu$ (less Pauli noise, more erasure). Every $\nu_k$ separates the pairs of this region for large $k$, so the single-loss form would follow from structures that realize the order of $\nu_k$ for arbitrarily large $k$ (``erasure-hardened'' structures with $\err_A\approx p$ for all $|A|<k$). The structures $F_2$ and, for $k=3$ only partially, the three-fold Pauli repetition $\mathrm{Rep}_3$ ($S=0$, $N=\langle XXX,ZZZ\rangle$; $\err_A=p$ for $1\le|A|\le2$, second order in $p$ for $A=\emptyset$, $\tfrac34$ for $|A|=3$) are the only such structures found.
+
+\begin{observation}[Search for reversals of trade pairs]\label{obs:search}
+\texttt{checks/universal\_order\_search.py} enumerates \emph{all} linear decoding structures on $n\le3$ qubits (every nested pair $S<N$ of subspaces of $\F^{2n}$: $92{,}881$ at $n=3$, $528$ distinct $\err$ tables) with exact ML, and hill-climbs for $n=4,5$.
+\begin{enumerate}[(a)]
+\item \emph{Marginal rates.} The smallest marginal rate $R_{\mathfrak D}/c$ over all structures on $n\le3$ qubits is $0$ at $e_0=0$ (attained by $F_2$, $\err_A=p$ for $|A|\le1$), equals $2e_0/(1+e_0)$ for $e_0\le0.1$ at the tested points (attained by $F_2$), and equals $0.2617$ at $(p_0,e_0)=(0.0213,0.2)$ (attained by $\mathrm{Rep}_3$; $F_2$ gives $0.3333$). Hill-climbing at $n=4,5$ does not improve on $2e_0/(1+e_0)$ at $e_0=0.05$ and reaches $0.242$ ($n=4$), $0.230$ ($n=5$) at $e_0=0.2$. For large $k$ the rate of $\mathrm{Rep}_k$ tends to $R_B/c=0.2501$ at $p_0=0.0213$.
+\item \emph{First-order wedge.} Just beyond the free-order boundary at $(0.0213,0.2)$, the pair with $\kappa=0.30$ ($P'=(p_0-\kappa c\,\Delta,\,e_0+\Delta)$, $\Delta=0.01$) is reversed by $\mathrm{Rep}_3$ but by neither the uncoded qubit nor $F_2$; the reversed set on $n\le3$ is therefore strictly larger than $\{\mu'>\mu\}\cup\{\nu'>\nu\}$.
+\item \emph{Trade pairs.} For the six pairs A, B, D, E, F, G of the script (for example $(0.0213,0.05)\to(0,0.25)$, which has no Pauli noise at all, and $(0.0213,0)\to(0.0150,0.30)$, which starts at $e_0=0$), no structure on $n\le3$ qubits reverses the pair (smallest difference $\err(P')-\err(P)$ between $+2\times10^{-3}$ and $+1.7\times10^{-2}$), and neither does hill-climbing at $n=4,5$ (smallest ratio $\err(P')/\err(P)$ to be read from the table in \texttt{results/universal\_order\_search.json}).
+\end{enumerate}
+\hfill\st{NUMERICAL}
+\end{observation}
+
+\begin{remark}[Reading of the search]\label{rem:search}
+(1) The search found \emph{no} structure that reverses a pair of the trade region beyond what $\mu$, $\nu$ and $\mathrm{Rep}_3$ already do, and the margins are large (ratios $1.5$ to $2.4$). This is evidence that the single-loss form of Conjecture~\ref{conj:universal} \emph{fails} in the trade region for linear structures, but it is not a proof: $n\ge6$ is not searched, and reversals for large $n$ would be governed by exponents, which are not controlled here.
+(2) If the failure persists for all $n$, the code-universal $\err$-order is strictly larger than the free order, while the all-losses order equals it (Proposition~\ref{prop:local-level1}). The extra comparabilities are then a property of the single loss, not evidence of missing free operations; no new free operation is needed for the uncoded theory.
+(3) In terms of marginal rates (\S\ref{sec:rates}): $\inf_{\mathfrak D}R_{\mathfrak D}(x_0)$ is $0$ at $e_0=0$ and, in all searches, positive at $e_0>0$; the marginal rates of the structure monotones then fill at most $[r_{\min},c]$ with $r_{\min}>0$, with $c$ attained by the uncoded qubit. A proof of $r_{\min}>0$ would be a universal \emph{lower} bound on the exchange rate, complementing Theorem~\ref{thm:rate}; it is not available.
+\end{remark}

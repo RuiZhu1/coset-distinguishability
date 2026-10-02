@@ -18,6 +18,7 @@ This script searches for further reversals with exact enumeration:
   S3b first-order wedge at (p0, e0) = (0.0213, 0.2): pairs just below the free-order boundary that are reversed by Rep_3 but by neither
       the uncoded qubit nor F2 (the reversed set on n <= 3 is therefore larger than {mu' > mu} U {nu' > nu});
   S4  the "trade" pairs A, B, D, E: exhaustive n <= 3 plus randomized hill-climbing for n = 4, 5 (a heuristic, not a proof).
+  S2d randomized hill-climbing for the smallest marginal rate R_D / c at n = 4, 5 (a heuristic upper bound on the infimum over structures);
   S2c marginal rate of the Pauli repetition family Rep_k (k copies of the Pauli, label E_0; Rep_1 = uncoded, Rep_2 = F2) and its large-k
       limit R_B / c.
 
@@ -192,6 +193,55 @@ def s3(uniq: dict, jobs: int, k: int = 24) -> dict:
     return dict(pairs=rows, mismatches=mism)
 
 
+def _climb_rate(args):
+    n, p0, e0, seed, budget = args
+    c = (0.75 - p0) / (1 - e0)
+    rng = np.random.default_rng(seed)
+    t0 = time.time()
+    best = 9.0
+
+    def score(B, s, m):
+        R, dp, de = Structure(n, B[:s], B[:m]).rate(p0, e0)
+        return R / c if (np.isfinite(R) and dp > 1e-9 and de > -1e-9) else 9.0
+
+    while time.time() - t0 < budget:
+        S, N, B = random_chain(n, rng)
+        s, m = len(S), len(N)
+        cur, stale = score(B, s, m), 0
+        while stale < 60 and time.time() - t0 < budget:
+            B2, s2, m2 = B.copy(), s, m
+            r = rng.random()
+            if r < 0.75:
+                B2[int(rng.integers(0, m2))] = rng.integers(0, 2, size=2 * n, dtype=np.uint8)
+            elif r < 0.875 and s2 + 1 < m2:
+                s2 += 1
+            elif m2 > s2 + 1:
+                m2 -= 1
+            else:
+                continue
+            if len(rref(B2[:m2])[1]) != m2:
+                continue
+            new = score(B2, s2, m2)
+            if new <= cur + 1e-12:
+                stale = 0 if new < cur - 1e-9 else stale + 1
+                cur, B, s, m = new, B2, s2, m2
+            else:
+                stale += 1
+        best = min(best, cur)
+    return n, p0, e0, best
+
+
+def s2d(jobs: int, budget: float) -> dict:
+    print(f"S2d: hill-climbing for the smallest R/c at n = 4, 5 ({budget:.0f} s per job; heuristic)")
+    pts = [(0.0213, 0.05), (0.0213, 0.2)]
+    out = {}
+    with ProcessPoolExecutor(jobs) as ex:
+        for n, p0, e0, b in ex.map(_climb_rate, [(n, p0, e0, 10 * n, budget) for (p0, e0) in pts for n in (4, 5)]):
+            print(f"  p0={p0}, e0={e0}, n={n}: best R/c found = {b:.5f}   (2e0/(1+e0) = {2 * e0 / (1 + e0):.5f})", flush=True)
+            out[f"p0={p0},e0={e0},n={n}"] = b
+    return out
+
+
 def s3b(uniq: dict, jobs: int) -> dict:
     p0, e0, D = 0.0213, 0.2, 0.01
     c = (0.75 - p0) / (1 - e0)
@@ -289,6 +339,7 @@ def main() -> int:
         print(f"n={n}: {tot} structures, {len(lst)} distinct eps* tables ({time.time() - t0:.0f} s)", flush=True)
     r2 = s2(uniq, args.jobs)
     r2c = s2c()
+    r2d = s2d(args.jobs, args.budget)
     r3 = s3(uniq, args.jobs)
     r3b = s3b(uniq, args.jobs)
     r4 = s4(uniq, args.jobs, args.budget)
@@ -301,7 +352,7 @@ def main() -> int:
     except Exception:
         commit, dirty = "unknown", True
     json.dump(dict(script="theory/checks/universal_order_search.py", budget_seconds=args.budget, structures_total=totals,
-                   distinct_tables={n: len(v) for n, v in uniq.items()}, s2_min_R_over_c=r2, s2c_rep_family=r2c, s3=r3, s3b=r3b, s4=r4,
+                   distinct_tables={n: len(v) for n, v in uniq.items()}, s2_min_R_over_c=r2, s2c_rep_family=r2c, s2d_hill_climb_rates=r2d, s3=r3, s3b=r3b, s4=r4,
                    numpy=np.__version__, git_commit=commit, git_dirty_src=dirty,
                    date=dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")), open(args.out, "w"), indent=2, default=float)
     return 0 if ok else 1

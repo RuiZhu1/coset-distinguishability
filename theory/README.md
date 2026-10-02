@@ -13,7 +13,9 @@ theory/
 ├── sec5-information.tex       Chernoff/union sandwich, reference rates, Poisson bound, detection exponents
 ├── sec6-map.tex               theory <-> numerics map, open problems, schedule in parallel with M0-M5
 ├── checks/exact_small_codes.py  exact ML checks (no sampling, no approximation) on three codes with n <= 9
-└── checks/constitution.py       structural checks of section 0 (LP over simulable reductions; about 4 s)
+├── checks/constitution.py       structural checks of section 0 (LP over simulable reductions; about 4 s)
+├── checks/structures.py         exact eps*(p, e) of any linear decoding structure (nested subspaces S < N of F_2^{2n}), enumeration of all structures
+└── checks/universal_order_search.py  counterexample search for the single-loss form of Conjecture 3.11 (about 8 min; `make -C theory search`)
 ```
 
 ## Build and run
@@ -69,7 +71,10 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Theorem 3.7 | Necessary and sufficient condition for the local-free-operation preorder on the code-capacity Pauli+erasure class | PROVED | C4 |
 | Open problem 3.10 | The gap $c-R_\alpha$: code dependence or incompleteness of the free operations | open | **P1 (M2)** |
 | Remark 3.13 / Observation 3.14 | Envelope argument for ML derivatives (the P1 sampling scheme gets $\partial p_L/\partial p$, $\partial p_L/\partial e$ from one table $f$); exact check on small codes and at d = 5, 7 | SKETCH / NUMERICAL | C8; `envelope_check.py` |
-| Conjecture 3.11 | Code-universal operational order = local free order (the "strong" form of the iff) | CONJECTURE | counterexample search (to do) |
+| Proposition 3.15 | The local free order is cut out by two scalars: $p'\ge p$ and $\mu'\le\mu$ | PROVED | N1 (LP), `tests/test_theory_structures.py` |
+| Proposition 3.16 | Uncoded qubit: $\varepsilon^\star=\tfrac34(1-\mu)$; two-qubit structure $F_2$: $\varepsilon^\star=\tfrac34(1-\nu)$, $\nu=(1-e^2)\lambda$; $\nu_k=(1-e^k)\lambda$ are free-order monotones separating all unreachable pairs | PROVED | S1 (closed forms to 2e-16) |
+| Observation 3.17 | Exhaustive search over all linear structures on $n\le3$ qubits, hill-climbing for $n=4,5$: minimal marginal rate ($0$ at $e_0=0$, positive for $e_0>0$); trade pairs (less Pauli, more erasure) are not reversed by any structure found | NUMERICAL | `checks/universal_order_search.py` (S2-S4) |
+| Conjecture 3.11 | Code-universal operational order = local free order. All-losses form: proved (Proposition 0.9, Remark 0.10). Single-loss form ($\varepsilon^\star$ only): proved for pairs with $\mu'>\mu$ or $\nu'>\nu$ (Proposition 3.16); **numerical evidence against it** for the remaining ``trade'' pairs (Observation 3.17) | CONJECTURE (evidence against) | `checks/universal_order_search.py` |
 | Conjecture 3.12 | $H_B$: $\alpha$ is a function of the Bhattacharyya parameter $B$, $R_\alpha=R_B$ | CONJECTURE | **P1 (M2)** |
 | Lemma 4.1 / Corollary 4.2 | Union (Bhattacharyya) bound $\varepsilon^\star\le\tfrac12\widetilde W(B)$ | PROVED | C5 |
 | Theorem 4.5 | Finite-sample certification at code capacity (independent of $p_L$ data) | PROVED | coverage simulation (to do) |
