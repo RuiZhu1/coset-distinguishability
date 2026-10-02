@@ -1,0 +1,149 @@
+# Heavy compute on GitHub-hosted runners: extend the ML failure tables of P1 (M2) and redo the analysis.
+#
+# Trigger by hand (Actions tab -> "Compute: P1 ML tables" -> Run workflow). Each (distance, work point) pair is one job;
+# the tables in results/p1_m2/tables/ are resumed (experiments/p1_erasure_pauli/p1_exchange_rate.py saves after every
+# round), so a job stopped by the time cap keeps its progress and the next run continues from it. The last job merges
+# the tables, runs `analyze`, and pushes everything to a new branch compute/p1-ml-<run id> (with a pull request if the
+# repository allows Actions to open one). Nothing is pushed to main.
+name: "Compute: P1 ML tables"
+
+on:
+  workflow_dispatch:
+    inputs:
+      ds:
+        description: "Code distances, space separated (5 7 9 11 13)"
+        default: "13"
+      points:
+        description: "Work points p0:e0, space separated"
+        default: "0.06:0.0 0.06:0.02 0.06:0.05 0.04:0.0 0.04:0.02 0.04:0.05"
+      scale:
+        description: "Decode budget as a multiple of the first pass (existing tables count towards it)"
+        default: "2"
+      minutes:
+        description: "Time cap per job in minutes (GitHub stops a job at 360)"
+        default: "330"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  OPENBLAS_NUM_THREADS: "1"
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - id: m
+        env:
+          DS: ${{ inputs.ds }}
+          POINTS: ${{ inputs.points }}
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_OUTPUT"
+          import json, os
+          ds = [int(x) for x in os.environ["DS"].split()]
+          pts = os.environ["POINTS"].split()
+          for s in pts:
+              p, e = (float(v) for v in s.split(":"))
+          inc = [{"d": d, "point": s, "tag": f"d{d}-p{float(s.split(':')[0]):.4f}-e{float(s.split(':')[1]):.4f}"}
+                 for d in ds for s in pts]
+          print("matrix=" + json.dumps({"include": inc}))
+          EOF
+
+  run:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - run: pip install -e .
+      - name: Run ${{ matrix.tag }}
+        env:
+          D: ${{ matrix.d }}
+          POINT: ${{ matrix.point }}
+          SCALE: ${{ inputs.scale }}
+          MINUTES: ${{ inputs.minutes }}
+        run: |
+          set +e
+          timeout "${MINUTES}m" python experiments/p1_erasure_pauli/p1_exchange_rate.py run --workers 1 --ds "$D" --points "$POINT" --scale "$SCALE"
+          status=$?
+          set -e
+          if [ "$status" -eq 124 ]; then
+            echo "::notice::time cap reached for ${{ matrix.tag }}; the table keeps the rounds finished so far"
+          elif [ "$status" -ne 0 ]; then
+            exit "$status"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: table-${{ matrix.tag }}
+          path: results/p1_m2/tables/
+          retention-days: 30
+
+  collect:
+    needs: [plan, run]
+    if: ${{ always() && needs.plan.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - run: pip install -e .
+      - name: Merge the tables of the matrix jobs
+        env:
+          MATRIX: ${{ needs.plan.outputs.matrix }}
+        run: |
+          mkdir -p downloaded
+          echo "$MATRIX" > downloaded/matrix.json
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: table-*
+          path: downloaded
+      - name: Keep, for each job, only the table it worked on
+        run: |
+          python3 - <<'EOF'
+          import json, shutil
+          from pathlib import Path
+          inc = json.loads(Path("downloaded/matrix.json").read_text())["include"]
+          dst = Path("results/p1_m2/tables")
+          for j in inc:
+              d = j["d"]; p, e = (float(v) for v in j["point"].split(":"))
+              name = f"d{d}_p{p:.4f}_e{e:.4f}.npz"
+              src = Path("downloaded") / f"table-{j['tag']}" / name
+              if src.exists():
+                  shutil.copy(src, dst / name)
+                  print("updated", name)
+              else:
+                  print("missing (job failed or produced nothing):", name)
+          EOF
+      - name: Analyze
+        run: python experiments/p1_erasure_pauli/p1_exchange_rate.py analyze --boot 500
+      - name: Push to a new branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: compute/p1-ml-${{ github.run_id }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git add results/p1_m2/tables results/p1_exchange_rate.json
+          git commit -m "P1 ML tables extended by Actions run ${{ github.run_id }} (ds: ${{ inputs.ds }}; scale ${{ inputs.scale }})"
+          git push origin "$BRANCH"
+          echo "Branch: ${{ github.server_url }}/${{ github.repository }}/tree/$BRANCH" >> "$GITHUB_STEP_SUMMARY"
+          gh pr create --base main --head "$BRANCH" --title "P1 ML tables: Actions run ${{ github.run_id }}" \
+            --body "Tables extended on GitHub-hosted runners (ds: ${{ inputs.ds }}; points: ${{ inputs.points }}; scale ${{ inputs.scale }}). Review results/p1_exchange_rate.json before merging." \
+            || echo "::warning::could not open a pull request (allow it under Settings > Actions > General); the branch is pushed"

@@ -229,6 +229,8 @@ Development install and tests: `pip install -e ".[dev]" && pytest` (about 10 sec
 
 Theory track: `make -C theory check` needs numpy and scipy (both are core dependencies of the package); `make -C theory pdf` needs a minimal TeX Live: `sudo apt-get install -y --no-install-recommends texlive-latex-recommended latexmk` (about 120 MB; plain `pdflatex`, no CJK fonts).
 
+**GitHub Actions.** `.github/workflows/ci.yml` runs on every push to `main` and on pull requests: `pytest`, `make -C theory check`, `make -C theory completion`, and the PDF of the notes (artifact `theory-notes-pdf`). Heavy runs go to GitHub-hosted runners by hand: Actions tab, **Compute: P1 ML tables**, Run workflow. One job per (distance, work point); each resumes its table in `results/p1_m2/tables/`, stops at the time cap (default 330 min) with its progress kept, and the last job runs `analyze` and pushes the result to a branch `compute/p1-ml-<run id>` (never to `main`). A hosted Linux runner has 4 cores and 16 GB; a job may run at most 6 hours. The repository is public, so runs, logs and results are public.
+
 **Cloud sessions.** A Claude Code cloud session runs in an ephemeral container: anything installed with `apt-get` or `pip` disappears when the container is reclaimed. To avoid reinstalling, add the install commands above to the **setup script** of the cloud environment (environment menu in the session title bar, then Edit); it runs when each new session starts. Files committed and pushed to the repository persist.
 
 ## 5. Engineering rules
