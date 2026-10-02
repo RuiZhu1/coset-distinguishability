@@ -3,15 +3,15 @@
   K1  geometry of the genie argument (Prop. 5.1, Step 1) on the rotated surface code of lcd, every interior column,
       d = 3..41: the Paulis supported on the column with zero syndrome are exactly {I, Xbar_column}
   K2  finite-d genie bound (Prop. 5.1): eps_genie(d) >= (1/2) B^d exp(-sqrt(d sigma^2)/2), exact eps_genie, d <= 61
-  K3  tilted union bound for burst mixtures (Lemma 4.8, Thm 4.9):  for every logical G
+  K3  tilted union bound for burst mixtures (Lemma 4.8, Thm 4.10):  for every logical G
           BC(P;G) <= E_P[sqrt(Q(X+G)/Q(X))] <= B_burst^wt(G)   and   eps* <= 1/2 sum_G BC(P;G) <= 1/2 W(B_burst),
       exact ML on [[5,1,3]] (with erasure) and on the d = 3 rotated surface code (no erasure)
   K4  O1 is false: exact rational computation of a burst model on the d = 3 rotated surface code in which eps*
-      DEcreases when the burst strength p_b increases from 1/2 to 3/4 (Prop. 4.13)
+      DEcreases when the burst strength p_b increases from 1/2 to 3/4 (Prop. 4.11)
   K5  [[5,1,3]]: certificate (exact integer polynomials) that flagging one qubit never changes the ML decision for
       0 < p < 3/4, hence R^(d) = c exactly at e0 = 0 (Prop. 3.32); Steane and d = 3 surface code violate it
   K6  concavity of eps*_A along one qubit's rate and the right-derivative form of the rate bound (Lemma 3.28, Thm 3.30)
-  K7  contamination only lowers the parity expectation of a check (Lemma 4.15(b)), exact
+  K7  contamination only lowers the parity expectation of a check (Lemma 4.12(b)), exact
 
 Run:  python theory/checks/completion_checks.py      (numpy only; about 30 s)
 Exit status is non-zero if a check fails.
@@ -90,7 +90,7 @@ def k1_genie_geometry() -> None:
             kz, _ = nullity(HX[:, T])        # Z part: must be {0}
             ok &= kx == 1 and bx[0].all() and kz == 0
             ncol += 1
-        # every top-row qubit lies in exactly one Z check, every left-column qubit in exactly one X check (Thm 4.17)
+        # every top-row qubit lies in exactly one Z check, every left-column qubit in exactly one X check (Thm 4.15)
         ok &= (HZ[:, :d].sum(axis=0) == 1).all() and (HX[:, [r * d for r in range(d)]].sum(axis=0) == 1).all()
         ok &= HZ.sum(axis=1).max() <= 4 and HX.sum(axis=1).max() <= 4
     check("K1 ker(sigma) on an interior column = {I, Xbar}; boundary rows/columns in one check; check weight <= 4",
@@ -202,7 +202,7 @@ def b_burst(p, e, rho_bar, V, t):
 
 
 def k3_burst_union() -> None:
-    print("\n=== K3 tilted union bound for burst mixtures (Lemma 4.8, Theorem 4.9) ===")
+    print("\n=== K3 tilted union bound for burst mixtures (Lemma 4.8, Theorem 4.10) ===")
     cases = [("[[5,1,3]]", five_qubit(), [(0, 1), (2, 3, 4)], (0.0, 0.05, 0.2)),
              ("rotated d=3", rotated_surface_d3(), [(0, 1, 3, 4), (4, 5, 7, 8), (1, 2, 4, 5), (3, 4, 6, 7)], (0.0,))]
     worst_G, worst_eps, worst_tilt, ncase = 0.0, 0.0, 0.0, 0
@@ -262,7 +262,7 @@ def k3_burst_union() -> None:
 
 # --------------------------------------------------------------------------------------------------------------
 def k4_o1_counterexample() -> None:
-    print("\n=== K4 O1: eps* is not monotone in the burst strength (Prop. 4.13) ===")
+    print("\n=== K4 O1: eps* is not monotone in the burst strength (Prop. 4.11) ===")
     st = code_structure(rotated_surface_d3())
     R = [1, 3, 5, 7]
     out = [j for j in range(9) if j not in R]
@@ -399,7 +399,7 @@ def k6_concavity_and_right_derivative() -> None:
 
 # --------------------------------------------------------------------------------------------------------------
 def k7_contamination() -> None:
-    print("\n=== K7 contamination cannot raise the parity expectation of a check (Lemma 4.15(b)) ===")
+    print("\n=== K7 contamination cannot raise the parity expectation of a check (Lemma 4.12(b)) ===")
     # one weight-4 check on qubits 0..3; background Dep_p; bursts on overlapping regions; exact over all 4^4 Paulis
     n = 4
     V = all_paulis(n)

@@ -3,8 +3,8 @@
 Goal: within the model class, give finite-sample upper bounds on $\pL(d)$ at large code distance \emph{directly}, rather than estimating $\alpha$ first and extrapolating.
 The proof skeleton has three layers: \emph{(A) the statistical layer} (confidence upper bounds on the parameters from data); \emph{(B) the monotonicity layer} (upper bounds on the parameters give a ``dominating'' model,
 and Theorem~\ref{thm:monotone} gives an upper bound on $\err$); \emph{(C) the computational layer} (an explicit upper bound on $\err_d$ for the dominating model).
-This section proves the code-capacity case completely (Theorem~\ref{thm:cc-cert}) and reduces the case with burst and chip-scale events (Theorem~\ref{thm:burst-cert})
-to three explicit open lemmas.
+This section proves the code-capacity case completely (Theorem~\ref{thm:cc-cert}), extends it to code capacity with unflagged burst and chip-scale events (Theorem~\ref{thm:burst-cert}),
+and gives a separate certificate for the MWPM decoder (\S\ref{sec:mwpm-cert}).
 
 \paragraph{Which decoder.}
 All upper bounds in this section are upper bounds for \emph{maximum-likelihood (Bayes-optimal) decoding}, stated as ``there is a decoder (ML with the noise parameters known)
@@ -143,34 +143,154 @@ Sum over $(E,F)$ and use the product measure.
 which is \emph{lower} than $\err$ (the genie is stronger), not an upper bound. Lemma~\ref{lem:burst-union} is the correct treatment of an unknown configuration, but its right side sums over two independent burst configurations simultaneously
 and is therefore loose.
 
-\begin{theorem}[Conditional certification with bursts and chip events (target statement)]\label{thm:burst-cert}
-Let the true parameters be $\theta=(p,e,r,\vartheta,r_c)$, with shape $\vartheta=(R,T_b,p_b)$ in a known finite class $\Theta_\vartheta$ (if the monotonicity of Problem~\ref{prob:O1} holds one may replace it by a shape upper bound; otherwise the right side below is maximized over $\vartheta\in\Theta_\vartheta$).
-Suppose the confidence upper limits obtained from data satisfy $\Prob[p\le\bar p,\ e\le\bar e,\ r\le\bar r,\ r_c\le\bar r_c]\ge1-\delta$. Then
-with probability $\ge1-\delta$, for all $d,T_{\rm tot}$,
-\[
-\err_{d,T_{\rm tot}}(\theta)\;\le\;\bar q_c+(1-\bar q_c)\,\tfrac12\sum_{G\in K}\ \sum_{\mathcal C,\mathcal C'}\sqrt{\pi_{\bar\theta}(\mathcal C)\pi_{\bar\theta}(\mathcal C')}\prod_j\beta_j(\mathcal C,\mathcal C';G_j),
-\]
-where $\bar q_c=1-e^{-\bar r_cT_{\rm tot}}$ and $\pi_{\bar\theta}$ is the burst-configuration law for the parameter upper limits.\hfill\st{PLAN}
-\end{theorem}
+\subsubsection*{A single-sum union bound for burst mixtures (O3)}
 
-\noindent\textbf{Components already proved:} monotonicity in the rate directions (Proposition~\ref{prop:rate-mono}), the floor (Lemma~\ref{lem:floor}),
-the union bounds (Lemmas~\ref{lem:union} and~\ref{lem:burst-union}); the argument for substituting $\bar\theta$ is the same as in Theorem~\ref{thm:cc-cert}.
-\textbf{Three pieces are still missing:}
-\begin{problem}[O1: monotonicity in the shape parameters]\label{prob:O1}
-For unflagged bursts, is $\err$ monotone in $p_b,R,T_b$? (Remark~\ref{rem:shape} shows that free operations do not give it; if it fails,
-one must take the worst case over a finite class of shapes, or use a union bound over shapes.)
-\end{problem}
-\begin{problem}[O2: parameter identification under contamination]\label{prob:O2}
-Bursts and chip events contaminate the syndrome statistics, and the i.i.d.\ premise of Lemma~\ref{lem:lambda} fails. One needs a robust confidence upper limit for $p$ (for example an estimate that excludes windows with high-weight detection events)
-and confidence upper limits for $r,r_c$ (from event-detection statistics, connected to the Poisson lower bound of P2, \S\ref{sec:design}).
-\end{problem}
-\begin{problem}[O3: explicit estimates for the burst sum]\label{prob:O3}
-Turn the double sum over configurations on the right side of Lemma~\ref{lem:burst-union} into an explicit exponential function (cluster expansion); a domain of convergence is needed,
-together with a proof that for $d\gg R$ it only changes the exponent and produces no $d$-independent floor.
-\end{problem}
+The double sum of Lemma~\ref{lem:burst-union} can be avoided. The key is a tilted form of the Bhattacharyya coefficient.
+
+\begin{lemma}[Tilted Bhattacharyya bound]\label{lem:tilted}
+Let $P$ be any law of $(E,F)$, $G\in V$, and $Q>0$ any positive function of $(E,F)$ (not necessarily normalized). Then
+\[
+\BC(P;G)\;\le\;\E_P\Big[\sqrt{Q(E+G,F)/Q(E,F)}\Big],
+\]
+with equality for $Q=P$ (where $P>0$).\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+Write $x=(E,F)$, $x+G=(E+G,F)$ and $h(x)=\sqrt{Q(x+G)/Q(x)}$. By the AM--GM inequality, $\sqrt{P(x)P(x+G)}\le\tfrac12P(x)h(x)+\tfrac12P(x+G)/h(x)$.
+Sum over $x$ and substitute $y=x+G$ in the second term; since $G+G=0$, $1/h(y+G)=h(y)$, so both terms equal $\tfrac12\E_P[h]$.
+\end{proof}
+
+\begin{definition}[Code-capacity bursts]\label{def:cc-bursts}
+On a stabilizer code with $n$ qubits, the noise $\Nn_{\rm cc}^{\rm burst}$ consists of: background $\Nn_{\rm cc}(p,e)$; for each region $B_z$ of a finite family of subsets of qubits, an independent Poisson number of events of intensity $r_z$, each of which applies independent depolarizing noise $\Dep_{p_b}$ to every qubit of $B_z$, with a strength $p_b\in[0,\tfrac34]$ drawn independently from an arbitrary (unknown) law; and, optionally, a chip-scale layer as in Lemma~\ref{lem:floor}. Bursts carry no flags and faults add in $\F$. Put
+\[
+V=\max_z|B_z|,\qquad \rho_z=1-e^{-r_z},\qquad \bar\rho=\max_j\sum_{z:\,j\in B_z}\rho_z
+\]
+(largest region and largest expected number of hit regions covering a qubit).
+\end{definition}
+
+\begin{theorem}[Product-form union bound for burst mixtures]\label{thm:burst-product}
+For $\Nn_{\rm cc}^{\rm burst}$ without the chip layer, every $t\in(0,\tfrac34]$, $\tau=t/(3(1-t))$ and
+\[
+m(s)=e+(1-e)\Big[(1-s)\sqrt\tau+\frac{s}{3\sqrt\tau}+\frac{2s}3\Big],\qquad \kappa=\frac{m(3/4)}{m(p)},\qquad
+B_{\rm burst}=m(p)\,\exp\!\Big(\bar\rho\,\frac{\kappa^V-1}V\Big),
+\]
+we have $\BC(P;G)\le B_{\rm burst}^{\wt(G)}$ for every $G$, and therefore
+\[
+\err_d\;\le\;\tfrac12\,\widetilde W_d\big(B_{\rm burst}\big).
+\]
+For $t=p$, $m(p)=B(p,e)$, so the bound reduces to Corollary~\ref{cor:product} when $\bar\rho=0$. The bound depends on the burst layer only through $V$ and $\bar\rho$: it holds uniformly over all strength laws.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+Apply Lemma~\ref{lem:tilted} with $Q=\prod_jQ_j$, $Q_j(a,0)=\Dep_t(a)$, $Q_j(a,1)=\tfrac14$. The factor $g_j=\sqrt{Q_j(a+G_j,f)/Q_j(a,f)}$ is $1$ if $G_j=I$ or $f=1$; for $f=0$ and $G_j\ne I$ it is $\sqrt\tau$ at $a=I$, $1/\sqrt\tau$ at $a=G_j$, and $1$ at the other two Paulis.
+Condition on the burst configuration $\mathcal C$ (event counts and strengths). The qubits are then independent; an unflagged qubit $j$ carries $\Dep_{s_j}$ with $s_j=p$ if no event covers it and $s_j\in[p,\tfrac34]$ otherwise (depolarizing rates compose within $[p,\tfrac34]$), and an erased qubit is uniform. Hence $\E[g_j\mid\mathcal C]=m(s_j)$ for $j\in\supp G$.
+$m$ is affine with slope $(1-e)(1+3u)(1-u)/(3u)\ge0$, $u=\sqrt\tau\le1$, so $m(s_j)\le m(p)$ if $j$ is uncovered and $m(s_j)\le m(\tfrac34)$ otherwise. With $N_G$ the number of covered qubits of $\supp G$ and $c_z=\mathbf 1[\text{at least one event in }B_z]$ (independent Bernoulli($\rho_z$)),
+\[
+\E_P\Big[\prod_jg_j\Big]\le m(p)^{\wt G}\,\E\,\kappa^{N_G}\le m(p)^{\wt G}\prod_z\big(1+\rho_z(\kappa^{a_z}-1)\big)\le m(p)^{\wt G}\exp\Big(\sum_z\rho_z(\kappa^{a_z}-1)\Big),
+\]
+where $a_z=|B_z\cap\supp G|\le V$ and $N_G\le\sum_zc_za_z$ ($\kappa\ge1$). By convexity, $\kappa^{a}-1\le\tfrac aV(\kappa^V-1)$ for $0\le a\le V$, and $\sum_z\rho_za_z=\sum_{j\in\supp G}\sum_{z\ni j}\rho_z\le\bar\rho\,\wt G$.
+This gives $\BC(P;G)\le B_{\rm burst}^{\wt G}$; Lemma~\ref{lem:union} and $K=N(S)\setminus S$ give the second claim. For $t=p$, $m(p)=2\sqrt{p(1-p)/3}+2p/3$ on unflagged qubits, i.e.\ $m(p)=B(p,e)$.
+\end{proof}
+
+\noindent This settles open problem O3 at code capacity. The right-hand side is the weight enumerator of the code evaluated at one number, exactly as without bursts. Whatever exponential decay $\tfrac12\widetilde W_d(x)$ has at $x=B(p,e)$ it also has at $x=B_{\rm burst}$, so bursts of bounded size change the exponent and produce no $d$-independent floor. The price is the factor $\kappa^V$: a hit region can conspire with the background on up to $V$ qubits.
+The free parameter $t$ can be optimized after the data are seen (the inequality holds for every $t$). Check K3 of \texttt{checks/completion\_checks.py} verifies $\BC\le\E_P[h]\le B_{\rm burst}^{\wt G}$ for every logical $G$, and $\err\le\tfrac12\sum_G\BC\le\tfrac12\widetilde W(B_{\rm burst})$, with exact ML on $[[5,1,3]]$ (with erasure) and on the $d=3$ rotated surface code.
+The same argument applies to any structure in which, given the burst configuration, the fault law is a product over fault locations (space-time locations included); only the single-location factor $m$ changes. This extension is not written out here.
+
+\subsubsection*{The shape question (O1) has a negative answer}
+
+\begin{proposition}[$\err$ is not monotone in the burst strength]\label{prob:O1}
+On the $d=3$ rotated surface code take background $p=\tfrac1{200}$, $e=0$, and one region $B=\{(0,1),(1,0),(1,2),(2,1)\}$ that is hit with probability $\rho=\tfrac1{20}$, in which case $\Dep_{p_b}$ is added on its qubits (unflagged). Then
+\[
+\err(p_b=\tfrac12)=4.8396\times10^{-3}\;>\;\err(p_b=\tfrac34)=3.5580\times10^{-3}
+\]
+(exact rational arithmetic; the values are rounded). So for unflagged bursts $\err$ is not monotone in the shape parameter $p_b$.\hfill\st{PROVED} (exact computation)
+\end{proposition}
+\noindent The computation is check K4 of \texttt{checks/completion\_checks.py}. The same drop occurs in the Poisson form of Definition~\ref{def:cc-bursts} (intensity $0.05$: $4.72\times10^{-3}\to3.48\times10^{-3}$, floating point), and a random search finds smaller examples on $n=3$ qubits.
+The monotonicity in the radius $R$ and duration $T_b$ is not tested. Since monotonicity fails, certification must not rely on a shape upper bound. Theorem~\ref{thm:burst-product} does not: it is uniform in the strength, and it uses only the region size $V$ and the rates.
+
+\subsubsection*{Parameter limits under contamination (O2)}
+
+\begin{lemma}[Contamination-robust confidence limits]\label{lem:robust}
+Let the data be $M$ independent and identically distributed shots of $\Nn_{\rm cc}^{\rm burst}$ (with the chip layer), where flags come only from erasures.
+(a) Lemma~\ref{lem:flags} holds unchanged: $\Prob[e\le\bar e]\ge1-\delta_1$.
+(b) Lemma~\ref{lem:lambda} remains valid, and becomes conservative: the syndrome bit of $g_0$ on shots without flags in its support is Bernoulli with parameter $P\ge\tfrac12(1-\lambda^{w_0})$, so $\Prob[p\le\bar p]\ge1-\delta_2$ with the same $\bar p$.
+(c) Let $T$ be a binary statistic of a shot and $\mathcal Z$ a set of regions with $\Prob[T=1\mid\text{at least one event in }\mathcal Z]\ge\eta>0$ (a detection efficiency). With $\bar T$ the Clopper--Pearson upper limit for $\Prob[T=1]$, $\Prob\big[\sum_{z\in\mathcal Z}r_z\le-\ln(1-\bar T/\eta)\big]\ge1-\delta_3$ (vacuous if $\bar T\ge\eta$).
+\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+(a) The flags are independent of the other layers. (b) The bit is the parity of the background contribution plus an independent contamination term, so $\E(-1)^{\rm bit}=\lambda^{w_0}\chi$ with $|\chi|\le1$ and $\lambda^{w_0}\ge0$. Hence $1-2P\le\lambda^{w_0}$, and on the event $P\le\overline P$ we get $\lambda\ge(1-2\overline P)_+^{1/w_0}$. (c) $\Prob[T=1]\ge\eta\,(1-e^{-\sum_{z\in\mathcal Z}r_z})$; on the event $\Prob[T=1]\le\bar T$ this rearranges to the stated limit.
+\end{proof}
+
+\begin{proposition}[No uniformly valid upper limit on the burst rate without a strength floor]\label{prop:no-rate-limit}
+Suppose a procedure computes $\bar r$ from $M$ shots and has $\Prob_\theta[r_z\le\bar r]\ge1-\delta$ for every model $\theta$ of a class containing, for one region $z$, all models $\theta_{R,\epsilon}$ (rate $R$, strength $\epsilon$) with $R>0$ and $\epsilon\in(0,\epsilon_0]$. Then under the burst-free model $\theta_0$, $\Prob_{\theta_0}[\bar r=\infty]\ge1-\delta$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+The single-shot law of $\theta_{R,\epsilon}$ is continuous in $\epsilon$ and equals that of $\theta_0$ at $\epsilon=0$, so $\mathrm{TV}(P^{\otimes M}_{\theta_{R,\epsilon}},P^{\otimes M}_{\theta_0})\to0$ as $\epsilon\to0$. Hence $\Prob_{\theta_0}[\bar r\ge R]\ge\Prob_{\theta_{R,\epsilon}}[\bar r\ge R]-\mathrm{TV}\ge1-\delta-o(1)$ for every $R$; let $R\to\infty$.
+\end{proof}
+
+\noindent So O2 is settled for $p$ and $e$ (shots i.i.d.; for multi-round data use windows separated by gaps $\ge T_b$, whose event counts are independent), while an upper limit on the burst rates needs an assumption that makes bursts detectable, such as a floor on the strength that yields the efficiency $\eta$ in (c). What remains open is a certificate that is uniform over weak bursts without such a floor (weak bursts are hard to detect but also nearly harmless; Theorem~\ref{thm:burst-product} does not exploit the second fact), and the circuit-level version.
+
+\subsubsection*{The certification theorem with bursts and chip events}
+
+\begin{theorem}[Conditional certification with bursts and chip events, code capacity]\label{thm:burst-cert}
+Let the true model be $\Nn_{\rm cc}^{\rm burst}$ with parameters $\theta=(p,e,(r_z),r_c)$, known regions $(B_z)$, and arbitrary unknown burst strength law and chip fault law. Let $q_c=1-e^{-r_c}$ be the probability of a chip event in a shot.
+Suppose the confidence upper limits satisfy $\Prob[p\le\bar p,\ e\le\bar e,\ r_z\le\bar r_z\ \forall z,\ r_c\le\bar r_c]\ge1-\delta$ (for example from Lemma~\ref{lem:robust}). Then with probability $\ge1-\delta$, for all $d$ and all $t\in(0,\tfrac34]$,
+\[
+\err_d(\theta)\;\le\;\bar q_c+(1-\bar q_c)\,\min\Big\{1,\ \tfrac12\widetilde W_d\big(B_{\rm burst}(\bar p,\bar e,\bar\rho,V;t)\big)\Big\},
+\qquad\bar q_c=1-e^{-\bar r_c},
+\]
+where $\bar\rho$ is computed from the $\bar r_z$.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+On the confidence event, the model $\bar\theta$ with the same strength and chip laws and parameters $(\bar p,\bar e,(\bar r_z),\bar r_c)$ is obtained from $\theta$ by superposing independent, classically samplable layers. These are depolarizing noise on unflagged qubits and erasure (Lemma~\ref{lem:basic-ops}; erasure overwrites the other layers), and further Poisson events of rates $\bar r_z-r_z$ and $\bar r_c-r_c$ (superposition theorem).
+Hence $\err(\theta)\le\err(\bar\theta)$ (Proposition~\ref{prop:rate-mono}). Lemma~\ref{lem:floor} gives $\err(\bar\theta)\le\bar q_c+(1-\bar q_c){\err}^{(0)}(\bar\theta)$, and Theorem~\ref{thm:burst-product} bounds ${\err}^{(0)}(\bar\theta)$ (and trivially ${\err}^{(0)}\le1$).
+\end{proof}
+
+\noindent Compared with the earlier target statement: no monotonicity in the shape is needed (Proposition~\ref{prob:O1} shows it fails), and the double configuration sum is replaced by the product bound. The remaining gap to a circuit-level certificate is the space-time version of Theorem~\ref{thm:burst-product} and of Lemma~\ref{lem:robust}(b), which needs a model of measurement faults.
 
 \paragraph{Division of numerical checks (see \S\ref{sec:map}).}
 The circuit-level stim + MWPM data of P2 can check: (i) the floor $\err\ge q_c(1-2^{-q})$ and its scaling $\propto r_cT_{\rm tot}$
 (the lower bound holds for any decoder, so the MWPM failure rate must not fall below it); (ii) unbiasedness of the parameter estimators (milestone M3); and
 (iii) that bursts reduce the exponent rather than create a floor. The \emph{upper-bound} parts concern ML, and MWPM data cannot falsify them;
 they must be checked with exact ML at small $d$ (\texttt{lcd.decoders.ExactTNMLDecoder}) or with tensor-network ML for code capacity with burst clusters (M1).
+
+\subsection{Certification for the MWPM decoder at code capacity (O5)}\label{sec:mwpm-cert}
+
+The bounds above concern ML decoding. For minimum-weight matching a Peierls-type argument \cite{DKLP} gives an upper bound directly, with no monotonicity property of the decoder needed.
+
+\begin{theorem}[Peierls bound for MWPM with erasures]\label{thm:mwpm-peierls}
+Consider the rotated surface code of odd distance $d$ (conventions of \texttt{lcd.codes.RotatedSurfaceCode}) under $\Nn_{\rm cc}(p,e)$. The decoder corrects the $X$ part and the $Z$ part independently, each by a correction of minimum weight with the observed syndrome, where the weight counts the non-erased qubits (erased qubits have weight $0$; ties are broken arbitrarily). At $e=0$ this is the decoder \texttt{MWPMCodeCapacity}. Let $q=2p/3$ and
+\[
+B_M(p,e)=e+(1-e)\,2\sqrt{q(1-q)}.
+\]
+If $3B_M<1$, the logical failure probability of this decoder satisfies
+\[
+\pL^{\rm MWPM}(p,e)\;\le\;2\sum_{\ell\ge d}d\,3^{\ell-1}B_M^{\ell}\;=\;\frac{2d\,B_M\,(3B_M)^{d-1}}{1-3B_M}.
+\]
+\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+We treat the $X$ part; the $Z$ part is the same with the roles of rows and columns exchanged, and the union bound gives the factor $2$.
+\emph{Matching graph.} Every qubit lies in one or two $Z$ checks (its four neighbouring plaquettes alternate in type, and a qubit in no $Z$ check would be an undetectable weight-$1$ error). Form the graph whose vertices are the $Z$ checks and a boundary vertex $\beta$, in which qubit $j$ is an edge joining its two $Z$ checks, or its $Z$ check and $\beta$.
+Every $Z$ check has weight $\le4$, so every vertex other than $\beta$ has degree $\le4$. The qubits of row $0$ lie in exactly one $Z$ check each (check K1), so their edges end at $\beta$.
+
+\emph{Failure produces a heavy cycle.} Let $E$ be the $X$ part of the error and $C$ the correction. $\Gamma=E\oplus C$ has zero syndrome, so every check vertex has even degree in $\Gamma$, hence so does $\beta$, and $\Gamma$ is an edge-disjoint union of simple cycles.
+A failure means that $\Gamma$ has odd overlap with the $Z$ logical on row $0$, so some simple cycle $\gamma\subseteq\Gamma$ has odd overlap with row $0$. Then $\gamma$ contains a row-$0$ edge, hence passes through $\beta$, and it is an $X$ logical operator, so $|\gamma|\ge d$.
+$C\oplus\gamma$ has the same syndrome as $C$, so minimality gives $w(\gamma\cap C)\le w(\gamma\setminus C)$, where $w$ counts non-erased qubits. Since $\gamma\subseteq E\oplus C$ we have $\gamma\setminus C=\gamma\cap E$, so at least half of the non-erased edges of $\gamma$ carry an $X$ error.
+
+\emph{Probability for a fixed cycle.} The $X$ components of non-erased qubits are independent Bernoulli($q$), and erased qubits impose no constraint. For $t\ge1$ the indicator that at least half of the $k$ non-erased edges are in error is at most $\prod_{\text{non-erased}}t^{x_i-1/2}$. Taking the expectation edge by edge and choosing $t=(1-q)/q\ge1$ ($q\le\tfrac12$) bounds the probability for a cycle of length $\ell$ by $\big(e+(1-e)2\sqrt{q(1-q)}\big)^\ell=B_M^\ell$.
+
+\emph{Counting.} A simple cycle of length $\ell$ through $\beta$ that uses a row-$0$ edge is traced by leaving $\beta$ along a row-$0$ edge ($d$ choices) and then choosing each of the remaining $\ell-1$ edges at a vertex of degree $\le4$, other than the edge just used ($\le3$ choices). There are at most $d\,3^{\ell-1}$ of them. Summing over $\ell\ge d$ gives the claim.
+\end{proof}
+
+\begin{corollary}[Finite-sample MWPM certificate]\label{cor:mwpm-cert}
+With $\bar p,\bar e$ from Lemmas~\ref{lem:flags} and~\ref{lem:lambda} (or Lemma~\ref{lem:robust}) at total level $\delta$, with probability $\ge1-\delta$, simultaneously for all $d$ with $3B_M(\bar p,\bar e)<1$,
+\[
+\pL^{\rm MWPM}(p,e)\;\le\;\frac{2d\,B_M(\bar p,\bar e)\,\big(3B_M(\bar p,\bar e)\big)^{d-1}}{1-3B_M(\bar p,\bar e)}.
+\]
+\hfill\st{PROVED}
+\end{corollary}
+\begin{proof}
+$B_M$ is nondecreasing in $p\in[0,\tfrac34]$ (as $q\le\tfrac12$) and in $e$ (as $2\sqrt{q(1-q)}\le1$), and the right side of Theorem~\ref{thm:mwpm-peierls} is increasing in $B_M$ on $3B_M<1$. Apply it on the confidence event.
+\end{proof}
+
+\noindent This answers O5 for code-capacity MWPM. The bound is rigorous but crude: its range of validity $3B_M<1$ is $p<4.29\%$ at $e=0$ and $e<\tfrac13$ at $p=0$, far below the MWPM thresholds. Replacing $3$ by the connective constant of self-avoiding walks on the square lattice ($\approx2.64$) improves the rate, but only asymptotically in $\ell$, and is not done here.
+Because it is a bound for a fixed decoder, it does not conflict with the rule that MWPM data cannot falsify ML bounds: it is falsified only by MWPM failure rates above it. A comparison with simulated MWPM failure rates is listed in \S\ref{sec:map}.

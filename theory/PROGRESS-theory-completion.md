@@ -1,7 +1,8 @@
 # Theory completion: progress notes (branch `theory-completion`, paused 2026-10-02)
 
 Working tree: `../coset-theory` (git worktree), kept separate from the main tree, where another agent is doing F0–F7.
-No `.tex` file has been changed yet. The results below have been derived and checked numerically; their proofs still have to be written into the notes.
+
+**Update (tex written):** everything below is now in the notes: sec3 §3.x (Lemmas 3.28–3.29, Theorems 3.30–3.31, Prop 3.32), sec4 (Lemma 4.8, Def 4.9, Thm 4.10, Prop 4.11, Lemma 4.12, Prop 4.13, Thm 4.14, Thm 4.15, Cor 4.16), sec5 (Prop 5.1 PROVED), sec6 (new table rows, open-problem list), main.tex abstract, README status board. The PDF builds with no undefined references. K4 and K5 have now run and pass (each about 1 s, 140 MB). K6 and K7 are still not run, and a full run of the script was OOM-killed once (cause not located). The MWPM numerical check is not written.
 
 ## Results derived (proof worked out) and numerically checked
 

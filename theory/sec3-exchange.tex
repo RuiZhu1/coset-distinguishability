@@ -75,7 +75,7 @@ $\err(p,e)$ in each case, and verifies Theorem~\ref{thm:partial} (all checks pas
 $R^{(d)}=\partial_e\err/\partial_p\err$ and $c=\tfrac34-p$ are \emph{equal} to 8 significant digits.
 \item For the Steane code $R^{(d)}/c$ lies between $0.67$ and $0.86$; for the $d=3$ rotated surface code at $p=0.02$, $e_0=0$ one finds $R^{(3)}\approx0.54$ while $c=0.73$.
 \end{itemize}
-Explanation (unproved): for a perfect code, flagging a single qubit does not change the ML decision on any syndrome, so $\err$ is linear along the segment ``replace the law of qubit $j$ from
+Explanation (now proved for $[[5,1,3]]$, Proposition~\ref{prop:five-sharp}; the general criterion is Theorem~\ref{thm:equality}): for this code, flagging a single qubit does not change the ML decision on any syndrome, so $\err$ is linear along the segment ``replace the law of qubit $j$ from
 $\Dep_p$ by $\Dep_{3/4}$'', and the first-order coefficient is exactly $(\tfrac34-p)\partial_{p_j}\err$.
 This shows that the inequality $\partial_e\err_d\le c\,\partial_p\err_d$ cannot be improved uniformly over all codes; the strict gap on the surface code is \emph{code dependent}.
 \hfill\st{NUMERICAL}
@@ -213,8 +213,8 @@ The ML decoder depends on $\theta$ only through $p$: the erased positions are kn
 the $e$-derivative is an exact identity for ML, and the envelope argument is needed only for $\partial_p$.
 Hence $\partial_\theta\ln\pL=\langle s_\theta\rangle_{\rm fail}$ (with $s_\theta=\partial_\theta\ln P_\theta$ the score function and the conditional expectation taken over failure events),
 and $\partial\alpha/\partial\theta$ is minus the least-squares slope of $\langle s_\theta\rangle_{\rm fail}$ against $d$ (the least-squares slope is linear in the data and commutes with differentiation).
-Differentiability: at finite $d$, $\err$ is the minimum of finitely many smooth functions and is differentiable almost everywhere; kinks may occur at ties between decisions.
-\hfill\st{SKETCH}
+Differentiability: at finite $d$, $\err$ is the minimum of finitely many smooth functions; one-sided derivatives always exist, and they equal the frozen-decoder derivatives when the ML decision is unique (Lemma~\ref{lem:danskin}, which makes this remark rigorous).
+\hfill\st{PROVED} (via Lemma~\ref{lem:danskin})
 \end{remark}
 
 \begin{observation}[Exact verification of the envelope identity]\label{obs:envelope}
@@ -343,3 +343,80 @@ These values lie within about one standard error of the Bhattacharyya reference 
 The measured rate lies inside the range spanned by other structures: the uncoded qubit has $R=c$, the Pauli repetition structures $\mathrm{Rep}_k$ approach $R_B$ as $k\to\infty$ ($R_B/c\approx0.25$ at $p_0=0.0213$, about $0.31$--$0.35$ at $p_0=0.04$--$0.06$; \S\ref{sec:hardened}, \texttt{checks/universal\_order\_search.py}), and the surface code sits at $R_{\rm surface}/c\approx0.3$, that is, at about the same value as these large structures.
 Since every monotone of the local free order has marginal rate in $[0,c]$ (Proposition~\ref{prop:marginal}), nothing in these data calls for further free operations: the gap $c-R_\alpha$ is where the surface-code monotone sits, a property of the code (case (A) of Problem~\ref{prob:gap}), not evidence of missing free operations. This is a reading of numbers, not a proof of (A).
 \end{remark}
+
+\subsection{Concavity, the envelope identity, and equality in the exchange-rate bound}\label{sec:equality}
+
+This subsection gives a proof of the envelope argument (Remark~\ref{rem:envelope}), a form of Theorem~\ref{thm:rate}(a) that needs no differentiability assumption, and a characterization of the codes and work points at which the bound is attained (open problem O6, Observation~\ref{obs:sharp}).
+Fix a linear decoding structure on $n$ qubits. For an erased set $A$ and rates $q=(q_j)_{j\notin A}\in[0,\tfrac34]^{n-|A|}$ let $\err_A(q)$ be the ML error when the qubits of $A$ are erased (flags known) and qubit $j\notin A$ carries $\Dep_{q_j}$; write $\err_A(p)$ when all $q_j=p$.
+A \emph{decision rule} $D$ maps each syndrome to a class; $L_A(q;D)$ is its failure probability, so $\err_A(q)=\min_DL_A(q;D)$ over the finite set of rules, and $\mathcal D^\ast_A(q)$ is the set of minimizers (the ML rules).
+
+\begin{lemma}[One qubit: affine failure rates, concave ML error, and the flag at rate $\tfrac34$]\label{lem:concave}
+Fix $A$, $j\notin A$ and the rates of the other qubits.
+(a) $q_j\mapsto L_A(q;D)$ is affine on $[0,\tfrac34]$ for every $D$, and $q_j\mapsto\err_A(q)$ is concave.
+(b) At $q_j=\tfrac34$, $\err_A(q)=\err_{A\cup\{j\}}(q_{-j})$: a qubit at rate $\tfrac34$ is the same decision problem as an erased qubit.
+\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+(a) $\Dep_{q_j}=(1-q_j)\delta_I+\tfrac{q_j}3(\delta_X+\delta_Y+\delta_Z)$ is affine in $q_j$, hence so is the product law, every class weight $W_c(q)$ and $L_A(q;D)=1-\sum_sW_{D(s)}(q)$.
+$\err_A=1-\sum_s\max_cW_c$ is one minus a sum of maxima of affine functions, hence concave. (b) $\Dep_{3/4}$ is the uniform law; given $A$ the position $j$ is fixed, so its flag carries no information beyond the law, and both problems have the same joint law of class and syndrome.
+\end{proof}
+
+\begin{lemma}[Danskin form of the envelope identity]\label{lem:danskin}
+Let $\theta\mapsto P_\theta$ be a family of noise laws on a structure such that every $L(\theta;D)$ is continuous near $\theta^\ast$ and has a one-sided directional derivative $\partial_vL(\theta^\ast;D)$ in a direction $v$. Then $\err(\theta)=\min_DL(\theta;D)$ has the one-sided directional derivative
+\[
+\partial_v^+\err(\theta^\ast)=\min_{D\in\mathcal D^\ast(\theta^\ast)}\partial_vL(\theta^\ast;D).
+\]
+In particular, if all ML rules at $\theta^\ast$ have the same derivative (for example, if the ML class is unique for every syndrome), the derivative of the ML error equals the derivative of the failure rate of the decoder frozen at $\theta^\ast$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+There are finitely many rules. A rule $D\notin\mathcal D^\ast$ has $L(\theta^\ast;D)>\err(\theta^\ast)$, so by continuity it is not a minimizer for $\theta=\theta^\ast+hv$ with $h>0$ small. Hence $\err(\theta^\ast+hv)=\min_{D\in\mathcal D^\ast}\big[\err(\theta^\ast)+h\,\partial_vL(\theta^\ast;D)+o(h)\big]=\err(\theta^\ast)+h\min_{D\in\mathcal D^\ast}\partial_vL(\theta^\ast;D)+o(h)$.
+\end{proof}
+
+\noindent Lemma~\ref{lem:danskin} applies to $\Nn_{\rm cc}(p,e)$ in every direction ($L$ is a polynomial in $p$ and $e$), and it upgrades Remark~\ref{rem:envelope} to a theorem: the frozen-decoder derivative used by the P1 estimator is the derivative of $\err$ whenever the ML decision is unique, and in general it bounds the right derivative from above (the frozen rule is one of the minimizers). The $e$-derivative needs no envelope argument (Remark~\ref{rem:envelope}).
+
+\begin{theorem}[Exchange-rate bound with one-sided derivatives]\label{thm:rate-right}
+For every linear decoding structure and every $0\le p<\tfrac34$, $0\le e<1$,
+\[
+\partial_e\err(p,e)\;\le\;c(p,e)\,\partial_p^+\err(p,e),\qquad c=\frac{3/4-p}{1-e},
+\]
+where $\partial_e\err$ exists ($\err$ is a polynomial in $e$) and $\partial_p^+$ is the right derivative, which exists by Lemma~\ref{lem:danskin}. No differentiability assumption is needed.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+Write $\pi_A=e^{|A|}(1-e)^{n-|A|}$, so $\err(p,e)=\sum_A\pi_A\err_A(p)$.
+(1) Reindexing $B=A\cup\{j\}$ and using $\pi_{B\setminus\{j\}}=\pi_B(1-e)/e$ gives
+$\partial_e\err=\sum_A\pi_A\big(\tfrac{|A|}e-\tfrac{n-|A|}{1-e}\big)\err_A=\tfrac1{1-e}\sum_A\pi_A\sum_{j\notin A}\big[\err_{A\cup\{j\}}(p)-\err_A(p)\big]$ (for $e=0$ only $A=\emptyset$ contributes).
+(2) Let $f_{A,j}(q)$ be $\err_A$ with qubit $j$ at rate $q$ and the others at $p$. By Lemma~\ref{lem:concave}, $\err_{A\cup\{j\}}(p)-\err_A(p)=f_{A,j}(\tfrac34)-f_{A,j}(p)\le(\tfrac34-p)\,f_{A,j}'^{\,+}(p)$ (a concave function lies below its right tangent).
+(3) By Lemma~\ref{lem:danskin}, $f_{A,j}'^{\,+}(p)=\min_{D\in\mathcal D^\ast_A}\partial_{q_j}L_A(p;D)$ and $\partial_p^+\err_A(p)=\min_{D\in\mathcal D^\ast_A}\sum_{j\notin A}\partial_{q_j}L_A(p;D)\ge\sum_{j\notin A}f_{A,j}'^{\,+}(p)$.
+Combining, $\partial_e\err\le\tfrac{3/4-p}{1-e}\sum_A\pi_A\sum_{j\notin A}f_{A,j}'^{\,+}(p)\le c\sum_A\pi_A\,\partial_p^+\err_A(p)=c\,\partial_p^+\err$.
+\end{proof}
+
+\begin{theorem}[When the bound is attained]\label{thm:equality}
+Let $0<p<\tfrac34$, $0\le e<1$. Then $\partial_e\err=c\,\partial_p^+\err$ if and only if, for every erased set $A$ with $\pi_A>0$ (only $A=\emptyset$ if $e=0$, all $A$ if $e>0$):
+\begin{enumerate}[(E1)]
+\item for every $j\notin A$ and every syndrome, some class that is ML-optimal for $(A,p)$ is also ML-optimal when qubit $j$ is erased in addition (``flagging one more qubit never changes the ML decision''); and
+\item $\min_{D\in\mathcal D^\ast_A}\sum_{j\notin A}\partial_{q_j}L_A(p;D)=\sum_{j\notin A}\min_{D\in\mathcal D^\ast_A}\partial_{q_j}L_A(p;D)$, which holds automatically if the ML class is unique for every syndrome.
+\end{enumerate}
+In particular, at $e_0=0$ and a rate $p$ without ML ties, $R^{(d)}=c$ if and only if flagging any single qubit leaves an ML decision optimal.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+Equality in the proof of Theorem~\ref{thm:rate-right} holds iff it holds in (2) for every $(A,j)$ with $\pi_A>0$ and in (3) for every such $A$; the latter is (E2).
+In (2), a concave function meets its right tangent at $\tfrac34$ iff it is affine on $[p,\tfrac34]$. Now $f_{A,j}=1-\sum_sg_s$ with $g_s=\max_cW_c$ convex; a sum of convex functions is affine iff each summand is.
+Finally $g_s$ is affine on $[p,\tfrac34]$ iff some $c$ is maximal at both endpoints: if $W_c$ is maximal at both ends, every $W_{c'}-W_c$ is affine and $\le0$ at both ends, so $g_s=W_c$; conversely, if $g_s$ is affine, a class $c$ maximal at the midpoint satisfies $W_c\le g_s$ with equality at an interior point, so $W_c=g_s$ on the whole segment.
+At $q_j=p$ maximality means ML-optimal for $(A,p)$, and at $q_j=\tfrac34$ it means ML-optimal for $A\cup\{j\}$ (Lemma~\ref{lem:concave}(b)); this is (E1).
+\end{proof}
+
+\noindent Theorem~\ref{thm:equality} answers the first half of open problem O6: the bound is attained exactly when the ML decision is insensitive to one additional flag. The criterion is a finite statement about ML decisions at the rate $p$; \texttt{checks/sharp\_codes\_scan.py} tests the equivalence (E1)$\Leftrightarrow R^{(d)}=c$ at $e_0=0$ on a library of small codes.
+
+\begin{proposition}[{The five-qubit code attains the bound at every rate}]\label{prop:five-sharp}
+For $[[5,1,3]]$ at $e_0=0$ and every $0<p<\tfrac34$, the ML class is unique for every syndrome and (E1) holds. Hence $R^{(d)}(p,0)=c(p,0)=\tfrac34-p$ exactly.
+For the Steane code and for the $d=3$ rotated surface code (E1) fails (at $p=0.01$ and $0.05$), so $R^{(d)}<c$ there.\hfill\st{PROVED} (computer-assisted)
+\end{proposition}
+\begin{proof}
+Put $r=p/(3(1-p))\in(0,1)$. The weight of a class $c$ is proportional to the integer polynomial $W_c(r)=\sum_{E\in c}r^{\wt(E)}$, and, with qubit $j$ erased, to $W^{(j)}_c(r)=\sum_{E\in c}r^{\wt(E\text{ off }j)}$.
+For each of the $16$ syndromes let $c_s$ be the class that is ML at small $r$. Every difference $\Delta(r)=W_{c_s}(r)-W_c(r)$ ($c\ne c_s$ in the same syndrome) and $\Delta^{(j)}(r)=W^{(j)}_{c_s}(r)-W^{(j)}_c(r)$ has degree $\le5$.
+Substituting $r=1/(1+x)$ and multiplying by $(1+x)^5$ gives polynomials in $x$ whose coefficients are nonnegative integers, not all zero in the unflagged case. They are therefore positive (respectively nonnegative) for $x>0$, that is, for $r\in(0,1)$.
+Hence $c_s$ is the unique ML class for $0<p<\tfrac34$ and stays ML-optimal under every single flag; Theorem~\ref{thm:equality} applies.
+The finite computation is check K5 of \texttt{checks/completion\_checks.py} (exact integer arithmetic); the same check finds a violation of (E1) for the other two codes. The strict inequality then follows from Theorem~\ref{thm:equality}, consistent with the values of $R^{(d)}/c$ in Observation~\ref{obs:sharp}.
+\end{proof}
+
+\noindent What remains of O6 is the second half: a structural description of the codes satisfying (E1) (perfect codes? transitive codes?). $[[5,1,3]]$ is perfect, but perfection alone does not obviously imply (E1): a weight-$3$ logical through the flagged qubit can tie with the weight-$1$ correction at leading order, so higher orders decide.
