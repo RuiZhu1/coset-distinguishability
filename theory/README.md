@@ -20,7 +20,8 @@ theory/
 ├── checks/exponent_criterion.py  channel-coding exponent criterion for large structures (seconds)
 ├── checks/completion_checks.py   checks K1-K7 of the theory-completion results (genie, burst bound, O1 counterexample, [[5,1,3]] certificate; about 4 min and 150 MB, `make -C theory completion`)
 ├── checks/handproof_checks.py   checks H1-H5 of the pen-and-paper pass ([[5,1,3]] polynomials, self-avoiding walks, bounds vs data, small DEM, pattern gain; seconds)
-└── checks/second_pass_checks.py checks L1-L4 (E1 on a code library, Stein exponents, MWPM simulation vs Peierls, coverage of Thm 4.14 at d = 3; about 1 min; writes results/second_pass_checks.json)
+├── checks/second_pass_checks.py checks L1-L4 (E1 on a code library, Stein exponents, MWPM simulation vs Peierls, coverage of Thm 4.14 at d = 3; about 1 min; writes results/second_pass_checks.json)
+└── checks/third_pass_checks.py  checks M1-M8 (pure-erasure exponent, degeneracy of the union bound, tensor-power conversions, weak bursts, Peierls with bursts, O1 counterexamples in exact arithmetic, AME codes; about 1.5 min; writes results/third_pass_checks.json)
 ```
 
 ## Build and run
@@ -65,12 +66,15 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Remark 0.10 | Reformulation of Conjecture 3.11: all-losses form proved (uncoded qubit); single-loss form for $\varepsilon^\star$ open | -- | `checks/universal_order_search.py` (done; no reversal of trade pairs, Observation 3.17) |
 | Proposition 0.11 | Marginal rates of monotones of the local free order fill exactly $[0,c]$; $c$ is attained by the free-order monotone $1-\mu$; $R_B$ and $R_{\rm hash}$ are marginal rates of monotones ($Q_{\rm hash}$: proved, Proposition 0.12) | PROVED | C7, N1, N7 |
 | Proposition 0.12 | $H(L\mid Y)$ is a member of the complete family, so $Q_{\rm hash}=1-H(L\mid Y)$ is a monotone (uncoded qubit); $\Phi_\alpha$ multiplicative and $H(L\mid Y)$ additive under $\otimes$: necessary conditions for conversions between tensor powers (R-c) | PROVED; sufficiency for R-c open | N7 |
+| Proposition 0.13 | Full power family $\Phi_\alpha$, $\alpha\in[-\infty,\infty]$ (nonincreasing for $\alpha\ge1$, nondecreasing for $\alpha<1$) and the peak $g$ (largest posterior): monotone and multiplicative | PROVED | M3 |
+| Theorem 0.14 (R-c) | Uncoded qubit: exact tensor-power and catalytic conversion give back the one-shot order (two scalars $p$, $\mu$) | PROVED | M3 |
+| Theorem 0.15 (R-c) | Uncoded qubit: approximate tensor-power conversion is decided by $H(L\mid Y)$; rate $N(P)/N(Q)$, $N=1+Q_{\rm hash}$; marginal rate $R_{\rm hash}$; trade pairs reachable approximately, not exactly | PROVED | M3 (Lorenz deficits) |
 | Theorem 1.7 | Monotonicity of $\varepsilon^\star$ under simulable reductions (coarse-graining / discarding flags: data processing; superposition: simulation argument) | PROVED | C1, C2 |
 | Proposition 1.9 | (F1), (F2), (F2') are simulable reductions; superposing independent noise never decreases $\varepsilon^\star$ | PROVED | C1, C2 |
 | Proposition 2.1 | Erasure = flagged completely depolarizing noise (Pauli twirl); the maximally mixed model is conservative for real noise | PROVED | -- |
 | Proposition 2.7 | Monotonicity under leakage given assumption (L); where (L) fails | PROVED (under the assumption) | -- |
 | Proposition 2.10 | Monotonicity in the event-layer rate directions (Poisson superposition) | PROVED | -- |
-| Remark 2.11 / Proposition 4.11 (O1) | Monotonicity in the shape parameters fails for unflagged bursts: exact counterexample in $p_b$ on the $d=3$ surface code ($\varepsilon^\star$ drops by 26% from $p_b=1/2$ to $3/4$); radius and duration untested | PROVED (exact computation) | K4 |
+| Remark 2.11 / Proposition 4.11 (O1) | Monotonicity in the shape parameters fails for unflagged bursts: exact counterexample in $p_b$ on the $d=3$ surface code ($\varepsilon^\star$ drops by 26% from $p_b=1/2$ to $3/4$); also fails for region size and duration (Observations 4.25, 4.26) | PROVED (exact computation) | K4 |
 | Theorem 3.1 | Partial flag-discarding inequality $\varepsilon^\star(p,e_0{+}\delta)\le\varepsilon^\star(p'',e_0)$ | PROVED | C3 |
 | Theorem 3.2 | Exchange-rate bound $R_{e\to p}\le(3/4-p_0)/(1-e_0)$ | PROVED | C7; **P1 (M2)** |
 | Observation 3.5 | The bound is attained by $[[5,1,3]]$ at $e_0{=}0$ (8 significant digits) | NUMERICAL; equality now PROVED (Propositions 3.32, 3.36) | C7, K5 |
@@ -81,7 +85,7 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Proposition 3.16 | Uncoded qubit: $\varepsilon^\star=\tfrac34(1-\mu)$; two-qubit structure $F_2$: $\varepsilon^\star=\tfrac34(1-\nu)$, $\nu=(1-e^2)\lambda$; $\nu_k=(1-e^k)\lambda$ are free-order monotones separating all unreachable pairs | PROVED | S1 (closed forms to 2e-16) |
 | Observation 3.17 | Exhaustive search over all linear structures on $n\le3$ qubits, hill-climbing for $n=4,5$: minimal marginal rate ($0$ at $e_0=0$, positive for $e_0>0$); trade pairs (less Pauli, more erasure) are not reversed by any structure found | NUMERICAL | `checks/universal_order_search.py` (S2-S4) |
 | Conjecture 3.11 | Code-universal operational order = local free order. All-losses form: proved (Proposition 0.9, Remark 0.10). Single-loss form ($\varepsilon^\star$ only): proved for pairs with $\mu'>\mu$ or $\nu'>\nu$ (Proposition 3.16); **numerical evidence against it** for the remaining ``trade'' pairs (Observation 3.17) | CONJECTURE (evidence against) | `checks/universal_order_search.py` |
-| Conjecture 3.12 | $H_B$: $\alpha$ is a function of the Bhattacharyya parameter $B$, $R_\alpha=R_B$ | CONJECTURE; P1 data consistent within about 1 standard error at $e_0>0$ (Observation 3.26), not confirmed; heuristic leading-order support at small $B$ (§3.9) | **P1 (M2)** |
+| Conjecture 3.12 | $H_B$: $\alpha$ is a function of the Bhattacharyya parameter $B$, $R_\alpha=R_B$ | CONJECTURE; P1 data consistent within about 1 standard error at $e_0>0$ (Observation 3.26), not confirmed; leading order proved near the erasure axis (Theorem 5.16, Proposition 5.17); open at $e=0$ | **P1 (M2)** |
 | Lemma 3.19 | Erasure jump: a logical operator supported on $T$ forces $\varepsilon^\star_A\ge\tfrac12$ for $A\supseteq T$ | PROVED | S1 of `checks/hardened_structures_search.py` (all structures, $n\le3$) |
 | Lemma 3.20 | Erasure-only failure $\varepsilon^\star_A(0)=1-2^{-r(A)}$ | PROVED | S2 (all structures, $n\le3$) |
 | Lemma 3.21 / Corollary 3.22 | Failure of order $j$ in $p$ needs a logical of weight $\le2j$; hence no erasure hardening beyond order $2j$ | PROVED | S3 ($j=1$, all structures, $n\le3$) |
@@ -96,13 +100,14 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Corollary 3.35 | First-order obstruction to (E1) by multiplicities at small $p$ | PROVED | L1 (160 random codes: (E1) fails for 138, obstruction detects 113) |
 | Proposition 3.36 (O6) | $[[5,1,3]]$ by hand: closed-form class polynomials; one flag at a single-error syndrome makes all four classes exactly equally likely; equality $R=c$ for all $p$ | PROVED | H1 (table), K5 |
 | Proposition 3.37 | Gap problem: no code-universally sound enlargement of the free operations lowers $c$; the gap $c-R_\alpha$ is code dependence | PROVED | -- |
+| Observation 3.38 (O6) | Codes from qubit AME states ($[[2,1,1]]$, $[[4,1,2]]$, $[[3,2,1]]$, $[[5,1,3]]$, $[[4,2,2]]$, all input choices): all satisfy (E1); only $[[5,1,3]]$ satisfies (E2) and attains $R=c$ | NUMERICAL (exact enumeration) | M8 |
 | Observation 3.26 / Remark 3.27 | P1/M2: ML exchange rate of the surface code, $d=5$--$11$, six work points: $R^{(d)}\le c$ everywhere; $R_\alpha/c\approx0.3$ at $e_0>0$, $R_\alpha\approx R_B$ | NUMERICAL | `results/p1_exchange_rate.json` |
 | Lemma 4.1 / Corollary 4.2 | Union (Bhattacharyya) bound $\varepsilon^\star\le\tfrac12\widetilde W(B)$ | PROVED | C5 |
 | Theorem 4.5 | Finite-sample certification at code capacity (independent of $p_L$ data) | PROVED | `experiments/certification/cc_certificate.py`: coverage 0.95-1.00 (target 0.95), certificate >= exact ML at d = 3, 5 |
 | Lemma 4.6 | Floor from chip-scale events, $\varepsilon^\star\ge q_c(1-2^{-q})$, and upper bound | PROVED | **P2 (M3-M4)** |
 | Lemma 4.7 | Union bound for burst mixtures | PROVED | -- |
 | Lemma 4.8 | Tilted Bhattacharyya bound $\mathfrak B(P;G)\le\mathbb E_P\sqrt{Q(X+G)/Q(X)}$ | PROVED | K3 |
-| Theorem 4.10 (O3) | Single-sum product bound for unflagged burst mixtures, $\varepsilon^\star\le\tfrac12\widetilde W(B_{\rm burst})$, uniform in the burst strength; no floor | PROVED | K3 |
+| Theorem 4.10 (O3) | Single-sum product bound for unflagged burst mixtures, $\varepsilon^\star\le\tfrac12\widetilde W(B_{\rm burst})$, uniform in the burst strength; valid at every $d$ but vacuous as $d\to\infty$ (Proposition 5.2(b)); the no-floor statement is Theorem 4.23 | PROVED (inequality) | K3 |
 | Lemma 4.12, Proposition 4.13 (O2) | Limits for $p,e$ robust to contamination; burst-rate limits need a detection efficiency; impossible without a strength floor | PROVED | K7 |
 | Theorem 4.14 | Conditional certification with bursts + chip events (code capacity), uniform over burst strengths | PROVED | L4 (d = 3: coverage 0.95-0.99, certificate >= eps* always, vacuous) |
 | Theorem 4.15, Corollary 4.16 (O5) | Peierls bound and finite-sample certificate for MWPM with erasures, $p_L^{\rm MWPM}\le 2dB_M(3B_M)^{d-1}/(1-3B_M)$ | PROVED | L3 (20 points, d = 3-9) |
@@ -111,14 +116,22 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Theorem 4.20 | Conditional certification with bursts + chip events for any linear decoding structure (needs $\widetilde W^{\mathcal L}$ of the DEM, not computed) | PROVED | -- |
 | Proposition 4.21 (O7) | Closed-form ML certificate for every $d$: $\varepsilon^\star_d\le\min\{\tfrac12\widetilde W_d(B),\ $Peierls$\}$ | PROVED | H3 |
 | Proposition 4.22 (O7) | Self-avoiding-walk refinement of the Peierls bound: range $4.29\%\to$ about $4.9\%$ at $e=0$ | PROVED ($c_{20}$ cited; $c_m$, $m\le14$, enumerated) | H2, H3 |
+| Theorem 4.23 (O3) | Peierls bound with bursts (MWPM, hence ML): exponent $\ge\ln(1/(3B_{M,\rm b}))>0$, no $d$-independent floor; crude constants | PROVED | M6 |
+| Theorem 4.24 (O2) | Weak bursts need no rate bound: thinning into a product background plus a correlated remainder; certified efficiency $\eta(\theta_0)$; certificate uniform over all burst strength laws, no strength floor | PROVED | M5 |
+| Observations 4.25, 4.26 (O1) | $\varepsilon^\star$ can decrease when the burst region grows ($\{0,1,3\}\to\{0,1,3,4\}$, $-24.5\%$) and when it lasts longer (1 to 2 rounds, $-22.2\%$) | PROVED (exact rationals) | M7 |
 | Proposition 5.1 | Chernoff upper bound $\alpha_+\le\ln(1/B)$, with explicit finite-$d$ form $\varepsilon_{\rm genie}\ge\tfrac12B^de^{-\sqrt{d\sigma^2}/2}$; Step 1 proved for all odd $d$ | PROVED | C6 ($d{=}3$), K1, K2, `checks/genie_large_d.py` |
-| Proposition 5.2 | Union lower bound $\alpha_-\ge-\Phi(B)$ | PROVED | -- |
+| Proposition 5.2, Corollary 5.3 | (a) union lower bound $\alpha_-\ge-\Phi(B)$ is vacuous for the surface code: (b) degeneracy makes $\widetilde W_d$ grow without bound ($\Phi\equiv\infty$); (c) Peierls lower bound $\alpha_-\ge\ln(1/(\mu B_M))$; sandwich $\ln(1/(\mu B_M))\le\alpha\le\ln(1/B)$ (an earlier version had $-\Phi(B)$ and claimed both sides depend on $B$ only) | PROVED (corrected) | M2 |
 | Proposition 5.5 | Poisson bound $T\ge\ln((1-a)/\delta)/r$ (pattern methods cannot beat $1/r$) | PROVED | **P2 (M4)** |
 | Proposition 5.6 | Chain of exponents $D_{\rm count}\le D_{\rm pattern}\le D_{\rm event}$ | PROVED (chain; ratio of rounds under the marking model, Theorem 5.10) | **P2 (M4)** |
 | Open problem 5.7 (O4) | Experimental-design theorem | two-hypothesis part PROVED under (M) (5.8-5.11); composite hypotheses open | -- |
 | Lemma 5.8, Theorem 5.9 | Marked Poisson model: $D_{\rm pattern}=D_{\rm count}+\Lambda_1D(\pi_1\|\pi_0)$; weak-signal gain $1+\chi^2$ | PROVED | H5 (identity); **P2 (M4)** |
 | Theorem 5.10 | Stein form: $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ (also Chernoff/Bayes) | PROVED | L2; **P2 (M4)** |
 | Theorem 5.11 | Adaptive designs do not beat the best single experiment (Stein, weak converse); optimal design maximizes $D_i/c_i$ | PROVED | -- |
+| Theorem 5.12 (O4) | Strong converse for adaptive designs (Stein): optimal exponent $D^\ast$ at every fixed error level | PROVED | -- |
+| Theorem 5.13, Proposition 5.14 (O4) | Composite alternatives: detection orientation optimal exponent $\max_w\min_\theta\sum_iw_iD_i(\theta)/c_i$, non-adaptive, universal test; false-alarm orientation: bounds only | PROVED | -- |
+| Lemma 5.15 | Crossing paths counted by rows: growth $2(1+4x+16x^2)$ per row | PROVED | M1 |
+| Theorem 5.16 | Pure-erasure exponent of the surface code: $\alpha(0,e)=\ln(1/e)-\ln2+O(e)$ (explicit bounds at every $d$) | PROVED | M1 |
+| Proposition 5.17 ($H_B$) | $H_B$ holds at leading order near the erasure axis; at $e=0$ a gap of about $\ln(2\sqrt2)$ remains | PROVED | -- |
 
 Section 0 is the constitutional audit; the axiom list it uses is an assumption of the author of these notes and must be confirmed or replaced (see its first subsection). Numbers refer to the numbering in `main.pdf` (checked against the `.aux` file whenever this table is updated).
 

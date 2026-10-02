@@ -1,6 +1,6 @@
 \section{Information-theoretic bounds and experimental design}\label{sec:info}
 
-\subsection{A sandwich for $\alpha$: the Chernoff upper bound and the union lower bound}
+\subsection{A sandwich for $\alpha$: the Chernoff upper bound and a Peierls lower bound}
 
 \begin{proposition}[Chernoff upper bound, with an explicit finite-$d$ form]\label{prop:genie}
 Let $d\ge3$ be odd, consider the rotated surface-code family (conventions of \texttt{lcd.codes.RotatedSurfaceCode}) and noise $\Nn_{\rm cc}(p,e)$ with $0\le p\le\tfrac34$, $0\le e\le1$, $(p,e)\ne(0,0)$. Then
@@ -47,20 +47,25 @@ contributing $e\cdot1$ to $B$; this is the origin of the $e$ term in $B$.
 Check K2 compares the bound with the exact $\varepsilon_{\rm genie}(d)$ for $d\le61$ (ratio $\ge1.67$ on the tested grid) and the slope of $-\ln\varepsilon_{\rm genie}$ with $\ln(1/B)$ (within $2\%$ between $d=101$ and $201$).
 For $d=3$, $\err\ge\varepsilon_{\rm genie}$ has been verified by exact computation (check C6); \texttt{checks/genie\_large\_d.py} tests it against the ML data of P1 for $d=5$--$13$.
 
-\begin{proposition}[Union lower bound]\label{prop:lower}
-Let $\Phi(x)=\limsup_{d\to\infty}\tfrac1d\ln\widetilde W_d(x)$ (Corollary~\ref{cor:product}). Then
-$\alpha_-(p,e)\ge-\Phi\big(B(p,e)\big)$.\hfill\st{PROVED}
+\begin{proposition}[The union lower bound is vacuous; a Peierls lower bound replaces it]\label{prop:lower}
+Let $\Phi(x)=\limsup_{d\to\infty}\tfrac1d\ln\widetilde W_d(x)$ (Corollary~\ref{cor:product}).
+(a) $\alpha_-(p,e)\ge-\Phi\big(B(p,e)\big)$.
+(b) For the rotated surface code, $\widetilde W_d(x)\ge x^d(1+x^4)^{(d-1)(d-3)/4}$ for every $x\in(0,1]$ and odd $d\ge3$. Hence $\Phi\equiv+\infty$ on $(0,1]$, (a) carries no information, and $\tfrac12\widetilde W_d(x)\ge1$ for all $d$ beyond about $4\ln(1/x)/\ln(1+x^4)$ (about $1.4\times10^3$ at $x=0.25$, $2\times10^5$ at $x=0.085$).
+(c) With $B_M=e+(1-e)2\sqrt{q(1-q)}$, $q=\tfrac23p$, and $\mu\approx2.638$ the connective constant of self-avoiding walks on $\mathbb Z^2$: $\alpha_-(p,e)\ge\ln\frac1{\mu B_M}$ whenever $\mu B_M<1$, and $\alpha_-(p,e)\ge\ln\frac1{2B_M}-\ln(1+4B_M+16B_M^2)$ whenever $B_M<0.18$.\hfill\st{PROVED}
 \end{proposition}
 \begin{proof}
-Corollary~\ref{cor:product}: $\err_d\le\tfrac12\widetilde W_d(B)$; take $-\tfrac1d\ln$ and then $\liminf$.
+(a) Corollary~\ref{cor:product}: $\err_d\le\tfrac12\widetilde W_d(B)$; take $-\tfrac1d\ln$ and then $\liminf$.
+(b) $\widetilde W_d$ sums over the \emph{elements} of the three nontrivial cosets of $S$, not over the cosets. Take $L=\bar X$ on column $0$ (weight $d$) and the $X$-type bulk plaquettes with corners $(2i,2j)$, $0\le i\le\frac{d-3}2$, $1\le j\le\frac{d-3}2$: they are pairwise disjoint (corners differ by at least $2$ in a coordinate) and disjoint from column $0$, and there are $\frac{(d-1)(d-3)}4$ of them. For each subset $T$ of them, $L\prod_{z\in T}s_z\in\bar XS$ has weight $d+4|T|$, and different subsets give different elements; summing $x^{d+4|T|}$ over $T$ gives the bound. Then $\tfrac1d\ln\widetilde W_d(x)\ge\ln x+\tfrac{(d-1)(d-3)}{4d}\ln(1+x^4)\to\infty$.
+(c) $\err_d$ is at most the failure probability of the MWPM decoder; apply Proposition~\ref{prop:saw} for every $K$ ($c_K^{1/K}\to\mu=\inf_Kc_K^{1/K}$ by submultiplicativity) and Lemma~\ref{lem:row-count} below.
 \end{proof}
+\noindent The cause of (b) is degeneracy: the step $\sqrt{\sum_ix_i}\le\sum_i\sqrt{x_i}$ in Lemma~\ref{lem:union} splits each logical class into its $2^{n-k}$ elements, and the products of a logical operator with far-away stabilizers are counted separately. Every inequality built on $\widetilde W_d$ (Corollary~\ref{cor:product}, Theorems~\ref{thm:cc-cert}, \ref{thm:burst-product}, \ref{thm:burst-cert}, \ref{thm:st-burst}, \ref{thm:st-cert}) remains true at each $d$, and is informative over the range of $d$ used in practice, but none of them says anything about $d\to\infty$. Asymptotic statements must use bounds that count crossing paths only (Peierls, \S\ref{sec:mwpm-cert}, \S\ref{sec:peierls-bursts}).
 
-\begin{corollary}[Sandwiched between two functions of $B$ only]\label{cor:sandwich}
-$-\Phi(B(p,e))\le\alpha_-\le\alpha_+\le-\ln B(p,e)$.\hfill\st{PROVED}
+\begin{corollary}[Sandwich for the exponent]\label{cor:sandwich}
+$\ln\frac1{\mu B_M(p,e)}\le\alpha_-\le\alpha_+\le\ln\frac1{B(p,e)}$ whenever $\mu B_M<1$. The two sides are functions of different single-qubit quantities: $B$ (the Bhattacharyya coefficient of the full Pauli law) and $B_M$ (that of the $X$ or $Z$ marginal alone); at $p=0$ they coincide ($B=B_M=e$), and at $e=0$, $B_M/B\to\sqrt2$ as $p\to0$.\hfill\st{PROVED}
 \end{corollary}
 
-The sandwich does not constrain the derivatives of $\alpha$, so it does not directly give upper and lower bounds on the exchange rate; its role is to give the testable hypothesis $H_B$
-(Conjecture~\ref{conj:HB}): if $\alpha$ is a function of $B$ in a neighborhood, then $R_\alpha=R_B$.
+The sandwich does not constrain the derivatives of $\alpha$, so it does not directly give upper and lower bounds on the exchange rate. (An earlier version of these notes stated it with $-\Phi(B)$ on the left and called both sides functions of $B$ alone; by Proposition~\ref{prop:lower}(b) that left side is $-\infty$.) Its role is to frame the testable hypothesis $H_B$
+(Conjecture~\ref{conj:HB}): if $\alpha$ is a function of $B$ in a neighborhood, then $R_\alpha=R_B$. What can be proved about $H_B$ is collected in \S\ref{sec:hb}.
 
 \subsection{Reference values for the exchange rate}
 
@@ -216,3 +221,91 @@ Let $x=Q_1[\text{decide }1]\ge1-a$ and $y=Q_0[\text{decide }1]=\alpha_0$. Data p
 
 \noindent\emph{Reading for P2.} Theorems~\ref{thm:pattern-gain}--\ref{thm:adaptive} settle the two-hypothesis part of O4 (Problem~\ref{prob:O4}) under (M): the design question reduces to computing $D_{\rm pattern}(i)/c_i$ for each candidate $i$ (distance, readout, clustering) and taking the largest; the gain over counting is $\Lambda_1D(\pi_1\|\pi_0)$, which for weak signals is governed by $\chi^2(\hat w\|\pi_0)$; and the Poisson bound (Proposition~\ref{prop:poisson}) remains the floor for every design.
 What is \emph{not} settled: (a) composite hypotheses (unknown shape, unknown rates), where adaptive designs can help and the relevant exponent is a minimax over the composite alternative; (b) the strong converse at fixed $a$ for adaptive designs (Theorem~\ref{thm:adaptive} uses the weak converse; the strong converse for classical adaptive discrimination is known in the literature but not reproduced here); (c) the Chernoff (Bayes) exponent for adaptive designs; (d) the computation of $D_{\rm pattern}(d)$ for the surface code, which needs the mark channel $W$ of P2; (e) the regime where (iv) fails (overlapping events).
+
+\subsection{More on O4: the strong converse, and composite alternatives}\label{sec:o4-more}
+
+\begin{theorem}[Strong converse for adaptive designs]\label{thm:adaptive-strong}
+In the setting of Theorem~\ref{thm:adaptive}, assume in addition that the per-use log-likelihood ratio $\ell_i=\ln(dP_{1,i}/dP_{0,i})$ of every experiment has finite variance $V_i$ under $P_{1,i}$ (true for finite alphabets with mutually absolutely continuous laws, and under (M)). Then for every fixed $a\in(0,1)$
+\[
+\limsup_{\mathcal B\to\infty}\frac1{\mathcal B}\ln\frac1{\alpha_0^\ast(\mathcal B,a)}\;\le\;D^\ast,
+\]
+where $\alpha_0^\ast(\mathcal B,a)$ is the smallest error under $H_0$ over all adaptive designs of budget $\mathcal B$ with error at most $a$ under $H_1$. With Theorem~\ref{thm:adaptive}, the optimal exponent per unit cost is $D^\ast$ at every $a\in(0,1)$, attained by a non-adaptive design.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+Let $\Lambda=\ln(dQ_1/dQ_0)$ on transcripts and $A=\{\text{decide }1\}$, so $Q_1(A)\ge1-a$. For every $\gamma$,
+$Q_0(A)\ge Q_0(A\cap\{\Lambda\le\gamma\})=\E_{Q_1}[\mathbf 1_{A\cap\{\Lambda\le\gamma\}}e^{-\Lambda}]\ge e^{-\gamma}\big(1-a-Q_1(\Lambda>\gamma)\big)$.
+Under $Q_1$, $\Lambda=\sum_{t\le T}\ell_t$ with $\E[\ell_t\mid\text{past}]=D_{i_t}\le D^\ast c_{i_t}$, so $\Lambda\le D^\ast\mathcal B+M_T$, where $M$ is a martingale whose increments have conditional variance at most $V=\max_iV_i$ and $T\le\mathcal B/\min_ic_i$. Chebyshev gives $Q_1(\Lambda>\mathcal B(D^\ast+\eta))\le Q_1(M_T>\mathcal B\eta)\le V/(\min_ic_i\,\mathcal B\eta^2)\to0$. Take $\gamma=\mathcal B(D^\ast+\eta)$ and let $\eta\to0$.
+\end{proof}
+
+\begin{theorem}[Composite alternatives: detection orientation]\label{thm:composite}
+Let $H_0$ be simple and $H_1=\{\theta\in\Theta\}$ composite ($\Theta$ compact, for example unknown burst rates $r\ge r_{\min}$ and unknown shapes in a compact family). Experiment $i$ has laws $P_{0,i}$, $P_{\theta,i}$ and cost $c_i$; put $D_i(\theta)=D(P_{0,i}\|P_{\theta,i})$, assumed continuous in $\theta$, and let the observations of each experiment take values in a finite set or follow (M). Consider designs (adaptive or not) of budget $\mathcal B$ with false alarm $Q_0(\text{decide }1)\le a$, and the worst-case miss $\beta=\sup_\theta Q_\theta(\text{decide }0)$.
+(a) Every adaptive design satisfies $(1-a)\ln\frac1\beta\le\mathcal B\,E^\ast+\ln2$, where
+\[
+E^\ast=\max_{w\in\Delta}\ \min_{\theta\in\Theta}\ \sum_iw_i\frac{D_i(\theta)}{c_i}\qquad(\Delta=\text{cost fractions}).
+\]
+(b) For every $w\in\Delta$, the non-adaptive design that spends the fraction $w_i$ of the budget on experiment $i$, with the test ``accept $H_0$ iff the empirical distribution (or empirical intensities) of every experiment is close to its null law'', has false alarm $\to0$ and $\liminf\frac1{\mathcal B}\ln\frac1\beta\ge\min_\theta\sum_iw_iD_i(\theta)/c_i$.
+Hence, as $a\to0$, the optimal worst-case miss exponent per unit cost is $E^\ast$, it is attained without adaptivity and without knowing $\theta$, and a mixture of experiments can be strictly better than every single one.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+(a) Under $H_0$ the data law does not depend on $\theta$, so the expected number $\nu_i$ of uses of experiment $i$ under $Q_0$ is one number for all $\theta$, with $\sum_i\nu_ic_i\le\mathcal B$. By the chain rule $D(Q_0\|Q_\theta)=\sum_i\nu_iD_i(\theta)$, and data processing to the decision gives $D(Q_0\|Q_\theta)\ge(1-a)\ln\frac1{Q_\theta(\text{decide }0)}-\ln2$. Hence $(1-a)\ln\frac1\beta\le\min_\theta\sum_i\nu_iD_i(\theta)+\ln2\le\mathcal B\max_w\min_\theta\sum_iw_iD_i(\theta)/c_i+\ln2$.
+(b) False alarm: law of large numbers. Miss: for each $\theta$ the acceptance event is an intersection of independent events ``the empirical law of experiment $i$ lies in a small closed neighbourhood $U_i$ of $P_{0,i}$''; Sanov's theorem (finite alphabets) or the Chernoff bound for Poisson count vectors (under (M)) bounds it by $\exp\big(-\sum_in_i[\inf_{U_i}D(\cdot\|P_{\theta,i})-o(1)]\big)$, uniformly in $\theta$ by compactness and continuity; letting $U_i\downarrow\{P_{0,i}\}$ gives $D_i(\theta)$. Example of a strict gain: two shapes $\theta_1,\theta_2$ and two experiments with $D_1=(1,0)$, $D_2=(0,1)$ (unit costs): every single experiment has worst-case exponent $0$, the even mixture has $\tfrac12$.
+\end{proof}
+
+\begin{proposition}[Composite alternatives: false-alarm orientation, bounds only]\label{prop:composite-fa}
+In the setting of Theorem~\ref{thm:composite}, hold the worst-case miss at $\sup_\theta Q_\theta(\text{decide }0)\le a$ and minimize the false alarm $\alpha_0$. With $D_i'(\theta)=D(P_{\theta,i}\|P_{0,i})$:
+\[
+\max_{w\in\Delta}\min_\theta\sum_iw_i\frac{D_i'(\theta)}{c_i}\ \le\ \liminf\frac1{\mathcal B}\ln\frac1{\alpha_0^{\rm opt}}\ \le\ \limsup\frac1{\mathcal B}\ln\frac1{\alpha_0^{\rm opt}}\ \le\ \frac1{1-a}\min_\theta\max_i\frac{D_i'(\theta)}{c_i},
+\]
+the left side attained non-adaptively.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+Upper: for each $\theta$, $D(Q_\theta\|Q_0)=\sum_i\E_{Q_\theta}[n_i]D_i'(\theta)\le\mathcal B\max_iD_i'(\theta)/c_i$, and data processing as in Theorem~\ref{thm:composite}(a). Lower: a non-adaptive design with fractions $w$ and the test ``decide $1$ iff the empirical laws are close to $\{P_{\theta,i}\}_i$ for some $\theta$''; Sanov/Chernoff under $H_0$ as in Theorem~\ref{thm:composite}(b).
+\end{proof}
+
+\noindent In this orientation the profile of experiments under $H_1$ may depend on $\theta$, so an adaptive design can learn $\theta$ before choosing; whether adaptive designs reach the right side is open. Also open: the Bayes (Chernoff) exponent of adaptive designs for two simple hypotheses (whether it equals $\max_iC_i/c_i$). For P2 the detection orientation is the natural one (false alarms of a burst monitor are held at a fixed level), and there Theorem~\ref{thm:composite} settles the design question up to computing $D_i(\theta)$.
+
+\subsection{What can be proved about $H_B$}\label{sec:hb}
+
+\begin{lemma}[Crossing paths counted by rows]\label{lem:row-count}
+For the rotated surface code and $0<x<0.18$, the crossing paths $\gamma$ of Lemma~\ref{lem:crossing} (simple paths of qubits from row $0$ to row $d-1$, consecutive qubits sharing a $Z$ check) satisfy
+\[
+\sum_\gamma x^{|\gamma|}\;\le\;\frac{d\,x\,\big(2x(1+4x+16x^2)\big)^{d-1}}{\tfrac12-2x-8x^2}.
+\]
+The same holds for the $X$-check graph with rows and columns exchanged.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+Classify each step of a path by the change of row index: up ($+1$), same ($0$), down ($-1$). From a given qubit there are at most $2$ continuations of each kind: a qubit lies in at most one $Z$ check spanning rows $(r,r+1)$ and one spanning $(r-1,r)$, each with at most $2$ qubits per row. A path of $\ell$ qubits has $\ell-1$ steps with net displacement $d-1$, and starts at one of $d$ qubits of row $0$. Dropping simplicity,
+$\sum_\gamma x^{|\gamma|}\le d\sum_{L\ge d-1}x^{L+1}[t^{d-1}](2t+2+2t^{-1})^L\le d\,x\sum_{L\ge d-1}\big(xf(\tau)\big)^L\tau^{-(d-1)}$
+for any $\tau>0$, with $f(\tau)=2\tau+2+2/\tau$ (all coefficients are nonnegative, so $[t^m]g\le g(\tau)\tau^{-m}$). With $\tau=1/(4x)$: $xf(\tau)=\tfrac12+2x+8x^2<1$ and $xf(\tau)/\tau=2x(1+4x+16x^2)$; sum the geometric series.
+\end{proof}
+
+\noindent Compared with the counts $d\,3^{\ell-1}$ and $2d\,c_{\ell-2}$ of Theorem~\ref{thm:mwpm-peierls} and Proposition~\ref{prop:saw}, the growth per row is $2$ instead of $3$ or $\mu\approx2.64$ (better as $x\to0$), at the price of a smaller range of validity.
+
+\begin{theorem}[The pure-erasure exponent of the surface code]\label{thm:erasure-exponent}
+For the rotated surface code at $p=0$ and $0<e<0.18$, for every odd $d\ge3$,
+\[
+\tfrac18(2e)^d(1-e)^{d-1}\;\le\;\err_d(0,e)\;\le\;\frac{2d\,e\,\big(2e(1+4e+16e^2)\big)^{d-1}}{\tfrac12-2e-8e^2}.
+\]
+Hence $\ln\frac1e-\ln2-\ln(1+4e+16e^2)\le\alpha_-(0,e)\le\alpha_+(0,e)\le\ln\frac1e-\ln2+\ln\frac1{1-e}$: along the erasure axis, $\alpha=\ln\frac1B-\ln2+O(B)$ with $B=e$. The $-\ln2$ is the growth rate of the number of minimum-weight logical operators.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+Lower bound. A minimum-weight $X$ logical is a path with one qubit per row: from $(r,c)$ the next qubit is $(r+1,c)$ or the one diagonal neighbour that shares the $Z$ check of $(r,c)$ towards row $r+1$ (one of $(r+1,c\pm1)$, by parity), and every such path has zero syndrome and odd overlap with the $Z$ logical on row $0$. Let $\Gamma$ be the paths that start at the centre $c_\ast=\frac{d-1}2$ of row $0$ and make at most $\frac{d-1}2$ diagonal moves; they stay inside the lattice and $|\Gamma|\ge2^{d-2}$. Order $\Gamma$ by the first row at which two paths differ, the one to the left coming first. If $\gamma'\prec\gamma$, then at the first row where they differ $\gamma'$ takes the left one of the two continuations of the common qubit; so $\gamma'$ contains a qubit of $N_L(\gamma)$, the set of left alternatives along $\gamma$ ($|N_L(\gamma)|\le d-1$, disjoint from $\gamma$). With $A$ the erased set and $\mathcal E_\gamma=\{\gamma\subseteq A\}$,
+\[
+\Prob\Big[\bigcup_{\gamma\in\Gamma}\mathcal E_\gamma\Big]=\sum_{\gamma}\Prob\Big[\mathcal E_\gamma\cap\bigcap_{\gamma'\prec\gamma}\mathcal E^c_{\gamma'}\Big]\ge\sum_\gamma\Prob[\mathcal E_\gamma]\,\Prob[A\cap N_L(\gamma)=\emptyset]\ge2^{d-2}e^d(1-e)^{d-1}.
+\]
+On this event $\err_A\ge\tfrac12$ (Lemma~\ref{lem:jump}), so $\err_d(0,e)\ge\tfrac12\Prob[\bigcup\mathcal E_\gamma]$.
+Upper bound. $\err_d(0,e)=\E_A[1-2^{-r(A)}]\le\Prob[r(A)\ge1]$ (Lemma~\ref{lem:erasure-only}). A nontrivial logical operator supported on $A$ has a nontrivial $X$ part or $Z$ part (CSS), whose support contains a crossing path in the $Z$-check or $X$-check graph (proof of Lemma~\ref{lem:crossing}); so $\Prob[r(A)\ge1]\le2\sum_\gamma e^{|\gamma|}$, and Lemma~\ref{lem:row-count} with $x=e$ gives the bound.
+\end{proof}
+
+\begin{proposition}[$H_B$ near the erasure axis, and what is missing elsewhere]\label{prop:hb-status}
+For all $(p,e)$ with $B_M<0.18$:
+\[
+\ln\frac1{2B_M}-\ln(1+4B_M+16B_M^2)\ \le\ \alpha_-(p,e)\ \le\ \alpha_+(p,e)\ \le\ \min\Big\{\ln\frac1B,\ \ln\frac1{2e}+\ln\frac1{1-e}\Big\}.
+\]
+If $p\to0$ faster than $e^2$ (so that $B=e(1+o(1))$ and $B_M=e(1+o(1))$), both sides equal $\ln\frac1B-\ln2+o(1)$: to leading order, $\alpha$ is a function of $B$ near the erasure axis. At $e=0$ the two sides differ by about $\ln(2\sqrt2)\approx1.04$ as $p\to0$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+Lower side: Proposition~\ref{prop:lower}(c). Upper side: Proposition~\ref{prop:genie}, and $\err_d(p,e)\ge\err_d(0,e)$ (superposing depolarizing noise on unflagged qubits is free, Theorem~\ref{thm:monotone}) with Theorem~\ref{thm:erasure-exponent}. As $B\to0$ along the stated regime, $\ln(B/e)\to0$ and $\ln(B_M/e)\to0$. At $e=0$, $B_M\approx2\sqrt{2p/3}=\sqrt2B$.
+\end{proof}
+
+\noindent What a proof of $H_B$ at leading order needs at $e=0$: (i) a lower bound on the ML failure probability that captures the entropy of minimum-weight logicals (the $-\ln2$), which the single-column genie of Proposition~\ref{prop:genie} misses; and (ii) a Peierls-type upper bound for a decoder that uses the correlation between $X$ and $Z$ errors, so that the per-qubit factor is $B$ rather than $B_M\approx\sqrt2B$. Both are open. $H_B$ as an exact statement (Conjecture~\ref{conj:HB}) is stronger still; the heuristic of \S\ref{sec:o6-gap} predicts only the leading order.

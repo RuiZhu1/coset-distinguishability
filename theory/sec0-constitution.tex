@@ -154,7 +154,7 @@ The word ``exchange rate'' is used for three different quantities. Only the firs
 \item \emph{Marginal rate of a monotone} $M$ at a point $x_0=(p_0,e_0)$: $R_M(x_0)=\partial_eM/\partial_pM$. Examples: $R^{(d)}$ ($M=\err_d$), $R_\alpha$ ($M=\alpha$, the $d\to\infty$ exponent of a code family), $R_s$ and $R_B$ (Hellinger).
 \item \emph{One-shot conversion cost}: $p^{(d)}_{\rm eq}(p,e)$ of Corollary~\ref{cor:worth}.
 \item \emph{Asymptotic rate in the tensor-power sense}: $\sup\{m/n: A^{\otimes n}\rightsquigarrow B^{\otimes m}\}$ (approximately), which needs the product of Proposition~\ref{prop:tensor}. $A^{\otimes n}$ is $n$ independent blocks, \emph{not} the large-distance limit of one code,
-and the large-sample Blackwell order of Conjecture~\ref{conj:universal}, (S3), concerns this limit. It is not computed here.
+and the large-sample Blackwell order of Conjecture~\ref{conj:universal}, (S3), concerns this limit. For the uncoded qubit it is computed in Theorems~\ref{thm:exact-tensor} and~\ref{thm:approx-tensor}; for coded structures it is open.
 \end{enumerate}
 The suppression exponent $\alpha$ is a monotone for the $d$-asymptotics of one code family (Corollary~\ref{cor:alpha}); $R_\alpha$ is therefore of type (R-a). In the paper it should be called the \emph{marginal exchange rate}.
 
@@ -186,7 +186,38 @@ $\partial_p(1-\mu)=\tfrac43(1-e_0)$ and $\partial_e(1-\mu)=\lambda_0$, so the ra
 (b) $\|v\otimes w\|_\alpha=\|v\|_\alpha\|w\|_\alpha$ and the sum over $(y_1,y_2)$ factorizes; conditional entropy of independent pairs adds. Monotonicity under $\rightsquigarrow$ then gives $\Phi_\alpha(Q)^n\le\Phi_\alpha(P)^n$.
 \end{proof}
 
-\noindent\emph{(R-c), what is open.} Proposition~\ref{prop:hash}(b) gives necessary conditions for conversions between tensor powers; whether they are sufficient (for large $n$, or with a catalyst), and in particular whether pairs of the trade region of \S\ref{sec:single-loss} become reachable between tensor powers, is open. The large-sample results of \cite{MPST} concern dichotomies and do not directly cover objects with $|\Lambda|=4$ and relabelling. Rates $m/n$ with $m\ne n$ also need a rule for changing the label alphabet, which these notes do not fix.
+\begin{proposition}[The full power family and the peak]\label{prop:power-family}
+For $v\in\mathbb R_+^\Lambda$ and real $\alpha\ne0$ put $\|v\|_\alpha=(\sum_\ell v_\ell^\alpha)^{1/\alpha}$ (for $\alpha<0$, $\|v\|_\alpha=0$ if some entry is $0$), $\|v\|_{-\infty}=\min_\ell v_\ell$, and $\Phi_\alpha(P)=\sum_y\|P_y\|_\alpha$. Let $g(P)=\max\{\|P_y\|_\infty/\|P_y\|_1:P_y\ne0\}$, the largest posterior probability of a label given an observation.
+(a) If $P\rightsquigarrow Q$ then $\Phi_\alpha(Q)\le\Phi_\alpha(P)$ for $\alpha\in[1,\infty]$, $\Phi_\alpha(Q)\ge\Phi_\alpha(P)$ for $\alpha\in[-\infty,1)$, and $g(Q)\le g(P)$.
+(b) $\Phi_\alpha(P\otimes Q)=\Phi_\alpha(P)\Phi_\alpha(Q)$ and $g(P\otimes Q)=g(P)g(Q)$.
+(c) For the uncoded qubit ($e<1$): $g(P_{p,e})=1-p$, $\Phi_\infty=\tfrac14+\tfrac34\mu$ and $\Phi_{-\infty}=\tfrac14(1-\mu)$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+(a) For $\alpha\ge1$, $\|\cdot\|_\alpha$ is convex, homogeneous and symmetric, so it lies in $\Phi_\Lambda$. For $\alpha<1$, $v\mapsto\|v\|_\alpha$ is concave on $\mathbb R_+^\Lambda$ (power means with exponent at most $1$ are concave) and homogeneous, so $-\|\cdot\|_\alpha\in\Phi_\Lambda$. Apply Theorem~\ref{thm:complete}. For $g$: by Lemma~\ref{lem:kernel}, $\|Q_{y'}\|_\infty\le\sum_{y,\pi}M(y',\pi\mid y)\|P_y\|_\infty\le g(P)\sum_{y,\pi}M(y',\pi\mid y)\|P_y\|_1=g(P)\|Q_{y'}\|_1$.
+(b) $\|v\otimes w\|_\alpha=\|v\|_\alpha\|w\|_\alpha$, and the maxima in $g$ multiply. (c) Direct from $P_0=(1-e)(1-p,\tfrac p3,\tfrac p3,\tfrac p3)$, $P_1=\tfrac e4\mathbf 1$.
+\end{proof}
+
+\begin{theorem}[Tensor powers and catalysts do not enlarge the order of the uncoded qubit]\label{thm:exact-tensor}
+For $p,p'\in[0,\tfrac34)$ and $e,e'\in[0,1)$ the following are equivalent: (i) a local free operation turns $\Nn_{\rm cc}(p,e)$ into $\Nn_{\rm cc}(p',e')$; (ii) $P_{p,e}^{\otimes n}\rightsquigarrow P_{p',e'}^{\otimes n}$ for some $n\ge1$; (iii) $P_{p,e}\otimes C\rightsquigarrow P_{p',e'}\otimes C$ for some object $C$.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+(i)$\Rightarrow$(ii),(iii): Propositions~\ref{prop:level-incl} and~\ref{prop:tensor}(a). (ii) or (iii)$\Rightarrow$(i): by Proposition~\ref{prop:power-family}, $g$ and $\Phi_\infty$ are monotone and multiplicative, and $g(C),\Phi_\infty(C)>0$; so $1-p'\le1-p$ and $\tfrac14+\tfrac34\mu'\le\tfrac14+\tfrac34\mu$. These are the two scalars of Proposition~\ref{prop:two-scalars}.
+\end{proof}
+
+\begin{theorem}[Approximate conversion of tensor powers: conditional entropy decides]\label{thm:approx-tensor}
+Let $P=P_{p,e}$, $Q=P_{p',e'}$ ($e,e'<1$, $p,p'<\tfrac34$) and $h_P=H(L\mid Y)_P=2e+(1-e)H_4(p)$ bits.
+(a) If $h_Q>h_P$, there are simulable reductions $P^{\otimes n}\rightsquigarrow\widetilde Q_n$ with $\|\widetilde Q_n-Q^{\otimes n}\|_{\rm TV}\to0$.
+(b) If $h_Q<h_P$, no sequence of reductions $P^{\otimes n}\rightsquigarrow\widetilde Q_n$ has $\|\widetilde Q_n-Q^{\otimes n}\|_{\rm TV}\to0$.
+(c) Allow free uniform labels to be appended, so that $P^{\otimes n}\otimes u^{\otimes(k-n)}$ and $Q^{\otimes m}\otimes u^{\otimes(k-m)}$, $k=\max(m,n)$, live on the same alphabet. Then the supremum of $\lim m/n$ over approximate conversions $P^{\otimes n}\to Q^{\otimes m}$ equals $N(P)/N(Q)$, where $N=2-H(L\mid Y)=1+Q_{\rm hash}$ (bits).
+Hence on the uncoded qubit the approximate tensor-power order is the order of $Q_{\rm hash}$, and its marginal exchange rate is exactly $R_{\rm hash}$ of \S\ref{sec:info}.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+(a) For a flag string $y\in\{0,1\}^n$ with $m(y)$ unflagged positions, $P^{\otimes n}_y=\Prob_P(y)\,s_y$ with $s_y=\Dep_p^{\otimes\text{unflagged}}\otimes u^{\otimes\text{flagged}}$, a probability vector on $\Lambda^n$; likewise $t_{y'}$ for $Q$. Fix $\delta$ with $4\delta<h_Q-h_P$ and let $Y_n$, $Y_n'$ be the flag strings with $|m(y)-(1-e)n|\le n^{2/3}$ (resp.\ $e'$); both have probability $\to1$. For $y\in Y_n$, $-\log s_y(X)$ is a sum of $m(y)$ i.i.d.\ terms of mean $H_4(p)$ and finite variance plus $2(n-m(y))$, so by Chebyshev $B_y=\{x:s_y(x)\ge2^{-n(h_P+\delta)}\}$ has $s_y(B_y^c)\le\epsilon_n\to0$ uniformly; likewise $A_{y'}=\{x:t_{y'}(x)\le2^{-n(h_Q-\delta)}\}$ has $t_{y'}(A_{y'}^c)\le\epsilon_n$. Put $\tilde t_{y'}=(1-2\epsilon_n)\,t_{y'}\mathbf 1_{A_{y'}}/t_{y'}(A_{y'})+2\epsilon_n\,u_{\Lambda^n}$, so $\|\tilde t_{y'}-t_{y'}\|_{\rm TV}\le4\epsilon_n$. Then $\tilde t_{y'}\prec s_y$ for large $n$: for $k\le|B_y|$ the sum of the $k$ largest entries of $\tilde t$ is at most $k\cdot2\cdot2^{-n(h_Q-\delta)}\le k\,2^{-n(h_P+\delta)}$, at most that of $s_y$; for $k>|B_y|$ the $4^n-k$ smallest entries of $\tilde t$ sum to at least $(4^n-k)2\epsilon_n4^{-n}$, those of $s_y$ (all in $B_y^c$) to at most $(4^n-k)\epsilon_n/(4^n-|B_y|)$, and $|B_y|\le2^{n(h_P+\delta)}\le4^n/2$. By Hardy--Littlewood--P\'olya and Birkhoff, $\tilde t_{y'}=D_{yy'}s_y$ with $D_{yy'}$ a convex combination of permutations. The kernel $M(y',\pi\mid y)=\Prob_Q(y')\,w_{yy'}(\pi)$, with $w_{yy'}$ the Birkhoff weights for $y\in Y_n$, $y'\in Y_n'$ and the uniform mixture of all permutations otherwise, produces $\widetilde Q_n$ with $\|\widetilde Q_n-Q^{\otimes n}\|_{\rm TV}\le\Prob_P(Y_n^c)+\Prob_Q(Y_n'^c)+4\epsilon_n\to0$.
+(b) $H(L\mid Y)$ is monotone (Proposition~\ref{prop:hash}) and additive, so $H(L\mid Y)_{\widetilde Q_n}\ge nh_P$. Writing $H(L\mid Y)=H(LY)-H(Y)$ and using $|H(a)-H(b)|\le-\|a-b\|_1\log(\|a-b\|_1/|\Omega|)$ for $\|a-b\|_1\le\tfrac12$ \cite[Thm.~17.3.3]{CT} on alphabets of size $8^n$ and $2^n$, $|H(L\mid Y)_{\widetilde Q_n}-nh_Q|=o(n)$ when the distance tends to $0$. Hence $h_Q\ge h_P$.
+(c) The padded objects have conditional entropies $nh_P+2(k-n)$ and $mh_Q+2(k-m)$ and the same product structure, so (a) and (b) apply with these totals: conversion is possible if $m(2-h_Q)<n(2-h_P)$ and impossible if $m(2-h_Q)>n(2-h_P)$.
+\end{proof}
+
+\noindent \emph{Reading.} The exact (or catalytic) order is the one-shot order, cut out by $p$ and $\mu$, with boundary slope $c$; the approximate tensor-power order is the order of a single entropy, with boundary slope $R_{\rm hash}<c$. This is the same dichotomy as for pure-state entanglement (majorization for exact conversion, entropy for asymptotic rates). For example, the trade pair $(0.0213,0.05)\to(0,0.25)$ is not reachable exactly at any $n$, but $h_P=0.273<h_Q=0.5$ bits, so it is reachable approximately (check M3 shows the Lorenz deficit at typical flag counts falling from $0.11$ at $n=10$ to below $10^{-3}$ at $n=200$). The approximate order concerns entropy, not guessing: $\err(P^{\otimes n})\to1$. For coded structures (R-c beyond the uncoded qubit) nothing is proved.
 
 \subsection{Audit table and verdict}\label{sec:audit-table}
 
@@ -224,7 +255,7 @@ Level 1 vs.\ Level 2 & Propositions~\ref{prop:level-incl}, \ref{prop:local-level
 \begin{enumerate}[(1)]
 \item The free operations, preorder, and monotones are stated at Level 1, for arbitrary finite label--observation pairs, with no reference to the surface code (Definition~\ref{def:object}, Lemma~\ref{lem:kernel}).
 \item $\err$ is a faithful monotone, additive after $-\log_2(1-\cdot)$, but not a complete one. The complete family is $\Phi_\Lambda$ (Theorem~\ref{thm:complete}); statements about ``the'' order must say which monotones are meant.
-\item ``Exchange rate'' means the \emph{marginal} rate of a monotone, (R-a). It lies in $[0,c]$ for every monotone of the local free order; the asymptotic rate (R-c) is a different quantity; only necessary conditions for it are proved here (Proposition~\ref{prop:hash}(b)). The reference values $R_B$ and $R_{\rm hash}$ of \S\ref{sec:info} are marginal rates of the monotones $B$ and $Q_{\rm hash}$ (Propositions~\ref{prop:hellinger}, \ref{prop:hash}).
+\item ``Exchange rate'' means the \emph{marginal} rate of a monotone, (R-a). It lies in $[0,c]$ for every monotone of the local free order; the asymptotic rate (R-c) is a different quantity; for the uncoded qubit it is settled by Theorems~\ref{thm:exact-tensor} and~\ref{thm:approx-tensor} (exact conversion: the one-shot order; approximate conversion: the order of $H(L\mid Y)$, rate $R_{\rm hash}$). The reference values $R_B$ and $R_{\rm hash}$ of \S\ref{sec:info} are marginal rates of the monotones $B$ and $Q_{\rm hash}$ (Propositions~\ref{prop:hellinger}, \ref{prop:hash}).
 \item ``Necessary and sufficient'' conditions are claimed only for free reachability on $\Nn_{\rm cc}$ (Theorem~\ref{thm:preorder}), which coincides with Level-1 reachability for the uncoded qubit (Proposition~\ref{prop:local-level1}). For a code with syndromes and for the single loss $\err$ the iff is open.
 \item The $d\to\infty$ exponent of one code family and the tensor-power limit are different asymptotics and must not be conflated.
 \item All statements concern the Bayes-optimal decoder; they are not statements about MWPM (Remark~\ref{rem:ml-only}).

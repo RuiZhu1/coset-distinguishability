@@ -94,8 +94,7 @@ so Theorem~\ref{thm:monotone} gives the first inequality; the second is Corollar
 The probability of this event is $\ge1-\delta_1-\delta_2$ by the union bound.
 \end{proof}
 
-This is a certificate that \emph{does not depend on any $\pL$ data}: flag and syndrome statistics suffice to give upper bounds for all $d$. The price is the looseness of the union bound
-(its threshold lies far below the true ML threshold). Replacing the union bound by a tighter, equally monotone bound (for example calibrated with measured small-$d$ failure rates) is the next step.
+This is a certificate that \emph{does not depend on any $\pL$ data}: flag and syndrome statistics suffice to give upper bounds for all $d$. The price is the looseness of the union bound: at the distances used in practice it behaves as if it had a threshold far below the true ML threshold, and because it counts every element of every logical class it grows without bound as $d\to\infty$ at any fixed noise (Proposition~\ref{prop:lower}(b); the crossover is at $d$ of order $10^3$--$10^5$ for the parameters of interest). For large $d$ use Proposition~\ref{prop:ml-peierls} instead. Replacing the union bound by a tighter, equally monotone bound is O7.
 
 \subsection{The case with local bursts and chip-scale events}
 
@@ -190,7 +189,7 @@ where $a_z=|B_z\cap\supp G|\le V$ and $N_G\le\sum_zc_za_z$ ($\kappa\ge1$). By co
 This gives $\BC(P;G)\le B_{\rm burst}^{\wt G}$; Lemma~\ref{lem:union} and $K=N(S)\setminus S$ give the second claim. For $t=p$, $m(p)=2\sqrt{p(1-p)/3}+2p/3$ on unflagged qubits, i.e.\ $m(p)=B(p,e)$.
 \end{proof}
 
-\noindent This settles open problem O3 at code capacity. The right-hand side is the weight enumerator of the code evaluated at one number, exactly as without bursts. Whatever exponential decay $\tfrac12\widetilde W_d(x)$ has at $x=B(p,e)$ it also has at $x=B_{\rm burst}$, so bursts of bounded size change the exponent and produce no $d$-independent floor. The price is the factor $\kappa^V$: a hit region can conspire with the background on up to $V$ qubits.
+\noindent The right-hand side is the weight enumerator of the code evaluated at one number, exactly as without bursts, so at each $d$ the bursts act as a larger single-qubit coefficient. \emph{Correction:} an earlier version concluded from this that bursts produce no $d$-independent floor. That does not follow: $\widetilde W_d(x)$ grows without bound as $d\to\infty$ for every $x>0$ (Proposition~\ref{prop:lower}(b)), so this bound says nothing about $d\to\infty$. The asymptotic statement is proved by the Peierls route instead (Theorem~\ref{thm:peierls-bursts}). The price in both is the factor $\kappa^V$: a hit region can conspire with the background on up to $V$ qubits.
 The free parameter $t$ can be optimized after the data are seen (the inequality holds for every $t$). Check K3 of \texttt{checks/completion\_checks.py} verifies $\BC\le\E_P[h]\le B_{\rm burst}^{\wt G}$ for every logical $G$, and $\err\le\tfrac12\sum_G\BC\le\tfrac12\widetilde W(B_{\rm burst})$, with exact ML on $[[5,1,3]]$ (with erasure) and on the $d=3$ rotated surface code.
 The same argument applies to any structure in which, given the burst configuration, the fault law is a product over fault locations (space-time locations included); only the single-location factor $m$ changes. This extension is not written out here.
 
@@ -204,7 +203,7 @@ On the $d=3$ rotated surface code take background $p=\tfrac1{200}$, $e=0$, and o
 (exact rational arithmetic; the values are rounded). So for unflagged bursts $\err$ is not monotone in the shape parameter $p_b$.\hfill\st{PROVED} (exact computation)
 \end{proposition}
 \noindent The computation is check K4 of \texttt{checks/completion\_checks.py}. The same drop occurs in the Poisson form of Definition~\ref{def:cc-bursts} (intensity $0.05$: $4.72\times10^{-3}\to3.48\times10^{-3}$, floating point), and a random search finds smaller examples on $n=3$ qubits.
-The monotonicity in the radius $R$ and duration $T_b$ is not tested. Since monotonicity fails, certification must not rely on a shape upper bound. Theorem~\ref{thm:burst-product} does not: it is uniform in the strength, and it uses only the region size $V$ and the rates.
+Monotonicity also fails in the size of the region and in the duration (Observations~\ref{obs:O1-region}, \ref{obs:O1-duration}). Since monotonicity fails, certification must not rely on a shape upper bound. Theorem~\ref{thm:burst-product} does not: it is uniform in the strength, and it uses only the region size $V$ and the rates.
 
 \subsubsection*{Parameter limits under contamination (O2)}
 
@@ -226,7 +225,7 @@ Suppose a procedure computes $\bar r$ from $M$ shots and has $\Prob_\theta[r_z\l
 The single-shot law of $\theta_{R,\epsilon}$ is continuous in $\epsilon$ and equals that of $\theta_0$ at $\epsilon=0$, so $\mathrm{TV}(P^{\otimes M}_{\theta_{R,\epsilon}},P^{\otimes M}_{\theta_0})\to0$ as $\epsilon\to0$. Hence $\Prob_{\theta_0}[\bar r\ge R]\ge\Prob_{\theta_{R,\epsilon}}[\bar r\ge R]-\mathrm{TV}\ge1-\delta-o(1)$ for every $R$; let $R\to\infty$.
 \end{proof}
 
-\noindent So O2 is settled for $p$ and $e$ (shots i.i.d.; for multi-round data use windows separated by gaps $\ge T_b$, whose event counts are independent), while an upper limit on the burst rates needs an assumption that makes bursts detectable, such as a floor on the strength that yields the efficiency $\eta$ in (c). What remains open is a certificate that is uniform over weak bursts without such a floor (weak bursts are hard to detect but also nearly harmless; Theorem~\ref{thm:burst-product} does not exploit the second fact). The circuit-level version of (b) is Lemma~\ref{lem:st-robust}.
+\noindent So O2 is settled for $p$ and $e$ (shots i.i.d.; for multi-round data use windows separated by gaps $\ge T_b$, whose event counts are independent), while an upper limit on the burst rates needs an assumption that makes bursts detectable, such as a floor on the strength that yields the efficiency $\eta$ in (c). A certificate that needs no such floor, because weak bursts are absorbed into the background estimate, is Theorem~\ref{thm:weak-bursts}. The circuit-level version of (b) is Lemma~\ref{lem:st-robust}.
 
 \subsubsection*{The certification theorem with bursts and chip events}
 
@@ -371,3 +370,62 @@ In the proof of Theorem~\ref{thm:mwpm-peierls} replace the count $d\,3^{\ell-1}$
 
 \noindent With the exact enumerations $c_{10}=44100$ and $c_{20}=897{,}697{,}164$ \cite{MS} one gets $\mu_{10}\approx2.914$, $\mu_{20}\approx2.803$, so at $e=0$ the condition $\mu_KB_M<1$ reads $p<4.56\%$ ($K=10$, $\gamma_{10}\approx1.46$) and $p<4.93\%$ ($K=20$), against $4.29\%$ for the factor $3$; no Peierls bound of this kind can go beyond $p<5.6\%$ (the connective constant $\mu\approx2.638$). Check H2 of \texttt{checks/handproof\_checks.py} enumerates $c_m$ for $m\le14$ (they agree with the cited values) and recomputes these ranges and $\gamma_{10}=1.455$; $c_{20}$ is cited, not enumerated. Check H3 finds the bounds above every MWPM and ML data point of P1 at which they are valid.
 \emph{Status of O7.} Proposition~\ref{prop:ml-peierls} removes the practical limitation of Theorem~\ref{thm:cc-cert} (weight enumerators only for $d\le5$) and Proposition~\ref{prop:saw} moves the range of validity from $4.29\%$ to about $4.9\%$; the true ML threshold is $18.9\%$. Closing that gap needs a different argument (for example a rigorous renormalization bound, or a rigorous way to extrapolate exact small-$d$ failure rates); O7 stays open in that sense.
+
+\subsection{Bursts by the Peierls route: no floor, and no strength floor needed (O3, O2)}\label{sec:peierls-bursts}
+
+The union bound over logical elements cannot say anything as $d\to\infty$ (Proposition~\ref{prop:lower}(b)). The Peierls bound of \S\ref{sec:mwpm-cert} counts crossing paths only, and it carries over to bursts.
+
+\begin{theorem}[Peierls bound with bursts]\label{thm:peierls-bursts}
+Take the rotated surface code under the code-capacity burst noise of Definition~\ref{def:cc-bursts} (background $\Nn_{\rm cc}(p,e)$, possibly with qubit-dependent rates $p_j\le p$; regions of size $\le V$ and coverage density $\bar\rho$; arbitrary burst strengths), decoded by the MWPM decoder of Theorem~\ref{thm:mwpm-peierls}. For $\varsigma\ge1$ let $q=\tfrac23p$,
+\[
+m(s)=e+(1-e)\Big[\frac{1-s}{\varsigma}+s\,\varsigma\Big],\qquad\kappa=\frac{m(1/2)}{m(q)},\qquad B_{M,\rm b}(\varsigma)=m(q)\exp\Big(\bar\rho\,\frac{\kappa^V-1}V\Big).
+\]
+If $3B_{M,\rm b}<1$, then for every odd $d\ge3$
+\[
+\err_d\;\le\;\pL^{\rm MWPM}\;\le\;\frac{2d\,B_{M,\rm b}(3B_{M,\rm b})^{d-1}}{1-3B_{M,\rm b}},
+\]
+and the counts of Proposition~\ref{prop:saw} and Lemma~\ref{lem:row-count} may replace $d\,3^{\ell-1}$. At $\bar\rho=0$ and $\varsigma=\sqrt{(1-q)/q}$, $B_{M,\rm b}=B_M$. In particular bursts in regions of bounded size lower the exponent to at least $\ln\frac1{3B_{M,\rm b}}>0$ and produce no $d$-independent floor; this proves the O3 statement at code capacity.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+Lemma~\ref{lem:crossing} is deterministic: a failure of the $X$ part gives a crossing path $\gamma$, $|\gamma|\ge d$, on which the unflagged qubits with an $X$-type error are at least half of the unflagged qubits. For a fixed $\gamma$, $\mathbf 1[\mathcal B_\gamma]\le\prod_{j\in\gamma}\phi_j$ with $\phi_j=1$ on flagged qubits and $\phi_j=\varsigma^{2x_j-1}$ otherwise. Given the burst activations the qubits are independent; an unflagged qubit at depolarizing rate $s_j$ has $x_j\sim{\rm Bernoulli}(\tfrac23s_j)$ with $\tfrac23s_j\in[0,\tfrac12]$, so $\E[\phi_j\mid\text{activations}]=m(\tfrac23s_j)$, and $m$ is nondecreasing because $\varsigma\ge1/\varsigma$. Hence the factor is at most $m(q)$ on qubits not hit by an active region and at most $m(\tfrac12)$ on hit ones, and Steps~3--4 of the proof of Theorem~\ref{thm:burst-product} give $\Prob[\mathcal B_\gamma]\le B_{M,\rm b}^{|\gamma|}$. Sum over crossing paths as in Theorem~\ref{thm:mwpm-peierls}; ML is at most MWPM.
+\end{proof}
+
+\noindent The bound is crude: the optimal $\varsigma$ is much smaller than $\sqrt{(1-q)/q}$ once $\bar\rho>0$, because $\kappa^V$ grows like $\varsigma^V$. For example, at $p=0.01$, $e=0$, $V=4$ the condition $3B_{M,\rm b}<1$ needs $\bar\rho$ of order $10^{-5}$ or less. The statement is qualitative: an exponent that stays positive, no floor.
+
+\begin{theorem}[Weak bursts need no rate bound: a certificate without a strength floor]\label{thm:weak-bursts}
+Take the noise of Theorem~\ref{thm:peierls-bursts} with Poisson activations: region $z$ ($|z|\le V$) has events of rate $r_z$ per shot, each with a random strength $\theta\in[0,1]$ drawn independently from an unknown law $\nu_z$, and an event uniformizes each qubit of $z$ independently with probability $\theta$ (this is $\Dep_{3\theta/4}$ per qubit). No lower bound on $\theta$ is assumed. Fix any analysis threshold $\theta_0\in(0,1]$ and call events with $\theta\ge\theta_0$ strong.
+\begin{enumerate}[(a)]
+\item (Thinning.) The noise equals: an independent product background in which qubit $j$ has depolarizing rate $p_j$ with $\lambda(p_j)=\lambda(p)e^{-R_j}$, plus independent Poisson layers that uniformize sets $A$ with $|A|\ge2$, at rates $R_A$. Here $R_A=\sum_{z\supseteq A}r_z\E_{\nu_z}[\theta^{|A|}(1-\theta)^{|z|-|A|}]$.
+\item (The correlated part is controlled by the strong rate and the background.) With $\bar\rho_m=\max_j\sum_{A\ni j,|A|\ge2}R_A$ and $\bar r_s=\max_j\sum_{z\ni j}r_z\nu_z([\theta_0,1])$,
+\[
+\bar\rho_m\le\bar r_s+(V-1)\,\theta_0(1-\theta_0)^{1-V}\max_j\ln\frac1{\lambda(p_j)}.
+\]
+\item (Data.) For each qubit $j$ pick a check $g(j)\ni j$. For any check $g$ containing $j$, on shots with no flag on $\supp g$: $\Prob[\text{$g$ fires}]=\tfrac12\big(1-\chi\prod_{i\in g}\lambda(p_i)\big)$ with $\chi\in(0,1]$, so an upper confidence limit $\bar P_g$ gives $\lambda(p_j)\ge1-2\bar P_g$. For a statistic $T$ equal to the parity of a check $g_W$, and regions $z$ with $|z\cap\supp g_W|\ge k$, the efficiency for strong events is at least $\eta(\theta_0)=\tfrac12\big(1-(1-\theta_0)^k\big)$, with no unknown parameter; so with an upper limit $\bar P_T$, simultaneously for all $\theta_0$, the strong rate of those regions is at most $-\ln\big(1-\min\{1,\bar P_T/\eta(\theta_0)\}\big)$.
+\item (Certificate.) On the event that all these confidence limits hold (probability $\ge1-\delta$ by a union bound), for every $\theta_0\in(0,1]$ and every $d$,
+\[
+\err_d\;\le\;\bar q_c+(1-\bar q_c)\min\Big\{1,\ \frac{2d\,\bar B(3\bar B)^{d-1}}{1-3\bar B}\Big\},
+\]
+where $\bar B$ is $B_{M,\rm b}$ of Theorem~\ref{thm:peierls-bursts} evaluated at $\bar p=\tfrac34(1-\min_j\underline\lambda_j)$, $\bar e$, and $\bar\rho=\bar r_s(\theta_0)+(V-1)\theta_0(1-\theta_0)^{1-V}\ln(1/\min_j\underline\lambda_j)$, and $\bar q_c$ is the chip-layer term of Theorem~\ref{thm:burst-cert}. The infimum over $\theta_0$ and $\varsigma$ may be taken after the data are seen.
+\end{enumerate}
+\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+(a) By the marking theorem, the events of region $z$ whose uniformized set is $A$ form independent Poisson processes of rates $r_z\E_{\nu_z}[\theta^{|A|}(1-\theta)^{|z|-|A|}]$; merging over $z$ keeps independence. Uniformizing a qubit absorbs every other Pauli on it, so only whether $A$ was uniformized at least once matters. For $|A|=1$ these layers are independent across qubits; qubit $j$ is uniformized with probability $1-e^{-R_j}$, which multiplies its depolarizing eigenvalue by $e^{-R_j}$.
+(b) A strong event contributes at most its rate to every $\sum_{A\ni j}R_A$. For weak events of region $z\ni j$, the probability that $j\in A$ and $|A|\ge2$ is $\E[\theta(1-(1-\theta)^{|z|-1})]\le(V-1)\theta_0\E[\theta]$, while the probability that $A=\{j\}$ is $\E[\theta(1-\theta)^{|z|-1}]\ge(1-\theta_0)^{V-1}\E[\theta]$. So the weak contribution to $\sum_{A\ni j,|A|\ge2}R_A$ is at most $(V-1)\theta_0(1-\theta_0)^{1-V}R_j$, and $R_j=\ln(\lambda(p)/\lambda(p_j))\le\ln(1/\lambda(p_j))$.
+(c) The parity of $g$ is the sum of independent contributions: the product background gives $\prod_i\lambda(p_i)$, and each active multi-set meeting $\supp g$ (and each chip event) makes it uniform, which gives $\chi\in(0,1]$. Since every $\lambda(p_i)\le1$, $\lambda(p_j)\ge\chi\prod_i\lambda(p_i)=1-2\Prob[\text{fires}]$. Given at least one strong event in such a region, some qubit of $z\cap\supp g_W$ is uniformized with probability at least $1-(1-\theta_0)^k$, and then the parity is exactly uniform; other noise and flags only add firings. So $\Prob[T=1]\ge\eta(\theta_0)\big(1-e^{-r_s}\big)$ for every $\theta_0$ at once, which is Lemma~\ref{lem:robust}(c).
+(d) Superposing depolarizing noise on unflagged qubits and superposing erasure are free (Theorem~\ref{thm:monotone}), so we may raise every $p_j$ to $\bar p$ and $e$ to $\bar e$. Then apply Theorem~\ref{thm:peierls-bursts} to the product background plus the multi-set layer of (a), whose sets have size $\le V$ and coverage $\le\bar\rho$ by (b) and (c), and the floor of Lemma~\ref{lem:floor}.
+\end{proof}
+
+\noindent This closes the main open item of O2. Proposition~\ref{prop:no-rate-limit} says that the total burst rate cannot be bounded from data without a strength floor, and Theorem~\ref{thm:weak-bursts} shows that it does not need to be: the strong part is bounded with a certified efficiency, and the weak part shows up in the background estimate, up to a correlated remainder of relative size $(V-1)\theta_0$. The trade-off in $\theta_0$ (a smaller $\theta_0$ shrinks the remainder but weakens $\eta$) is optimized a posteriori. Not covered: weak \emph{chip-scale} events (with $V=n$ the remainder term is useless unless $\theta_0\lesssim1/n$), and the circuit level, where (a)--(c) carry over to the locations of Definition~\ref{def:local-dep} (Lemma~\ref{lem:st-robust}) but no Peierls bound is available, so only the finite-$d$ bound of Theorem~\ref{thm:st-burst} can be used.
+
+\subsection{Shape monotonicity in the region and duration directions (O1)}\label{sec:o1-more}
+
+\begin{observation}[$\err$ can decrease when the burst region grows]\label{obs:O1-region}
+On the $d=3$ rotated surface code with background $p=\tfrac1{200}$, $e=0$, one region activated with probability $\rho=\tfrac1{20}$ and strength $p_b=\tfrac34$: enlarging the region from the L-shaped corner $\{0,1,3\}$ to the plaquette $\{0,1,3,4\}$ lowers $\err$ from $5.754\times10^{-3}$ to $4.347\times10^{-3}$ ($-24.5\%$). Among all regions of the $3\times3$ lattice and the parameters $p\in\{0.005,0.02\}$, $\rho\in\{0.05,0.3\}$, $p_b\in\{0.3,0.75\}$, adding one qubit lowers $\err$ in $656$ cases ($84$ with both regions connected); along balls of growing radius around a qubit no decrease was found.\hfill\st{PROVED} (exact rational computation, check M7)
+\end{observation}
+
+\begin{observation}[$\err$ can decrease when the burst lasts longer]\label{obs:O1-duration}
+For the bit-flip repetition code of distance $3$ over $3$ rounds with perfect measurements, background $p=\tfrac1{100}$ per data qubit and round, and one burst with probability $\rho=\tfrac1{20}$ starting at a uniformly random round on data qubits $\{0,1\}$ with flip probability $p_b=\tfrac12$: a duration of two rounds gives a smaller $\err$ than one round ($1.0591\times10^{-2}$ against $1.3613\times10^{-2}$, $-22.2\%$). The drop persists with measurement errors of probability $0.02$ in the first two rounds ($-22.7\%$, floating point); in $14$ of $128$ tested settings a longer burst gives a smaller $\err$.\hfill\st{PROVED} (exact rational computation, check M7)
+\end{observation}
+
+\noindent So O1 has a negative answer in all three shape directions. A plausible reading (not a proof): a stronger, larger or longer burst makes the hit qubits closer to uniform, and a uniform qubit carries no misleading evidence, whereas a partially noisy one biases the decision. Theorems~\ref{thm:burst-product}, \ref{thm:peierls-bursts} and~\ref{thm:weak-bursts} are uniform in the strength and monotone in $(V,\bar\rho)$, so they need no shape monotonicity.
