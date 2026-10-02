@@ -19,7 +19,8 @@ Pre-registered pass criterion: |B_matched - B_frozen| < 3 bootstrap s.e. and < 1
 the discretisation error and the matched-minus-frozen difference scale.
 
     python experiments/p1_erasure_pauli/envelope_check.py
-Writes results/envelope_check.json.
+    python experiments/p1_erasure_pauli/envelope_check.py --extended    # d = 9, exact and truncated-MPS (chi = 8) ML
+Writes results/envelope_check.json (or results/envelope_check_extended.json).
 """
 from __future__ import annotations
 
@@ -35,7 +36,7 @@ import numpy as np
 import lcd
 from lcd.analysis import Strata
 from lcd.codes import RotatedSurfaceCode
-from lcd.decoders import ExactTNMLDecoder
+from lcd.decoders import ExactTNMLDecoder, MPSMLDecoder
 from lcd.decoders.tn_ml import make_priors
 from lcd.noise import sample_stratum
 
@@ -43,9 +44,13 @@ REPO = Path(__file__).resolve().parents[2]
 
 
 def run_case(args: tuple) -> dict:
-    d, p0, e0, h, N, seed = args
+    d, p0, e0, h, N, seed, decoder = args if len(args) == 7 else (*args, "exact")
     code = RotatedSurfaceCode(d)
-    dec = ExactTNMLDecoder(code)
+    if decoder == "exact":
+        dec, kw = ExactTNMLDecoder(code), {}
+    else:                                           # "mps<chi>": truncated MPS with the convergence monitor of M2
+        chi = int(decoder[3:])
+        dec, kw = MPSMLDecoder(code, chi=chi), dict(refine_chi=2 * chi, margin=8.0)
     S = Strata(code.n, d, targets=[(p0, e0)], cutoff=1e-9)   # identity holds for the full sum: keep the tail tiny
     free = np.flatnonzero(~S.known_zero)
     offs = np.array([-2, -1, 0, 1, 2])
@@ -55,7 +60,7 @@ def run_case(args: tuple) -> dict:
     for i in free:
         ex, ez, er = sample_stratum(code.n, int(S.k[i]), int(S.w[i]), N, rng)
         for j, p in enumerate(thetas):
-            f[i, :, j] = dec.fail_prob(ex, ez, make_priors(code.n, p, er))
+            f[i, :, j] = dec.fail_prob(ex, ez, make_priors(code.n, p, er), **kw)
     P = {int(o): S.prob(p0 + h * o, e0) for o in offs}
     dPdp, _ = S.dprob(p0, e0)
 
@@ -76,7 +81,7 @@ def run_case(args: tuple) -> dict:
     for _ in range(300):
         idx = brng.integers(0, N, size=(S.size, N))
         boots.append(stats(idx))
-    res = dict(d=d, p=p0, e=e0, h=h, samples_per_stratum=N, strata=int(free.size), A_analytic_frozen=base["A"])
+    res = dict(d=d, p=p0, e=e0, h=h, decoder=decoder, samples_per_stratum=N, strata=int(free.size), A_analytic_frozen=base["A"])
     passed = True
     for k in (1, 2):
         diff = base[f"Bm{k}"] - base[f"Bf{k}"]
@@ -97,11 +102,18 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=20241004)
     ap.add_argument("--jobs", type=int, default=4)
-    ap.add_argument("--out", type=Path, default=REPO / "results" / "envelope_check.json")
+    ap.add_argument("--extended", action="store_true", help="d = 9 cases, exact and truncated-MPS decoders")
+    ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args()
     s = args.seed
-    cases = [(5, 0.06, 0.0, 0.01, 60_000, s), (5, 0.10, 0.0, 0.01, 60_000, s),
-             (5, 0.06, 0.05, 0.01, 6_000, s), (7, 0.06, 0.0, 0.01, 30_000, s)]
+    if args.extended:
+        cases = [(9, 0.06, 0.0, 0.01, 20_000, s, "exact"), (9, 0.06, 0.05, 0.01, 1_000, s, "exact"),
+                 (9, 0.06, 0.0, 0.01, 4_000, s, "mps8")]
+    else:
+        cases = [(5, 0.06, 0.0, 0.01, 60_000, s), (5, 0.10, 0.0, 0.01, 60_000, s),
+                 (5, 0.06, 0.05, 0.01, 6_000, s), (7, 0.06, 0.0, 0.01, 30_000, s)]
+    if args.out is None:
+        args.out = REPO / "results" / ("envelope_check_extended.json" if args.extended else "envelope_check.json")
     with ProcessPoolExecutor(max_workers=args.jobs) as ex:
         results = list(ex.map(run_case, cases))
     for r in results:

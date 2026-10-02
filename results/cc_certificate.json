@@ -1,0 +1,682 @@
+{
+  "points": [
+    {
+      "p": 0.005,
+      "e": 0.0,
+      "B": 0.08477861148580411,
+      "eps": {
+        "3": {
+          "eps": 0.000329158128024698,
+          "se": 0.0,
+          "method": "exact enumeration (theory/checks)"
+        },
+        "5": {
+          "eps": 1.14265107743089e-05,
+          "se": 1.1907984092287881e-07,
+          "cert_interval": [
+            1.1055363710859128e-05,
+            1.18066667129201e-05
+          ],
+          "decodes": 199996,
+          "method": "stratified exact-TN ML matched at p"
+        }
+      },
+      "union_bound": {
+        "3": {
+          "bound": 0.007738943197151196,
+          "ok": true,
+          "ratio": 23.511323398249832
+        },
+        "5": {
+          "bound": 0.000384275647791366,
+          "ok": true,
+          "ratio": 33.630182947480556
+        }
+      },
+      "runs": [
+        {
+          "M": 100,
+          "trials": 2000,
+          "coverage": 1.0,
+          "coverage_e": 1.0,
+          "coverage_p": 1.0,
+          "coverage_ok": true,
+          "p_bar_median": 0.02131372892525879,
+          "e_bar_median": 0.001474463690359561,
+          "cert_median": {
+            "3": 0.09321158371460765,
+            "5": 0.026191359293886707
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          }
+        },
+        {
+          "M": 1000,
+          "trials": 2000,
+          "coverage": 0.979,
+          "coverage_e": 1.0,
+          "coverage_p": 0.979,
+          "coverage_ok": true,
+          "p_bar_median": 0.008439304535433234,
+          "e_bar_median": 0.00014754429243467768,
+          "cert_median": {
+            "3": 0.018273014783785835,
+            "5": 0.0016167163701857486
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          }
+        },
+        {
+          "M": 10000,
+          "trials": 2000,
+          "coverage": 0.98,
+          "coverage_e": 1.0,
+          "coverage_p": 0.98,
+          "coverage_ok": true,
+          "p_bar_median": 0.005932877487535793,
+          "e_bar_median": 1.4755408954338165e-05,
+          "cert_median": {
+            "3": 0.010209513806231868,
+            "5": 0.0006102657704168685
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "p": 0.01,
+      "e": 0.0,
+      "B": 0.12155791959742725,
+      "eps": {
+        "3": {
+          "eps": 0.00130001411979086,
+          "se": 0.0,
+          "method": "exact enumeration (theory/checks)"
+        },
+        "5": {
+          "eps": 9.142297091529474e-05,
+          "se": 9.037686076307617e-07,
+          "cert_interval": [
+            8.822483847844229e-05,
+            9.469933629367469e-05
+          ],
+          "decodes": 199995,
+          "method": "stratified exact-TN ML matched at p"
+        }
+      },
+      "union_bound": {
+        "3": {
+          "bound": 0.02418250769771769,
+          "ok": true,
+          "ratio": 18.601726957864166
+        },
+        "5": {
+          "bound": 0.0025892014085385283,
+          "ok": true,
+          "ratio": 28.321125233804494
+        }
+      },
+      "runs": [
+        {
+          "M": 100,
+          "trials": 2000,
+          "coverage": 1.0,
+          "coverage_e": 1.0,
+          "coverage_p": 1.0,
+          "coverage_ok": true,
+          "p_bar_median": 0.03421149913453855,
+          "e_bar_median": 0.001474463690359561,
+          "cert_median": {
+            "3": 0.2284799215383099,
+            "5": 0.1346836772672527
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 0.998,
+            "5": 0.979
+          }
+        },
+        {
+          "M": 1000,
+          "trials": 2000,
+          "coverage": 0.9765,
+          "coverage_e": 1.0,
+          "coverage_p": 0.9765,
+          "coverage_ok": true,
+          "p_bar_median": 0.01462146538916928,
+          "e_bar_median": 0.00014754429243467768,
+          "cert_median": {
+            "3": 0.04653043742461903,
+            "5": 0.007852208439043468
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          }
+        },
+        {
+          "M": 10000,
+          "trials": 2000,
+          "coverage": 0.977,
+          "coverage_e": 1.0,
+          "coverage_p": 0.977,
+          "coverage_ok": true,
+          "p_bar_median": 0.011324685474897955,
+          "e_bar_median": 1.4755408954338165e-05,
+          "cert_median": {
+            "3": 0.029865920616128666,
+            "5": 0.0036967428934983684
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "p": 0.01,
+      "e": 0.01,
+      "B": 0.13034234040145298,
+      "eps": {
+        "3": {
+          "eps": 0.002679950548755234,
+          "se": 0.0,
+          "method": "exact enumeration (theory/checks)"
+        },
+        "5": {
+          "eps": 0.00019529388023360405,
+          "se": 2.539722873290527e-06,
+          "cert_interval": [
+            0.00017512785874627298,
+            0.00021783589497114008
+          ],
+          "decodes": 199982,
+          "method": "stratified exact-TN ML matched at p"
+        }
+      },
+      "union_bound": {
+        "3": {
+          "bound": 0.030315589055705406,
+          "ok": true,
+          "ratio": 11.31199568954218
+        },
+        "5": {
+          "bound": 0.0037913218223429523,
+          "ok": true,
+          "ratio": 19.413418473778588
+        }
+      },
+      "runs": [
+        {
+          "M": 100,
+          "trials": 2000,
+          "coverage": 0.9785,
+          "coverage_e": 0.9785,
+          "coverage_p": 1.0,
+          "coverage_ok": true,
+          "p_bar_median": 0.029756426346228798,
+          "e_bar_median": 0.01472679723853566,
+          "cert_median": {
+            "3": 0.21342388486660382,
+            "5": 0.11835242995176742
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 0.998,
+            "5": 0.9615
+          }
+        },
+        {
+          "M": 1000,
+          "trials": 2000,
+          "coverage": 0.957,
+          "coverage_e": 0.9765,
+          "coverage_p": 0.98,
+          "coverage_ok": true,
+          "p_bar_median": 0.014716984281348502,
+          "e_bar_median": 0.011312025024454024,
+          "cert_median": {
+            "3": 0.05782887827323782,
+            "5": 0.011402113497146132
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          }
+        },
+        {
+          "M": 10000,
+          "trials": 2000,
+          "coverage": 0.954,
+          "coverage_e": 0.9715,
+          "coverage_p": 0.9825,
+          "coverage_ok": true,
+          "p_bar_median": 0.011306014283641572,
+          "e_bar_median": 0.010393684692779001,
+          "cert_median": {
+            "3": 0.03714067397236098,
+            "5": 0.005348294939799018
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "p": 0.02,
+      "e": 0.02,
+      "B": 0.19149158053229995,
+      "eps": {
+        "3": {
+          "eps": 0.010253401845388643,
+          "se": 0.0,
+          "method": "exact enumeration (theory/checks)"
+        },
+        "5": {
+          "eps": 0.0015420929662411792,
+          "se": 1.7481484047189013e-05,
+          "cert_interval": [
+            0.0013665421685443574,
+            0.0017379134282242785
+          ],
+          "decodes": 199984,
+          "method": "stratified exact-TN ML matched at p"
+        }
+      },
+      "union_bound": {
+        "3": {
+          "bound": 0.11093109918619133,
+          "ok": true,
+          "ratio": 10.818955587513758
+        },
+        "5": {
+          "bound": 0.03566646982046548,
+          "ok": true,
+          "ratio": 23.12861195872113
+        }
+      },
+      "runs": [
+        {
+          "M": 100,
+          "trials": 2000,
+          "coverage": 0.9675,
+          "coverage_e": 0.9765,
+          "coverage_p": 0.9905,
+          "coverage_ok": true,
+          "p_bar_median": 0.04852341953402922,
+          "e_bar_median": 0.02628333237854676,
+          "cert_median": {
+            "3": 0.5905080929559916,
+            "5": 0.9132612515535089
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 0.823,
+            "5": 0.527
+          }
+        },
+        {
+          "M": 1000,
+          "trials": 2000,
+          "coverage": 0.955,
+          "coverage_e": 0.9735,
+          "coverage_p": 0.981,
+          "coverage_ok": true,
+          "p_bar_median": 0.026539870716825842,
+          "e_bar_median": 0.021812281021509956,
+          "cert_median": {
+            "3": 0.18457383853268372,
+            "5": 0.09013329104524664
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          }
+        },
+        {
+          "M": 10000,
+          "trials": 2000,
+          "coverage": 0.9555,
+          "coverage_e": 0.976,
+          "coverage_p": 0.979,
+          "coverage_ok": true,
+          "p_bar_median": 0.02193363730302847,
+          "e_bar_median": 0.020552334133363048,
+          "cert_median": {
+            "3": 0.13058423375256695,
+            "5": 0.04779975858542329
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "p": 0.04,
+      "e": 0.02,
+      "B": 0.26788201991343463,
+      "eps": {
+        "3": {
+          "eps": 0.02848268960743362,
+          "se": 0.0,
+          "method": "exact enumeration (theory/checks)"
+        },
+        "5": {
+          "eps": 0.008229304892158923,
+          "se": 7.277267640831207e-05,
+          "cert_interval": [
+            0.007426985042351681,
+            0.009143328061356627
+          ],
+          "decodes": 199980,
+          "method": "stratified exact-TN ML matched at p"
+        }
+      },
+      "union_bound": {
+        "3": {
+          "bound": 0.3838179473227973,
+          "ok": true,
+          "ratio": 13.475481164623782
+        },
+        "5": {
+          "bound": 0.37250289991458824,
+          "ok": true,
+          "ratio": 45.265414855332175
+        }
+      },
+      "runs": [
+        {
+          "M": 100,
+          "trials": 2000,
+          "coverage": 0.959,
+          "coverage_e": 0.9775,
+          "coverage_p": 0.9805,
+          "coverage_ok": true,
+          "p_bar_median": 0.07697499425851831,
+          "e_bar_median": 0.02628333237854676,
+          "cert_median": {
+            "3": 1.5792435999508818,
+            "5": 8.605943986730976
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 0.205,
+            "5": 0.067
+          }
+        },
+        {
+          "M": 1000,
+          "trials": 2000,
+          "coverage": 0.955,
+          "coverage_e": 0.978,
+          "coverage_p": 0.977,
+          "coverage_ok": true,
+          "p_bar_median": 0.04943053542942297,
+          "e_bar_median": 0.021812281021509956,
+          "cert_median": {
+            "3": 0.5950771691787453,
+            "5": 0.928465975431963
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 0.998,
+            "5": 0.5805
+          }
+        },
+        {
+          "M": 10000,
+          "trials": 2000,
+          "coverage": 0.952,
+          "coverage_e": 0.977,
+          "coverage_p": 0.9735,
+          "coverage_ok": true,
+          "p_bar_median": 0.042823309450101876,
+          "e_bar_median": 0.020564495247829568,
+          "cert_median": {
+            "3": 0.4411078921483478,
+            "5": 0.4948897559704988
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "p": 0.06,
+      "e": 0.05,
+      "B": 0.34851487481523963,
+      "eps": {
+        "3": {
+          "eps": 0.07101883735148762,
+          "se": 0.0,
+          "method": "exact enumeration (theory/checks)"
+        },
+        "5": {
+          "eps": 0.03220615143170926,
+          "se": 0.00023397273298030014,
+          "cert_interval": [
+            0.028622685606163083,
+            0.0361808746921839
+          ],
+          "decodes": 199960,
+          "method": "stratified exact-TN ML matched at p"
+        }
+      },
+      "union_bound": {
+        "3": {
+          "bound": 1.1344459716593243,
+          "ok": true,
+          "ratio": 15.97387417150615
+        },
+        "5": {
+          "bound": 3.927866719984267,
+          "ok": true,
+          "ratio": 121.9601394569921
+        }
+      },
+      "runs": [
+        {
+          "M": 100,
+          "trials": 2000,
+          "coverage": 0.9645,
+          "coverage_e": 0.9805,
+          "coverage_p": 0.9835,
+          "coverage_ok": true,
+          "p_bar_median": 0.10924458756205971,
+          "e_bar_median": 0.05885313603170929,
+          "cert_median": {
+            "3": 4.437610222245761,
+            "5": 117.17691018296856
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 0.0075,
+            "5": 0.0005
+          }
+        },
+        {
+          "M": 1000,
+          "trials": 2000,
+          "coverage": 0.9495,
+          "coverage_e": 0.9745,
+          "coverage_p": 0.975,
+          "coverage_ok": true,
+          "p_bar_median": 0.07302715472538257,
+          "e_bar_median": 0.052692355669822354,
+          "cert_median": {
+            "3": 1.7340547059059241,
+            "5": 10.797492491355545
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 0.004,
+            "5": 0.0
+          }
+        },
+        {
+          "M": 10000,
+          "trials": 2000,
+          "coverage": 0.9535,
+          "coverage_e": 0.9765,
+          "coverage_p": 0.9765,
+          "coverage_ok": true,
+          "p_bar_median": 0.06381023140299338,
+          "e_bar_median": 0.05085752734992423,
+          "cert_median": {
+            "3": 1.292890775499168,
+            "5": 5.336695242000308
+          },
+          "cert_ge_eps_fraction": {
+            "3": 1.0,
+            "5": 1.0
+          },
+          "cert_nonvacuous_fraction": {
+            "3": 0.0,
+            "5": 0.0
+          }
+        }
+      ]
+    }
+  ],
+  "logical_weight_distribution": {
+    "3": [
+      0,
+      0,
+      0,
+      24,
+      0,
+      192,
+      0,
+      408,
+      0,
+      144
+    ],
+    "5": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      160,
+      0,
+      1968,
+      0,
+      24512,
+      0,
+      191888,
+      0,
+      1169296,
+      0,
+      4676016,
+      0,
+      11831568,
+      0,
+      16991792,
+      0,
+      11841040,
+      0,
+      3348192,
+      0,
+      255216
+    ]
+  },
+  "delta1": 0.025,
+  "delta2": 0.025,
+  "calibration": {
+    "code": "rotated d=5",
+    "g0_support": [
+      0,
+      1,
+      5,
+      6
+    ]
+  },
+  "script": "experiments/certification/cc_certificate.py",
+  "args": {
+    "trials": 2000,
+    "seed": 20261002
+  },
+  "failures": [],
+  "git_commit": "4c5a83be91b43a7b6f774ffd66f44fe3e847a18b",
+  "git_dirty_src": true,
+  "versions": {
+    "lcd": "0.0.1",
+    "numpy": "2.5.3"
+  },
+  "date": "2026-10-02T07:10:01+00:00"
+}

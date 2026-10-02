@@ -73,3 +73,47 @@ def test_mwpm_fails_on_a_logical_operator():
     ex[0] = code.LX        # an X-type logical: zero syndrome, flips the logical observable
     ez = np.zeros_like(ex)
     assert dec.fail(ex, ez).all()
+
+
+def test_mwpm_without_erasure_flags_is_unchanged():
+    rng = np.random.default_rng(5)
+    code = RotatedSurfaceCode(5)
+    dec = MWPMCodeCapacity(code)
+    ex, ez = sample_iid(code.n, 0.12, 3000, rng)
+    assert (dec.fail(ex, ez) == dec.fail(ex, ez, np.zeros(ex.shape, bool))).all()
+
+
+@pytest.mark.parametrize("d", [5, 7])
+def test_mwpm_with_erasure_corrects_every_stratum_below_half_distance(d):
+    """2w + k < d  =>  the zero-weight erasure edges never cause a failure (known-zero strata rule for MWPM)."""
+    rng = np.random.default_rng(4)
+    code = RotatedSurfaceCode(d)
+    dec = MWPMCodeCapacity(code)
+    for k in range(1, d):
+        for w in range((d - k + 1) // 2):
+            assert 2 * w + k < d
+            ex, ez, er = sample_stratum(code.n, k, w, 500, rng)
+            assert not dec.fail(ex, ez, er).any()
+
+
+def test_mwpm_is_bayes_optimal_on_pure_erasure():
+    """With only erasures, averaging over all 4^k Paulis on a fixed erased set, MWPM fails exactly as often as ML
+    (both pick one correction among the equally likely logical classes)."""
+    from lcd.decoders import ExactTNMLDecoder
+    from lcd.decoders.tn_ml import make_priors
+
+    rng = np.random.default_rng(6)
+    code = RotatedSurfaceCode(3)
+    mw, ml = MWPMCodeCapacity(code), ExactTNMLDecoder(code)
+    sets = [np.flatnonzero(code.LX)] + [rng.choice(code.n, k, replace=False) for k in (2, 3, 4, 5, 5)]
+    for A in sets:
+        k = len(A)
+        t = (np.arange(4 ** k)[:, None] >> (2 * np.arange(k))) & 3          # all Paulis on A: 0=I 1=X 2=Z 3=Y
+        ex = np.zeros((4 ** k, code.n), np.uint8)
+        ez = np.zeros_like(ex)
+        ex[:, A], ez[:, A] = t & 1, t >> 1
+        er = np.zeros(ex.shape, bool)
+        er[:, A] = True
+        f_mw = mw.fail(ex, ez, er).mean()
+        f_ml = ml.fail_prob(ex, ez, make_priors(code.n, 0.0, er)).mean()
+        assert abs(f_mw - f_ml) < 1e-12      # nontrivial: 0.5 on the logical support, 0.75 / 0.5 on two k = 5 sets

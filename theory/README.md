@@ -59,7 +59,7 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Theorem 0.6 | Complete family of monotones $\Phi_\Lambda$ (Blackwell--Sherman--Stein with relabeling); an adaptation of the standard separation argument | PROVED | N2, N3 |
 | Corollary 0.7 | $\varepsilon^\star$ alone is not complete; the free operations are maximal | PROVED | N5 |
 | Propositions 0.8, 0.9 | Level 2 $\subseteq$ Level 1; for the uncoded qubit, local free reachability = arbitrary simulable reduction = $\Phi$-order for all $\varphi$ | PROVED | N1 |
-| Remark 0.10 | Reformulation of Conjecture 3.11: all-losses form proved (uncoded qubit); single-loss form for $\varepsilon^\star$ open | -- | counterexample search (to do) |
+| Remark 0.10 | Reformulation of Conjecture 3.11: all-losses form proved (uncoded qubit); single-loss form for $\varepsilon^\star$ open | -- | `checks/universal_order_search.py` (done; no reversal of trade pairs, Observation 3.17) |
 | Proposition 0.11 | Marginal rates of monotones of the local free order fill exactly $[0,c]$; $c$ is attained by the free-order monotone $1-\mu$; $R_B$ and $R_{\rm hash}$ are marginal rates of monotones ($Q_{\rm hash}$: numerical) | PROVED | C7, N1, N7 |
 | Theorem 1.7 | Monotonicity of $\varepsilon^\star$ under simulable reductions (coarse-graining / discarding flags: data processing; superposition: simulation argument) | PROVED | C1, C2 |
 | Proposition 1.9 | (F1), (F2), (F2') are simulable reductions; superposing independent noise never decreases $\varepsilon^\star$ | PROVED | C1, C2 |

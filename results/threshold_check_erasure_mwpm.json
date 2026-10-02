@@ -1,0 +1,42 @@
+{
+  "script": "experiments/p1_erasure_pauli/threshold_check.py",
+  "scenario": "erasure_mwpm",
+  "swept": "e (p = 0)",
+  "reference": "MWPM = 0.5",
+  "args": {
+    "scenario": "erasure_mwpm",
+    "ds": "[5, 9, 13, 17, 21]",
+    "shots": "40000",
+    "seed": "20241003",
+    "xs": "None",
+    "reanalyze": "False",
+    "resume": "True",
+    "out": "None"
+  },
+  "crossings": {
+    "MWPM_d5_d9": {
+      "crossing": 0.501999448507009,
+      "se": 0.0014018616676438435
+    },
+    "MWPM_d9_d13": {
+      "crossing": 0.5009249471975677,
+      "se": 0.0017416739332175527
+    },
+    "MWPM_d13_d17": {
+      "crossing": 0.5065835073672991,
+      "se": 0.001970525062193424
+    },
+    "MWPM_d17_d21": {
+      "crossing": 0.5064303927835432,
+      "se": 0.0022640004133375738
+    }
+  },
+  "versions": {
+    "lcd": "0.0.1",
+    "numpy": "2.5.3"
+  },
+  "git_commit": "4c5a83be91b43a7b6f774ffd66f44fe3e847a18b",
+  "git_dirty_src": true,
+  "date": "2026-10-02T07:38:41+00:00",
+  "note": "finite-size crossings of small d from a weighted linear fit of the difference; sanity check only (no finite-size scaling)"
+}
