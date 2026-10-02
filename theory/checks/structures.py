@@ -64,6 +64,7 @@ class Structure:
         self.nz = np.stack([(V[:, j] | V[:, n + j]) for j in range(n)], axis=1).astype(np.int64)    # non-identity indicator
         self.cls = coset_ids(V, S)                  # S-coset
         syn = coset_ids(V, N)                       # N-coset
+        self.syn, self.V = syn, V
         ncls = int(self.cls.max()) + 1
         s_of_c = np.full(ncls, -1, dtype=np.int64)
         s_of_c[self.cls] = syn
