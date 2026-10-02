@@ -1,0 +1,141 @@
+\section{Framework: linear decoding structures, simulable reductions, and monotonicity}\label{sec:framework}
+
+\subsection{Linear decoding structures and noise instances}
+
+To let one set of proofs cover both code-capacity noise and circuit-level noise (detector error models), we only use \emph{linearity}.
+
+\begin{definition}[Linear decoding structure]\label{def:structure}
+A linear decoding structure is a triple $\mathfrak D=(V,\sigma,L)$: $V$ is a finite-dimensional $\F$-vector space (the \emph{fault space}),
+$\sigma:V\to\F^{r}$ is the \emph{detector map} (syndrome), and $L:V\to\F^{q}$ is the \emph{observable map}; both are linear.
+\end{definition}
+
+\begin{definition}[Structure of a stabilizer code]\label{def:code-structure}
+Let $S$ be the stabilizer group of an $n$-qubit stabilizer code ($n-k$ independent generators $g_i$). Write Paulis modulo phase as $V=\F^{2n}$ with
+symplectic form $\langle u,v\rangle=u_x\!\cdot v_z+u_z\!\cdot v_x$. Put
+\[
+\sigma(E)=\big(\langle E,g_i\rangle\big)_{i=1}^{n-k},\qquad
+L(E)=\big(\langle E,\bar X_j\rangle,\langle E,\bar Z_j\rangle\big)_{j=1}^{k},
+\]
+where $\bar X_j,\bar Z_j$ is a symplectic basis of logical operators. The map $E\mapsto(\sigma(E),L(E))$ is surjective and its kernel is exactly $S$.
+For circuit-level noise, $V=\F^{\#\text{fault locations}}$, $\sigma$ is the detector map and $L$ the observable flips; linearity comes from
+the linear propagation of Pauli faults through Clifford circuits.
+\end{definition}
+
+\begin{definition}[Noise instance and the coset-distinguishing problem]\label{def:instance}
+A noise instance is a random pair $(E,F)$: $E\in V$ is the fault vector and $F\in\mathfrak F$ ($\mathfrak F$ finite) is classical \emph{side information}
+(erasure flags, leakage-detection flags, event flags, \dots); the joint law $P_{EF}$ is known to the decoder. The decoder observes
+$Y=(\sigma(E),F)$ and must guess $L(E)$. A decoder is a (possibly randomized) map $\hat g(Y)$. Define
+\[
+\err(P):=\min_{\hat g}\Prob[\hat g(Y)\neq L(E)]
+=1-\sum_{y}\max_{\ell}\Prob[L=\ell,\,Y=y].
+\]
+The minimum is attained by maximum-likelihood (coset) decoding, and $\err(P)=\pL$ is the logical failure probability under maximum-likelihood decoding.
+\end{definition}
+
+\begin{lemma}[Decoding is label guessing]\label{lem:decoding}
+For a stabilizer code (Definition~\ref{def:code-structure}), suppose that after seeing $y=(s,f)$ the decoder applies a recovery operator $R$ with $\sigma(R)=s$.
+Recovery succeeds (that is, $E+R\in S$, a logical identity) if and only if $L(R)=L(E)$; moreover for every $(s,\ell)$ there is an $R$ with
+$\sigma(R)=s$ and $L(R)=\ell$. Hence the minimal recovery failure probability is $\err(P)$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+$\sigma(E+R)=0$, so $E+R$ lies in the normalizer, and $E+R\in S\iff L(E+R)=0\iff L(R)=L(E)$
+(because the joint kernel of $(\sigma,L)$ is $S$). Surjectivity of $(\sigma,L)$ gives the second sentence.
+\end{proof}
+
+\begin{remark}[The choice of label does not matter]
+Replacing $L$ by $L'(E)=\pi_{\sigma(E)}(L(E))$, where $\pi_s$ is a syndrome-dependent label permutation (for example from a different choice of
+reference lift of the syndrome), leaves $\err$ unchanged: for fixed $y$ the maximum over $\ell$ is unaffected by a permutation. Numerically we use the raw labels
+$(\langle E,\bar X\rangle,\langle E,\bar Z\rangle)$ directly (see \texttt{theory/checks}).
+\end{remark}
+
+For a family of noise models $\Nn=(P_d)_{d}$ indexed by the code distance $d$, write
+$\alpha_-(\Nn)=\liminf_{d\to\infty}-\tfrac1d\ln\err(P_d)$ and $\alpha_+(\Nn)=\limsup_{d\to\infty}-\tfrac1d\ln\err(P_d)$;
+when they coincide the common value is the suppression exponent $\alpha$.
+
+\subsection{Simulable reductions}
+
+\begin{definition}[Simulable reduction]\label{def:reduction}
+Let $(L,Y)$ and $(L',Y')$ be random pairs with values in finite sets. A \emph{simulable reduction}
+$(L,Y)\rightsquigarrow(L',Y')$ is a triple $(\kappa,g,h)$:
+$\kappa(\cdot\mid y)$ is a Markov kernel from $Y$ to the \emph{processor's randomness} $\xi$, and $g(y,\xi)$, $h(\ell,y,\xi)$ are functions such that
+
+\smallskip
+(i) for every $(y,\xi)$ the map $\ell\mapsto h(\ell,y,\xi)$ is a bijection of the label set;
+
+(ii) if $\xi\sim\kappa(\cdot\mid Y)$ (conditionally independent of $L$ given $Y$), then
+$\big(h(L,Y,\xi),\,g(Y,\xi)\big)$ has the same law as $(L',Y')$.
+\end{definition}
+
+\begin{theorem}[Monotonicity]\label{thm:monotone}
+If $(L,Y)\rightsquigarrow(L',Y')$ then $\err(L\mid Y)\le\err(L'\mid Y')$.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+Let $\hat g'$ be any decoder for $(L',Y')$. Build a randomized decoder $\hat g$ for $(L,Y)$:
+observe $y$, draw $\xi\sim\kappa(\cdot\mid y)$, and output $h^{-1}(\hat g'(g(y,\xi));y,\xi)$, where $h^{-1}$ inverts $h$ in the label variable (it exists by (i)).
+Then
+\[
+\{\hat g(Y)=L\}=\{\hat g'(g(Y,\xi))=h(L,Y,\xi)\}=\{\hat g'(Y'_{\rm sim})=L'_{\rm sim}\},
+\]
+where $(L'_{\rm sim},Y'_{\rm sim})=(h(L,Y,\xi),g(Y,\xi))$ has the law of $(L',Y')$ by (ii). Hence
+$\Prob[\hat g(Y)\neq L]=\Prob[\hat g'(Y')\neq L']$. The error of a randomized decoder is an average of errors of deterministic decoders,
+so some deterministic decoder does at least as well. Optimizing over $\hat g'$ gives the claim.
+\end{proof}
+
+\begin{remark}[The data-processing form]
+$1-\err(L\mid Y)=2^{-H_{\min}(L\mid Y)}$, where $H_{\min}$ is the conditional min-entropy. When $h=\mathrm{id}$
+(only the observation is processed), Theorem~\ref{thm:monotone} says $H_{\min}(L\mid Y)\le H_{\min}(L\mid g(Y,\xi))$,
+which is the data-processing inequality for the conditional min-entropy (the Sibson--R\'enyi mutual information of order $\infty$). Other R\'enyi/Hellinger-type functionals are
+monotone as well; see Proposition~\ref{prop:hellinger}.
+\end{remark}
+
+\subsection{The three free operations}
+
+The following three operations are special cases of Definition~\ref{def:reduction}, so Theorem~\ref{thm:monotone} gives monotonicity for each.
+Let $(E,F)$ be a noise instance on a linear decoding structure $\mathfrak D$.
+
+\paragraph{(F1) Syndrome coarse-graining.}
+$Y'=g(Y,\xi)$, $h=\mathrm{id}$, with $g$ an arbitrary (possibly randomized) function, for example merging detectors or taking subsets.
+\emph{Special case}: discarding flags (\textbf{(F1$'$)}): $F'=\varphi(F,\xi)$, which is again a noise instance $(E,F')$.
+
+\paragraph{(F2) Superposing independent, classically samplable noise.}
+Let $(E',F'')$ be a random pair independent of $(E,F)$ with known law. The new instance is
+$(E+E',\,(F,F''))$ (or a further coarse-graining of it by (F1$'$)).
+Take $\xi=(E',F'')$, $g(y,\xi)=(\sigma(E')+s,\,f,\,F'')$, and $h(\ell,y,\xi)=\ell+L(E')$.
+
+\paragraph{(F2$'$) Independent noise that depends on the observed flags.}
+$\xi\sim\kappa(\cdot\mid y)$ may depend on the observation $y=(s,f)$; for example, superpose depolarizing noise only on qubits that are not flagged.
+$h(\ell,y,\xi)=\ell+L(N)$, where $N$ is the superposed fault drawn by the processor itself.
+
+\begin{proposition}[(F1), (F2), (F2$'$) are simulable reductions]\label{prop:free-ops}
+Let $(E,F)$ be a noise instance and let $(E_{\rm new},F_{\rm new})$ arise by (F2) or (F2$'$), where the superposed fault $N$ satisfies:
+given $F$, $N$ is conditionally independent of $E$ (in particular, in (F2) $N=E'$ is independent of $(E,F)$). Then
+\[
+\err(E,F)\;\le\;\err(E+N,\,F_{\rm new}),
+\]
+where $F_{\rm new}$ is any (randomized) function of $(F,\text{additional flags})$. In particular, superposing noise never decreases $\err$.
+\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+The label of the new problem is $L(E+N)=L(E)+L(N)$ (linearity) and the observation is $(\sigma(E)+\sigma(N),F_{\rm new})$.
+The processor computes the new observation from $(\sigma(E),F)$ and the $(N,\text{additional flags})$ it drew itself, and shifts the label by the known $L(N)$.
+This is a reduction in the sense of Definition~\ref{def:reduction}: (i) holds because a shift is a bijection, and (ii) because $N$ is conditionally independent of $E$ with known law,
+which gives the correct joint law. Now apply Theorem~\ref{thm:monotone}.
+\end{proof}
+
+\begin{corollary}[Monotonicity of the exponent]\label{cor:alpha}
+If for every $d$ the instance $P'_d$ arises from $P_d$ by a free operation of the same type, then
+$\alpha_\pm(\Nn')\le\alpha_\pm(\Nn)$.\hfill\st{PROVED}
+\end{corollary}
+
+\begin{remark}[Independence cannot be dropped]\label{rem:independence}
+Take $N=E$ (the superposed noise is a copy of the existing fault): $E+N=0$ and $\err=0<\err(E,F)$. So
+the processor must be able to draw $N$ \emph{without knowing the hidden variable $E$}; this is the meaning of ``superposing \emph{independent} noise''.
+Section~\ref{sec:repr} uses this to draw the boundary of the model class.
+\end{remark}
+
+\begin{remark}[Valid only for the optimal decoder]\label{rem:ml-only}
+Theorem~\ref{thm:monotone} concerns Bayes-optimal (maximum-likelihood) decoding. For suboptimal decoders (for example MWPM with fixed weights),
+superposing noise does not guarantee monotonicity of their failure rates, and there is no ready-made data-processing inequality; therefore the \emph{numerical} checks of monotonicity must use exact ML
+(see \texttt{theory/checks/exact\_small\_codes.py}) and cannot be replaced by MWPM results.
+Conversely, optimality always gives $\err\le p_{\rm L}^{\rm MWPM}$, that is, $\alpha_{\rm ML}\ge\alpha_{\rm MWPM}$.
+\end{remark}

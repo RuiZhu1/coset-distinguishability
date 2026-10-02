@@ -1,0 +1,120 @@
+\section{How erasure, leakage, and event-type noise are represented in the model}\label{sec:repr}
+
+Monotonicity (Theorem~\ref{thm:monotone}) holds only for superpositions that are ``classically samplable and independent of the hidden variables''
+(Remark~\ref{rem:independence}). This section explains, for each physical noise type, how to write it as a noise instance $(E,F)$,
+under which assumptions the monotonicity argument still holds, and where it fails.
+
+\subsection{Erasure}
+
+\begin{proposition}[Erasure = flagged completely depolarizing noise]\label{prop:erasure}
+Consider a stabilizer code with ideal (noiseless) syndrome extraction. Qubit $j$ is erased and flagged ($F_j=1$) with probability $e$, after which it is in the maximally mixed state.
+In the $(E,F)$ representation, erasure is then equivalent to: $F_j=1$ and $E_j$ uniform on $\{I,X,Y,Z\}$, independent of the other qubits.
+\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+Replacement by the maximally mixed state is the channel $\Lambda(\rho)=\operatorname{tr}(\rho)\,\mathbb 1/2=\tfrac14\sum_{P\in\{I,X,Y,Z\}}P\rho P$
+(the Pauli-twirl identity). The overall channel is therefore a convex combination of Pauli unitaries; syndrome measurement is a linear function on the Pauli frame,
+so the whole process is equivalent to ``random Pauli + classical flag''.
+\end{proof}
+
+\begin{remark}[Conservativeness]
+If an actual erasure resets the qubit to a fixed known state (such as $\lvert 0\rangle$) or leaves a leaked state, the experimenter can additionally apply a random Pauli to that location
+(with a flag); this is again a free operation of type (F2$'$) and can only make the problem harder. Hence the ``maximally mixed model'' gives an
+$\err$ that is an \emph{upper bound on the $\err$ of the real noise} (it errs on the conservative side), not a lower bound.
+\end{remark}
+
+\begin{corollary}[Discarding the flag = depolarizing]\label{cor:discard}
+Discarding the flag (F1$'$) of an erased qubit yields an unflagged uniform Pauli error, that is, depolarizing noise of rate $3/4$ (the probability of a nontrivial Pauli is $3/4$).
+\end{corollary}
+
+\subsection{The code-capacity class $\Nn_{\rm cc}(p,e)$ and three operations on it}
+
+\begin{definition}\label{def:Ncc}
+$\Nn_{\rm cc}(p,e)$: each data qubit independently is erased with probability $e$ (flag $F_j=1$, $E_j$ uniform),
+and otherwise suffers depolarizing noise with probability $p$ ($E_j=X,Y,Z$ each with probability $p/3$). Write $\lambda(p)=1-\tfrac43p$ (the Pauli eigenvalue of the depolarizing channel) and
+$\mu(p,e)=(1-e)\lambda(p)$. Note that $\Dep_p$ is linear in $p$ and that $\Dep_{3/4}$ is the uniform distribution.
+\end{definition}
+
+\begin{lemma}[Basic free operations within the class]\label{lem:basic-ops}
+The following operations map $\Nn_{\rm cc}(p,e)$ to $\Nn_{\rm cc}(p',e')$, and each is a special case of (F1$'$)/(F2)/(F2$'$):
+\begin{enumerate}[(a)]
+\item \emph{Superposing depolarizing noise} (F2$'$, acting only on unflagged qubits): $p'=p\oplus q$, i.e.\ $\lambda(p')=\lambda(p)\lambda(q)$; $e'=e$.
+\item \emph{Superposing erasure} (F2): $p'=p$, $e'=1-(1-e)(1-\delta)$.
+\item \emph{Randomly discarding flags} (F1$'$): each flagged qubit independently drops its flag with probability $\kappa\in[0,1]$. Then
+\[
+e'=e(1-\kappa),\qquad p'=\frac{(1-e)p+\tfrac34 e\kappa}{1-e+e\kappa},\qquad
+\lambda(p')=\frac{(1-e)\lambda(p)}{1-e+e\kappa}.
+\]
+\end{enumerate}
+\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+(a) and (b) follow directly from the composition of depolarizing channels and the fact that ``erasure overwrites an existing fault'' (the sum of uniform noise and any independent noise is again uniform);
+in (b) the newly erased qubits have $E$ made uniform and the flag is merged in.
+
+(c) Each qubit is treated independently. After the flag is dropped: a qubit is still flagged with probability $e(1-\kappa)$, and then $E$ is uniform; an unflagged qubit comes, with probability
+$(1-e)$, from a non-erased qubit (law $\Dep_p$) and, with probability $e\kappa$, from an erasure whose flag was dropped (law $\Dep_{3/4}$).
+Given ``unflagged'', the law of $E$ is the mixture of $\Dep_p$ and $\Dep_{3/4}$ with weights $(1-e):e\kappa$;
+since $\Dep_p$ is linear in $p$ the mixture is again $\Dep_{p'}$ with $p'$ as above; the qubits are independent, so the result is again in $\Nn_{\rm cc}$.
+The formula for $\lambda$ follows from the linearity of $\lambda=1-\tfrac43p$.
+\end{proof}
+
+\subsection{Leakage}
+
+Physically, a leaked qubit leaves the computational subspace; during its lifetime it causes random Pauli errors in the gates that act on it and makes measurement results random.
+We bring leakage into the model class through the following \emph{assumption}.
+
+\begin{definition}[Assumption (L): leakage is classically samplable]\label{def:L}
+The leakage process is described by a random \emph{set of leakage events} $\Lambda$ (locations, start times, durations $\le\tau$) such that
+\begin{enumerate}[(L1)]
+\item after twirling over the computational subspace, the entire effect of leakage on the detectors is equivalent to a fault vector $E_\Lambda\in V$ whose conditional law
+$P(E_\Lambda\mid\Lambda)$ is known (typically: every gate involving a leaked qubit applies a uniform Pauli with probability $1/2$);
+\item the law of $\Lambda$ is known and \emph{independent} of the background faults $E_{\rm bg}$;
+\item the side information $F_\Lambda$ is a known (possibly partial) function of $\Lambda$: full detection corresponds to flagged events, no detection to $F_\Lambda=\text{constant}$.
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[Monotonicity under leakage]\label{prop:leak}
+Under assumption (L) the total noise instance is $(E_{\rm bg}+E_\Lambda,\,(F_{\rm bg},F_\Lambda))$, and $(E_\Lambda,F_\Lambda)$ is a random pair independent of the background and
+classically samplable. Hence Proposition~\ref{prop:free-ops} applies:\\
+(1) adding leakage does not decrease $\err$;\\
+(2) monotonicity in the leakage event rate $r_\ell$: a Poisson leakage process of rate $r_\ell+r'_\ell$ equals the sum of a process of rate $r_\ell$ and an independent process of rate $r'_\ell$
+(Poisson superposition theorem; faults add in $\F$), so $\err$ is nondecreasing in $r_\ell$;\\
+(3) discarding the leakage-detection flags is (F1$'$) and does not decrease $\err$.\hfill\st{PROVED}
+\end{proposition}
+
+\begin{remark}[Outside assumption (L): where the argument fails]\label{rem:L-fail}
+If (L2) fails, the superposed layer depends on a hidden variable, the processor cannot sample it independently (Remark~\ref{rem:independence}), and the monotonicity argument breaks down. Typical cases:
+(i) the leakage probability depends on the computational basis state of the qubit (for example $\lvert1\rangle$ leaks more easily), which correlates $\Lambda$ with the background faults;
+(ii) the action of a leaked qubit on its neighbors is a coherent rotation rather than a random Pauli, so the twirling approximation in (L1) fails;
+(iii) leakage is coupled to measurement/reset errors through the same physical mechanism. These are listed as \emph{model-class assumptions} and lie outside the proofs of these notes,
+consistently with the ``Scope and limitations'' of the abstract: coherent errors are outside the model class.
+The approximation in (L1) that the twirled leakage noise is Pauli is itself an experimentally testable assumption and should be listed together with coherent errors among the model-class assumptions.
+\end{remark}
+
+\subsection{Local burst events and chip-scale events}
+
+\begin{definition}[Additive event layers]\label{def:events}
+Let the background $(E_{\rm bg},F_{\rm bg})$ be as above. A \emph{local burst layer}: a Poisson point process in space-time with intensity $r\,\mu(dz\,dt)$;
+each event (center $z$, start $t$) independently applies depolarizing noise of rate $p_b$ at every fault location in a space-time region of radius $R$ and duration $T_b$.
+A \emph{chip-scale layer}: Poisson events of rate $r_c$; each event applies some known fault law $K_c$ to all locations of the chip for a duration $\tau_c$.
+All layers are independent of each other and of the background, and faults add in $\F$ (\emph{additive semantics}, consistent with the ``detection events are XOR-superposed'' remark in README P2).
+\end{definition}
+
+\begin{proposition}[Monotonicity in the rate directions]\label{prop:rate-mono}
+In the model class of Definition~\ref{def:events}, $\err$ is nondecreasing in $p$, $e$, the burst rate $r$, and the chip-event rate $r_c$.
+\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+A Poisson process of intensity $r+r'$ is the union of independent processes of intensities $r$ and $r'$ (superposition theorem), and under additive semantics the faults of the events add in $\F$,
+so increasing $r$ is exactly the superposition of an independent, classically samplable burst layer; the same holds for $r_c$, $p$, and $e$ (Lemma~\ref{lem:basic-ops}).
+Apply Proposition~\ref{prop:free-ops}.
+\end{proof}
+
+\begin{remark}[Monotonicity in the shape parameters $(R,T_b,p_b,\tau_c)$ is \emph{not} given by free operations]\label{rem:shape}
+Increasing $p_b$ (or $R$, $T_b$) amounts to superposing further noise \emph{inside the burst regions that have occurred}. When burst events are invisible to the decoder (unflagged),
+this additional layer depends on a hidden variable (the event locations), the processor cannot sample it independently, and the argument fails.
+If burst events are \emph{flagged} (the locations and times of events enter $F$), the additional layer depends on the observed $F$, which is of type (F2$'$), and monotonicity holds.
+For unflagged bursts, monotonicity in the shape parameters is an open problem (\ref{prob:O1}). It decides directly whether the certification theorem
+(\S\ref{sec:cert}) can give robust upper bounds under uncertainty in the shape.
+\end{remark}

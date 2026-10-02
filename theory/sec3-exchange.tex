@@ -1,0 +1,345 @@
+\section{The local exchange-rate bound and the preorder on the Pauli-plus-erasure class}\label{sec:exchange}
+
+The main line of this section: \emph{discarding an erasure flag is a free operation} (Corollary~\ref{cor:discard}), which gives a rigorous upper bound on the exchange rate (Theorem~\ref{thm:rate}),
+and in the simplest subclass $\Nn_{\rm cc}(p,e)$ we completely characterize the preorder induced by local free operations (Theorem~\ref{thm:preorder}).
+The gap between the true exchange rate and the bound is one of the core research questions of the project (\S\ref{sec:gap}).
+
+\subsection{Partial flag discarding and the exchange-rate bound}
+
+\begin{theorem}[Partial flag-discarding inequality]\label{thm:partial}
+Let $0\le p\le\tfrac34$, $0\le e_0<1$, $0\le\delta\le1-e_0$. For every code distance $d$,
+\[
+\err_d\big(\Nn_{\rm cc}(p,\,e_0+\delta)\big)\;\le\;\err_d\big(\Nn_{\rm cc}(p'',\,e_0)\big),\qquad
+p''=p+\delta\,\frac{\tfrac34-p}{1-e_0}.
+\]
+Consequently $\alpha_\pm(p,e_0+\delta)\ge\alpha_\pm(p'',e_0)$.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+Apply Lemma~\ref{lem:basic-ops}(c) with $e=e_0+\delta$ and $\kappa=\delta/(e_0+\delta)$ (trivial if $e_0+\delta=0$).
+Then $e'=e(1-\kappa)=e_0$ and $e\kappa=\delta$, so
+\[
+p'=\frac{(1-e_0-\delta)p+\tfrac34\delta}{1-e_0}=p+\delta\frac{\tfrac34-p}{1-e_0}=p''.
+\]
+This operation is (F1$'$), so Theorem~\ref{thm:monotone} gives $\err(p,e_0+\delta)\le\err(p'',e_0)$;
+the exponent version follows from Corollary~\ref{cor:alpha}.
+\end{proof}
+
+\begin{theorem}[Exchange-rate bound]\label{thm:rate}
+Let $c(p_0,e_0)=\dfrac{3/4-p_0}{1-e_0}$.
+
+(a) If the right derivatives of $\err_d$ with respect to $p$ and $e$ exist at $(p_0,e_0)$, then
+\[\partial_e\err_d\le c\,\partial_p\err_d,\]
+and when $\partial_p\err_d>0$, $R^{(d)}:=\partial_e\err_d/\partial_p\err_d\le c(p_0,e_0)$.
+
+(b) Suppose the limit $\alpha=\alpha_-=\alpha_+$ exists, has right derivatives with respect to $p$ and $e$ at $(p_0,e_0)$, and $\partial_p\alpha<0$. Then the local exchange rate satisfies
+\[
+R_{e\to p}(p_0,e_0)=\frac{\partial_e\alpha}{\partial_p\alpha}=\frac{-\partial_e\alpha}{-\partial_p\alpha}\;\le\;\frac{3/4-p_0}{1-e_0}.
+\]
+\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+In Theorem~\ref{thm:partial}, $p''=p_0+c\,\delta$ is linear in $\delta$. (a): subtract $\err_d(p_0,e_0)$ from both sides and divide by $\delta\downarrow0$;
+the left side tends to $\partial_e\err_d$ and the right side to $c\,\partial_p\err_d$. (b): the same for $\alpha$ gives
+$\partial_e\alpha\ge c\,\partial_p\alpha$; since $-\partial_p\alpha>0$, multiplying by $-1$ gives
+$-\partial_e\alpha\le c(-\partial_p\alpha)$, and dividing by $-\partial_p\alpha>0$ gives $\partial_e\alpha/\partial_p\alpha\le c$. (Both derivatives of $\alpha$ are negative, so $R_{e\to p}>0$; an earlier version of the statement carried a spurious minus sign in front of the ratio, which the proof did not use.)
+\end{proof}
+
+\paragraph{Constitutional reading.}
+$R_{e\to p}$ here is the \emph{marginal rate of a monotone} (\S\ref{sec:rates}); by Proposition~\ref{prop:marginal} every monotone of the local free order has marginal rate in $[0,c]$, and $c$ is attained by the free-order monotone $1-\mu$, so Theorem~\ref{thm:rate} cannot be improved using the free operations alone.
+
+\begin{remark}[Relation to the heuristic ``$R\le3/4$'']\label{rem:34}
+``Adding $\delta e$ of erasure $\to$ adding $\tfrac34\delta e$ of depolarizing noise'' is the value of $c$ at $(p_0,e_0)=(0,0)$. The exact $c$ has two corrections:
+(i) the numerator $\tfrac34-p_0$: a newly erased qubit already carried depolarizing noise of probability $p_0$, so the net increase of the nontrivial-Pauli probability is $\tfrac34-p_0$;
+(ii) the denominator $1-e_0$: $p$ is the conditional rate on \emph{non-erased qubits}, and the overall nontrivial-Pauli probability is $(1-e)p+\tfrac34 e$.
+
+Hence $c\le\tfrac34$ if and only if $p_0\ge\tfrac34e_0$. At $e_0=0$ we always have $c=\tfrac34-p_0<\tfrac34$;
+but at the work point $(p_0,e_0)=(0.02,0.05)$ suggested in the README, $c=0.768>\tfrac34$.
+So ``$R\le3/4$'' is a theorem only in the region $p_0\ge\tfrac34e_0$; in general one should use $c(p_0,e_0)$.
+\end{remark}
+
+\begin{corollary}[Integral form: the ``Pauli equivalent'' of erasure]\label{cor:worth}
+For every $(p,e)$ define the equivalent $p_{\rm eq}^{(d)}(p,e):=\inf\{p'\in[0,\tfrac34]:\err_d(p',0)\ge\err_d(p,e)\}$. Then
+\[
+p_{\rm eq}^{(d)}(p,e)\;\le\;p+e\,(\tfrac34-p),
+\]
+which is Theorem~\ref{thm:partial} with $e_0=0$ and $\delta=e$. If $\err_d(\cdot,0)$ is strictly increasing there is also the lower bound $p_{\rm eq}^{(d)}\ge p$
+(monotonicity under superposed erasure, Proposition~\ref{prop:rate-mono}); the Pauli equivalent of the erasure is then sandwiched between $0$ and $e(\tfrac34-p)$,
+that is, $0\le R_{\rm eff}\le\tfrac34-p$.\hfill\st{PROVED}
+\end{corollary}
+
+\begin{observation}[{Sharpness of the bound: the $[[5,1,3]]$ code attains equality at $e_0=0$}]\label{obs:sharp}
+\texttt{theory/checks/exact\_small\_codes.py} enumerates all $4^n$ Pauli errors exactly for three codes with $n\le9$, computes the maximum-likelihood
+$\err(p,e)$ in each case, and verifies Theorem~\ref{thm:partial} (all checks pass; see \S\ref{sec:map}). In particular:
+\begin{itemize}
+\item For the five-qubit code $[[5,1,3]]$ at $e_0=0$ and $p\in\{0.005,0.02,0.06,0.1,0.2,0.3,0.45\}$,
+$R^{(d)}=\partial_e\err/\partial_p\err$ and $c=\tfrac34-p$ are \emph{equal} to 8 significant digits.
+\item For the Steane code $R^{(d)}/c$ lies between $0.67$ and $0.86$; for the $d=3$ rotated surface code at $p=0.02$, $e_0=0$ one finds $R^{(3)}\approx0.54$ while $c=0.73$.
+\end{itemize}
+Explanation (unproved): for a perfect code, flagging a single qubit does not change the ML decision on any syndrome, so $\err$ is linear along the segment ``replace the law of qubit $j$ from
+$\Dep_p$ by $\Dep_{3/4}$'', and the first-order coefficient is exactly $(\tfrac34-p)\partial_{p_j}\err$.
+This shows that the inequality $\partial_e\err_d\le c\,\partial_p\err_d$ cannot be improved uniformly over all codes; the strict gap on the surface code is \emph{code dependent}.
+\hfill\st{NUMERICAL}
+\end{observation}
+
+\subsection{Complete characterization of the local-free-operation preorder on the code-capacity class}
+
+\begin{definition}[Local free operations]\label{def:local}
+On the i.i.d.\ class, a \emph{local free operation} acts qubit by qubit independently: for each qubit the processor draws $(n,f')$ from a Markov kernel
+$Q(n,f'\mid f)$ (with $f\in\{0,1\}$ the input flag, $n\in\F^2$ the superposed Pauli, and $f'\in\{0,1\}$ the output flag),
+and sets $E'_j=E_j+n$, $F'_j=f'$. ($n$ may depend on $f$, $f'$, and the processor's randomness, but not on $E_j$; this is the general local form of (F1$'$), (F2), and (F2$'$).)
+\end{definition}
+
+\begin{theorem}[Preorder theorem: the Pauli-plus-erasure class]\label{thm:preorder}
+Let $p,p'\in[0,\tfrac34)$ and $e,e'\in[0,1)$. The following are equivalent:
+\begin{enumerate}[(i)]
+\item there is a local free operation turning $\Nn_{\rm cc}(p,e)$ into $\Nn_{\rm cc}(p',e')$;
+\item either $e'\ge e$ and $\lambda(p')\le\lambda(p)$ (that is, $p'\ge p$); or $e'<e$ and $\mu(p',e')\le\mu(p,e)$,
+that is, $(1-e')\lambda(p')\le(1-e)\lambda(p)$.
+\end{enumerate}
+In particular, (i) implies $\err_d(p',e')\ge\err_d(p,e)$ for every code and every $d$.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+\emph{(ii)$\Rightarrow$(i).} Case $e'\ge e$, $p'\ge p$: first superpose erasure by Lemma~\ref{lem:basic-ops}(b) to take $e\to e'$,
+then superpose depolarizing noise by (a) to take $\lambda\to\lambda(p')$ (this needs $\lambda(q)=\lambda(p')/\lambda(p)\in[0,1]$).
+Case $e'<e$, $\mu'\le\mu$: by (c) take $\kappa=1-e'/e$, which gives erasure rate $e'$ and
+$\lambda_c=(1-e)\lambda(p)/(1-e')$. The condition $\mu'\le\mu$ is exactly $\lambda(p')\le\lambda_c$, and then (a) superposes the remaining depolarizing noise.
+
+\emph{(i)$\Rightarrow$(ii).} For $P\in\F^2\setminus\{0\}$ write $\hat\nu(P)=\sum_a\nu(a)(-1)^{\langle P,a\rangle}$.
+Input: with flag 1 (probability $e$) $E$ is uniform and $\hat E(P)=0$; with flag 0 (probability $1-e$) $\hat E(P)=\lambda:=\lambda(p)$.
+Let $q_{f,f'}(n)=Q(n,f'\mid f)$ (a sub-probability measure) with total mass $q_{f,f'}$. The Fourier coefficient of the sub-measure with output flag $1$ is
+$(1-e)\lambda\,\hat q_{0,1}(P)$ (the part coming from input flag 1 is uniform and has no nonzero modes).
+The output class requires ``$E'$ uniform given flag 1'', so $\lambda\hat q_{0,1}(P)=0$ for all $P\ne0$; since $\lambda>0$, $q_{0,1}$ is a uniform measure.
+Let $s_0=\sum_n q_{0,0}(n)$; then $\sum q_{0,1}=1-s_0$, and the probability of output flag $0$ is
+\[
+m':=1-e'=e\,y+(1-e)s_0,\qquad y:=\textstyle\sum_nq_{1,0}(n)\in[0,1].
+\]
+The Fourier coefficient at $P\neq0$ of the sub-measure with output flag 0 is $(1-e)\lambda\,\hat q_{0,0}(P)$, and the output class requires it to equal
+$m'\lambda'$ (with $\lambda'=\lambda(p')$). Since $|\hat q_{0,0}(P)|\le s_0$,
+\[
+m'\lambda'\le(1-e)\lambda\,s_0.\tag{$*$}
+\]
+If $e'\ge e$ (that is, $m'\le1-e$): $m'\ge(1-e)s_0$, and substituting into $(*)$ gives $\lambda'\le\lambda$.
+If $e'<e$: $s_0\le1$, and $(*)$ gives $(1-e')\lambda'\le(1-e)\lambda$.
+
+The last sentence follows from Theorem~\ref{thm:monotone}.
+\end{proof}
+
+\paragraph{Level-1 form.}
+For the uncoded qubit, (i) and (ii) are also equivalent to the existence of an arbitrary simulable reduction (label permutations beyond translations) and to $\Phi(P')\le\Phi(P)$ for all $\varphi\in\Phi_4$ (Proposition~\ref{prop:local-level1}); the complete family of monotones is described in Theorem~\ref{thm:complete}.
+
+\begin{remark}[Structure]
+(1) Complete monotones: the local free order is completely determined by two functionals: the total unflagged eigenvalue mass $\mu=(1-e)\lambda$ (nonincreasing under any local free operation)
+and ``the conditional eigenvalue $\lambda$ is nonincreasing when the erasure rate does not decrease''.
+(2) Slope of the boundary of the reachable set: the steepest direction for lowering $e'$ starting from $(p,e)$ is $\mu'=\mu$, whose tangent slope is exactly
+$dp'/de'=-c(p',e')$, consistent with the $c$ of Theorem~\ref{thm:rate}: $c$ is the boundary slope of the free order.
+(3) The order is not total; for example, if $(p,e)$ and $(p',e')$ satisfy $e'<e$ but $\mu'>\mu$, neither direction is reachable.
+\end{remark}
+
+\subsection{Hellinger/Chernoff monotones}
+
+\begin{proposition}[Hellinger monotones]\label{prop:hellinger}
+For a noise instance $P=P_{EF}$, $G\in V$, and $s\in(0,1)$ let
+$\BC_s(P;G)=\sum_{E,F}P(E,F)^{1-s}P(E+G,F)^s$.
+If $P'$ is obtained by a free operation of type (F1) or (F2)/(F2$'$), then $\BC_s(P';G)\ge\BC_s(P;G)$ (for the same $G$).\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+These operations are Markov kernels $W$ acting on $(E,F)$ (discarding/coarse-graining flags; superposition of an $E$-independent $N$ is a convolution),
+and translation commutes with convolution: $(WP)(\cdot+G)=W(P(\cdot+G))$. The function $(x,y)\mapsto x^{1-s}y^s$ is positively homogeneous and concave, hence superadditive,
+$\sum_u(\sum_vW(u|v)x_v)^{1-s}(\sum_vW(u|v)y_v)^s\ge\sum_v x_v^{1-s}y_v^s$. Take $x=P$, $y=P(\cdot+G)$.
+\end{proof}
+
+For $\Nn_{\rm cc}(p,e)$ and any nonzero single-qubit shift $G_j\in\{X,Y,Z\}$ (the three are symmetric), the single-qubit coefficient is
+\[
+b_s(p,e)=e+(1-e)\Big[(1-p)^{1-s}(\tfrac p3)^s+(\tfrac p3)^{1-s}(1-p)^s+\tfrac{2p}3\Big],
+\]
+where the first term comes from $F=1$ (the uniform distribution is invariant under the shift). Since $b_s=b_{1-s}$ and $b_s$ is convex in $s$, $\min_s b_s=b_{1/2}$. Put
+\[
+\beta_{\rm dep}(p)=2\sqrt{p(1-p)/3}+2p/3,\qquad B(p,e)=b_{1/2}(p,e)=e+(1-e)\beta_{\rm dep}(p).
+\]
+$B$ is the \emph{single-qubit Bhattacharyya parameter}. For each $s$, the same argument as in Theorem~\ref{thm:partial} together with Proposition~\ref{prop:hellinger}
+(partial flag discarding does not decrease $b_s$) gives $\partial_eb_s\le c\,\partial_pb_s$, that is, the Hellinger exchange rate satisfies
+\[
+R_s(p,e)=\frac{\partial_eb_s}{\partial_pb_s}\le c(p,e).
+\]
+Write $R_B:=R_{1/2}=\dfrac{1-\beta_{\rm dep}(p)}{(1-e)\,\beta_{\rm dep}'(p)}$.
+
+\subsection{The gap problem}\label{sec:gap}
+
+The free order $\succeq_{\rm free}$ is a sub-order of the \emph{operational order} (comparing $\err_d$ or $\alpha$ for a given code). Let $R_\alpha$ be the true exchange rate on the surface code.
+\begin{problem}[Exchange-rate gap]\label{prob:gap}
+Quantify $\Delta:=c-R_\alpha\ge0$, and decide whether the gap comes from
+\begin{enumerate}[(A)]
+\item \emph{code dependence}: the \emph{code-universal} operational order (requiring $\err$ not to increase for all linear decoding structures and all $n$) coincides with the local free order,
+and the $\alpha$-order of the surface code is merely a coarser order; or
+\item \emph{incompleteness of the free operations}: there are free operations outside Definition~\ref{def:local} (nonlocal or code dependent) that would make the order finer?
+\end{enumerate}
+\end{problem}
+
+\begin{conjecture}[Code-universal order = local free order]\label{conj:universal}
+Within $\Nn_{\rm cc}(p,e)$, the \emph{code-universal finite-$n$ operational order} coincides with the local free order of Theorem~\ref{thm:preorder}.
+\hfill\st{CONJECTURE}
+\end{conjecture}
+\noindent\emph{Reformulation (constitutional audit).} The all-losses version of this conjecture (compare $\Phi(P')\le\Phi(P)$ for all $\varphi\in\Phi_\Lambda$, over all structures) is proved by taking the uncoded qubit (Proposition~\ref{prop:local-level1}, Remark~\ref{rem:conj-reform}); what remains open is the single-loss statement for $\err=1-\Phi_{\max}$. \emph{Status after the search of \S\ref{sec:single-loss}:} it holds (proved) for every unreachable pair with $\mu'>\mu$ or $\nu'>\nu$, in particular whenever $e'<e$; for the remaining ``trade'' pairs the search finds no reversing structure (Observation~\ref{obs:search}), which is evidence that it is false.
+
+\noindent\emph{Evidence and route.} Observation~\ref{obs:sharp} gives first-order evidence at $e_0=0$: the boundary slope $c$ is attained by some code.
+Route to a proof: (S1) for each $n$ and linear structure $(\sigma,L)$, the comparison of $\err$ is a Blackwell comparison of the ``experiments'' given by $n$ independent copies
+(Blackwell--Sherman--Stein: experiment $A$ is at least as good as $B$ for all priors and losses if and only if $B$ is a randomized processing of $A$ \cite{Blackwell});
+(S2) the decision problems arising from linear structures form a proper subclass of all decision problems, and one must show that they suffice to separate the two functionals $\mu$ and $(e,\lambda)$ of the local free order;
+(S3) the asymptotic version is characterized, via the large-sample Blackwell order, by the family of all R\'enyi divergences \cite{MPST}, which corresponds exactly to $\{b_s\}_{s\in(0,1)}$ and its higher-order generalizations.
+If the conjecture holds, the gap is case (A) and $c-R_\alpha$ measures information specific to the surface code rather than a deficiency of the free operations;
+if it is refuted by a counterexample from some code (for example one other than $[[5,1,3]]$), new free operations are needed (case (B)).
+
+\begin{conjecture}[Completeness of $B$: hypothesis $H_B$]\label{conj:HB}
+In some neighborhood within $\Nn_{\rm cc}$, the $\alpha(p,e)$ of the surface code is a function of $B(p,e)$, so that $R_\alpha=R_B$.
+\hfill\st{CONJECTURE}
+\end{conjecture}
+\noindent This is testable: the numerics of P1 give $R_\alpha$, to be compared with the analytic $R_B$. $R_\alpha\neq R_B$ would show that
+the Bhattacharyya monotone is incomplete, and the next candidates are $b_s$ ($s\ne\tfrac12$). Lemma~\ref{lem:union} (upper bound) and Proposition~\ref{prop:genie}
+(lower bound) already sandwich $\alpha$ between two functions depending only on $B$, but a sandwich does not constrain derivatives, so $H_B$ needs its own test.
+
+\subsection{Analytic formula for derivatives and the envelope argument}\label{sec:envelope}
+
+The sampling scheme of P1 (README \S2) obtains $\partial_\theta\pL$ directly from one table $f(k,w)$, without decoding at neighboring parameter points. For decoders independent of $(p,e)$ (MWPM) this is an identity;
+for the maximum-likelihood decoder it relies on the following argument.
+
+\begin{remark}[Envelope argument for ML derivatives]\label{rem:envelope}
+Let $D^\ast$ be the ML decoder at $\theta^\ast=(p^\ast,e^\ast)$ (a fixed map). For a fixed decoder $D$,
+$\pL(\theta;D)=\sum_{k,w}P_\theta(k,w)\,f_D(k,w)$, where $f_D$ does not depend on $\theta$. Optimality gives $\err(\theta)=\min_D\pL(\theta;D)\le\pL(\theta;D^\ast)$,
+with equality at $\theta^\ast$. The difference $g(\theta)=\pL(\theta;D^\ast)-\err(\theta)\ge0$ satisfies $g(\theta^\ast)=0$, so wherever both are differentiable at $\theta^\ast$ we have $\nabla g(\theta^\ast)=0$, that is,
+\[
+\partial_\theta\err\big|_{\theta^\ast}=\sum_{k,w}\partial_\theta P_\theta(k,w)\,f_{D^\ast}(k,w).
+\]
+The ML decoder depends on $\theta$ only through $p$: the erased positions are known, so $e$ never enters the posterior given the flags. Therefore
+the $e$-derivative is an exact identity for ML, and the envelope argument is needed only for $\partial_p$.
+Hence $\partial_\theta\ln\pL=\langle s_\theta\rangle_{\rm fail}$ (with $s_\theta=\partial_\theta\ln P_\theta$ the score function and the conditional expectation taken over failure events),
+and $\partial\alpha/\partial\theta$ is minus the least-squares slope of $\langle s_\theta\rangle_{\rm fail}$ against $d$ (the least-squares slope is linear in the data and commutes with differentiation).
+Differentiability: at finite $d$, $\err$ is the minimum of finitely many smooth functions and is differentiable almost everywhere; kinks may occur at ties between decisions.
+\hfill\st{SKETCH}
+\end{remark}
+
+\begin{observation}[Exact verification of the envelope identity]\label{obs:envelope}
+Check C8 of \texttt{exact\_small\_codes.py}: for $[[5,1,3]]$, the Steane code, and the $d=3$ rotated surface code, at $(p^\ast,e^\ast)\in\{(0.04,0.05),(0.1,0.2)\}$,
+the derivatives $\partial_p\err,\partial_e\err$ of the exact ML agree with the derivatives of the failure rate of the \emph{frozen decoder} to within relative $2\times10^{-10}$.
+In addition, \texttt{experiments/p1\_erasure\_pauli/envelope\_check.py} tests the $p$-derivative at $d=5,7$ with the exact transfer-matrix ML decoder on common random samples
+of each stratum $(k,w)$. A central difference has a deterministic $O(h^2)$ discretisation error (about $+0.3\%$ at $d=5$ and $+1.9\%$ at $d=7$ for $h=0.01$, $p=0.06$, growing four times for $2h$),
+so the test compares the finite difference with re-matched decoders ($B_{\rm matched}$) against the \emph{same} finite difference with the frozen decoder ($B_{\rm frozen}$).
+Their difference is at most $0.04\%$ of the derivative (within $1.6$ bootstrap standard errors) in four cases, one of which has erasure strata; one deviation of $2.05$ standard errors ($0.1\%$ of the derivative) occurs at step $2h$, $d=7$.
+The identity has not yet been tested directly for the truncated-MPS ML decoder or at $d\ge9$; the MPS decoder's decisions agree with the exact decoder on all tested samples (README, M1), so it is expected to transfer.\hfill\st{NUMERICAL}
+\end{observation}
+
+\subsection{The single-loss form of Conjecture~\ref{conj:universal}: what is proved and what a search shows}\label{sec:single-loss}
+
+A structure $\mathfrak D$ \emph{reverses} a pair $(P,P')$ if $\err_{\mathfrak D}(P')<\err_{\mathfrak D}(P)$. The single-loss form of Conjecture~\ref{conj:universal} says: every pair $(P,P')$ in $\Nn_{\rm cc}$ that is not related by a local free operation is reversed by some linear decoding structure (on any number $n$ of qubits).
+By Remark~\ref{rem:conj-reform} the all-losses form is already proved; this subsection concerns $\err$ alone.
+
+\begin{proposition}[The free order is cut out by two scalars]\label{prop:two-scalars}
+For $p,p'\in[0,\tfrac34)$, $e,e'\in[0,1)$, condition (ii) of Theorem~\ref{thm:preorder} holds if and only if $p'\ge p$ and $\mu(p',e')\le\mu(p,e)$, where $\mu=(1-e)\lambda(p)$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+If $e'\ge e$, then $p'\ge p$ gives $\lambda'\le\lambda$ and $1-e'\le1-e$, hence $\mu'\le\mu$. If $e'<e$ and $\mu'\le\mu$ then $\lambda'\le\lambda(1-e)/(1-e')<\lambda$, hence $p'>p$. Conversely, if $e'\ge e$ the condition is $p'\ge p$, and if $e'<e$ it is $\mu'\le\mu$.
+\end{proof}
+
+\begin{proposition}[Two structures, and a family of monotones]\label{prop:two-structures}
+(a) For the uncoded qubit, $\err=\tfrac34(1-\mu)$. It reverses exactly the pairs with $\mu'>\mu$.
+(b) Let $F_2$ be the two-qubit structure with $S=0$, $N=\langle XX,ZZ\rangle$ (syndrome $E_0+E_1$, label $E_0$). Then $\err=p(1-e^2)+\tfrac34e^2=\tfrac34(1-\nu)$ with $\nu=(1-e^2)\lambda(p)$. It reverses exactly the pairs with $\nu'>\nu$.
+(c) For every $k\ge1$ the function $\nu_k=(1-e^k)\lambda(p)$ is a monotone of the local free order ($\nu_1=\mu$, $\nu_2=\nu$), and every unreachable pair with $e,e'<1$ is separated by some $\nu_k$: $\nu_k'>\nu_k$.
+Consequently the single-loss form holds for every unreachable pair with $\mu'>\mu$ or $\nu'>\nu$; in particular for every unreachable pair with $e'<e$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+(a) For $f=0$ the best guess has probability $(1-e)(1-p)$, for $f=1$ it is $e/4$, so $1-\err=(1-e)(1-p)+e/4=\tfrac34\mu+\tfrac14$ (use $1-p=\tfrac34\lambda+\tfrac14$).
+(b) Write $\err=\sum_A\Pr[A]\,\err_A$ over the erased set $A\subseteq\{0,1\}$. For $A=\emptyset$: $\max_\ell P_0(\ell)P_0(\ell+s)$ equals $(1-p)^2$ for $s=0$ and $(1-p)p/3$ for each of the three $s\ne0$ (the two labels $\ell\in\{I,s\}$ tie), so $1-\err_\emptyset=(1-p)^2+(1-p)p=1-p$.
+For $A=\{0\}$ the maximum over $\ell$ is $\tfrac14(1-p)$ for each of the four syndromes; for $A=\{1\}$ it is $P_0(I)/4=(1-p)/4$; in both cases $\err_A=p$. For $A=\{0,1\}$ all sixteen $(\ell,s)$ have probability $1/16$, so $\err_A=\tfrac34$.
+(c) If $e'\ge e$, $p'\ge p$ then $1-e'^k\le1-e^k$ and $\lambda'\le\lambda$. If $e'<e$ and $\mu'\le\mu$, write $\nu_k=\mu\sum_{i<k}e^i$, which is increasing in $e$ and in $\mu$. By Proposition~\ref{prop:two-scalars} these are all reachable pairs. If a pair is unreachable and $e'<e$ then $\mu'>\mu$; if $e'\ge e$ then $p'<p$, and $\nu_k'-\nu_k\to\lambda'-\lambda>0$ as $k\to\infty$.
+\end{proof}
+
+The unreachable pairs not covered by Proposition~\ref{prop:two-structures} form the \emph{trade region}: $e'\ge e$, $p'<p$, $\mu'\le\mu$, $\nu'\le\nu$ (less Pauli noise, more erasure). Every $\nu_k$ separates the pairs of this region for large $k$, so the single-loss form would follow from structures that realize the order of $\nu_k$ for arbitrarily large $k$ (``erasure-hardened'' structures with $\err_A\approx p$ for all $|A|<k$). The structures $F_2$ and, for $k=3$ only partially, the three-fold Pauli repetition $\mathrm{Rep}_3$ ($S=0$, $N=\langle XXX,ZZZ\rangle$; $\err_A=p$ for $1\le|A|\le2$, second order in $p$ for $A=\emptyset$, $\tfrac34$ for $|A|=3$) are the only such structures found.
+
+\begin{observation}[Search for reversals of trade pairs]\label{obs:search}
+\texttt{checks/universal\_order\_search.py} enumerates \emph{all} linear decoding structures on $n\le3$ qubits (every nested pair $S<N$ of subspaces of $\F^{2n}$: $92{,}881$ at $n=3$, $528$ distinct $\err$ tables) with exact ML, and hill-climbs for $n=4,5$.
+\begin{enumerate}[(a)]
+\item \emph{Marginal rates.} The smallest marginal rate $R_{\mathfrak D}/c$ over all structures on $n\le3$ qubits is $0$ at $e_0=0$ (attained by $F_2$, $\err_A=p$ for $|A|\le1$), equals $2e_0/(1+e_0)$ for $e_0\le0.1$ at the tested points (attained by $F_2$), and equals $0.2617$ at $(p_0,e_0)=(0.0213,0.2)$ (attained by $\mathrm{Rep}_3$; $F_2$ gives $0.3333$). Hill-climbing at $n=4,5$ does not improve on $2e_0/(1+e_0)$ at $e_0=0.05$ and reaches $0.242$ ($n=4$) and $0.237$ ($n=5$) at $e_0=0.2$. For large $k$ the rate of $\mathrm{Rep}_k$ tends to $R_B/c=0.2501$ at $p_0=0.0213$.
+\item \emph{First-order wedge.} Just beyond the free-order boundary at $(0.0213,0.2)$, the pair with $\kappa=0.30$ ($P'=(p_0-\kappa c\,\Delta,\,e_0+\Delta)$, $\Delta=0.01$) is reversed by $\mathrm{Rep}_3$ but by neither the uncoded qubit nor $F_2$; the reversed set on $n\le3$ is therefore strictly larger than $\{\mu'>\mu\}\cup\{\nu'>\nu\}$.
+\item \emph{Trade pairs.} For the six pairs A, B, D, E, F, G of the script (for example $(0.0213,0.05)\to(0,0.25)$, which has no Pauli noise at all, and $(0.0213,0)\to(0.0150,0.30)$, which starts at $e_0=0$), no structure on $n\le3$ qubits reverses the pair (smallest difference $\err(P')-\err(P)$ between $+2\times10^{-3}$ and $+1.7\times10^{-2}$), and neither does hill-climbing at $n=4,5$ (smallest ratio $\err(P')/\err(P)$: $1.28$ for pair G, which lies closest to the boundary $\nu'=\nu$, and between $1.49$ and $3.66$ for the others).
+\end{enumerate}
+\hfill\st{NUMERICAL}
+\end{observation}
+
+\begin{remark}[Reading of the search]\label{rem:search}
+(1) The search found \emph{no} structure that reverses a pair of the trade region beyond what $\mu$, $\nu$ and $\mathrm{Rep}_3$ already do, and the margins are clear (ratios between $1.28$ and $3.66$ in the hill-climbing runs). This is evidence that the single-loss form of Conjecture~\ref{conj:universal} \emph{fails} in the trade region for linear structures, but it is not a proof: $n\ge6$ is not searched, and reversals for large $n$ would be governed by exponents, which are not controlled here.
+(2) If the failure persists for all $n$, the code-universal $\err$-order is strictly larger than the free order, while the all-losses order equals it (Proposition~\ref{prop:local-level1}). The extra comparabilities are then a property of the single loss, not evidence of missing free operations; no new free operation is needed for the uncoded theory.
+(3) In terms of marginal rates (\S\ref{sec:rates}): $\inf_{\mathfrak D}R_{\mathfrak D}(x_0)$ is $0$ at $e_0=0$ and, in all searches at $p_0\ge0.02$, positive at $e_0>0$, with $c$ attained by the uncoded qubit. Proposition~\ref{prop:rate-small-p} shows that the infimum tends to $0$ as $p_0\to0$ at fixed $e_0$ (large repetition structures), so a universal lower bound on the exchange rate, complementing Theorem~\ref{thm:rate}, cannot be uniform in $p_0$; whether it is positive for each fixed $p_0>0$ is open and is a question about large structures (\S\ref{sec:hardened}).
+\end{remark}
+
+\subsection{Erasure-hardened structures: obstructions, and what does not follow}\label{sec:hardened}
+
+A structure is \emph{erasure-hardened of order $k$} if its failure probability with erased set $A$ does not exceed its failure probability without erasures, to leading order in $p$, for every $|A|<k$.
+The structure $F_2$ is hardened of order $2$ with failure $\err_\emptyset=p$; a hardened family of arbitrary order would settle the single-loss form of Conjecture~\ref{conj:universal} at first order.
+Write $V_A$ for the Paulis supported on $A\subseteq\{1,\dots,n\}$, $\err_A(p)$ for the ML failure probability with erased set $A$, and $d_K$ for the minimal weight of an element of $N\setminus S$ (the shortest logical operator).
+
+\begin{lemma}[Erasure jump]\label{lem:jump}
+If $G\in N\setminus S$ is supported on $T$, then $\err_A(p)\ge\tfrac12$ for every $A\supseteq T$ and every $p$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+Given $A$, the law $P_A$ of the fault is uniform on the qubits of $A$, so $P_A(E+G)=P_A(E)$ for all $E$. Since $G\in N=\ker\sigma$ the syndrome is unchanged, and since $G\notin S$ the class $E+S$ is mapped to a different class $E+G+S$ of the same syndrome with the same weight.
+Hence for every syndrome $s$ the best class $c^\ast$ has a twin $c^\ast+G\neq c^\ast$ of equal weight, so $\max_cW(c)\le\tfrac12\sum_{c'}W(c')$; summing over $s$ gives success probability $\le\tfrac12$.
+\end{proof}
+
+\begin{lemma}[Erasure-only failure]\label{lem:erasure-only}
+$\err_A(0)=1-2^{-r(A)}$ with $r(A)=\dim(N\cap V_A)-\dim(S\cap V_A)$ (the number of independent logical operators supported on $A$). Hence the erasure-only failure of any structure is $\err(0,e)=\mathbb E_A\big[1-2^{-r(A)}\big]$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+At $p=0$ the fault is uniform on $V_A$. Its syndromes are the cosets of $N\cap V_A$ in $V_A$; inside one syndrome the classes are the cosets of $S\cap V_A$, all of the same size, so there are $2^{r(A)}$ equally likely classes and the best guess succeeds with probability $2^{-r(A)}$.
+\end{proof}
+
+\begin{lemma}[Failure of order $j$ needs a logical operator of weight $\le2j$]\label{lem:first-order}
+If $\err_\emptyset(p)/p^j\not\to0$ as $p\to0$, then $d_K\le2j$. In particular, if $\err_\emptyset(p)/p\not\to0$ then $d_K\le2$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+Suppose $d_K>2j$. Two faults of weight $\le j$ with the same syndrome differ by an element of $N$ of weight $\le2j$, which must lie in $S$; so all faults of weight $\le j$ with a given syndrome lie in one class $c_0$, and every other class of that syndrome contains only faults of weight $>j$, hence has weight $\le Cp^{j+1}$, while $W(c_0)\ge(p/3)^j(1-p)^n$. For small $p$ the class $c_0$ wins, so only faults of weight $>j$ cause failures and $\err_\emptyset=O(p^{j+1})$.
+\end{proof}
+
+\begin{corollary}[Hardening beyond order $2j$ is impossible]\label{cor:hardening}
+If $\err_\emptyset(p)=\Theta(p^j)$, there is $A$ with $|A|\le2j$ and $\err_A\ge\tfrac12$, so $\err(p,e)\ge\tfrac12e^{2j}$. A structure that fails at first order in $p$ cannot be erasure-hardened of any order $\ge3$: some pair of erasures already costs at least $\tfrac12$. In particular there is no structure with $\err_A(p)=\Theta(p)$ for all $|A|\le2$.\hfill\st{PROVED}
+\end{corollary}
+
+\begin{proposition}[The marginal rate at small $p$ is not bounded below]\label{prop:rate-small-p}
+For the Pauli repetition code $\mathrm{Rep}_k$ ($k$ copies of the Pauli, $S=0$, $N=\langle X^{\otimes k},Z^{\otimes k}\rangle$; $\mathrm{Rep}_1$ is the uncoded qubit and $\mathrm{Rep}_2=F_2$),
+\[
+\lim_{p\to0}\frac{R_{\mathrm{Rep}_k}(p,e)}{c(p,e)}=\frac{2e}{2e+(k-1)(1-e)}\qquad(0<e<1).
+\]
+Consequently, for every $e_0\in(0,1)$ and $\delta>0$ there is $p_\delta>0$ such that for all $p_0<p_\delta$ some structure has $R/c<\delta$: $r_{\min}(p_0,e_0)/c\to0$ as $p_0\to0$, so no lower bound on the marginal rate can be uniform in $p_0$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+With $m$ non-erased copies the failure is $\err_m=\tfrac34$ for $m=0$, $\err_1=\err_2=p$ (Proposition~\ref{prop:two-structures} and the single-copy case), and $\err_m=O(p^2)$ for $m\ge3$ (every single copy error is corrected by the majority). Hence
+$\err(p,e)=\sum_m\binom km(1-e)^me^{k-m}\err_m(p)$ gives $\partial_e\err(0,e)=\tfrac34ke^{k-1}$ and
+$\partial_p\err(0,e)=k(1-e)e^{k-1}+\binom k2(1-e)^2e^{k-2}$; divide by $c(0,e)=\tfrac34/(1-e)$. For fixed $k$ the limit $p\to0$ is attained continuously, and the right side tends to $0$ as $k\to\infty$.
+\end{proof}
+
+\begin{observation}[Checks of Lemmas~\ref{lem:jump}--\ref{lem:first-order} and of the small-$p$ rate]\label{obs:hardened}
+\texttt{checks/hardened\_structures\_search.py} verifies Lemma~\ref{lem:jump} ($\err_A\ge\tfrac12$ on the support of a minimum-weight logical), Lemma~\ref{lem:erasure-only} (to $10^{-12}$) and Lemma~\ref{lem:first-order} ($j=1$) on \emph{every} linear structure on $n\le3$ qubits ($92{,}881$ at $n=3$); the smallest marginal rate over these structures at $p_0=10^{-4}$ is $0.0523\,c$ at $e_0=0.05$ and $0.2003\,c$ at $e_0=0.2$ (attained by $\mathrm{Rep}_3$, $R/c\to e_0$), against $2e_0/(1+e_0)=0.095,\ 0.333$ for $F_2$. At the moderate rate $p_0=0.0213$, hill-climbing at $n=6$ (about $1.3\times10^4$ evaluations per point) finds nothing below $F_2$ at $e_0=0.05$ ($0.0952\,c$) and reaches $0.2352\,c$ at $e_0=0.2$ ($0.2419\,c$ at $n=4$, $0.2365\,c$ at $n=5$): no erasure-hardened structure of order $3$ appears, as Corollary~\ref{cor:hardening} predicts for structures that fail at first order.\hfill\st{NUMERICAL}
+\end{observation}
+
+\begin{remark}[Large structures and channel-coding exponents]\label{rem:exponents}
+For $S=0$ a structure with $2^q$ labels is a linear code of rate $R=q\ln2/n$ on the additive Pauli channel with erasure flags known to the decoder, and $\err$ is its ML decoding error. Gallager's random-coding and expurgated exponents $E_r,E_{\rm ex}$ are achieved by random linear codes and the sphere-packing exponent $E_{\rm sp}$ bounds every code from below (see \texttt{checks/exponent\_criterion.py} for the formulas).
+So if $\max_R[\max(E_r,E_{\rm ex})(R;P')-E_{\rm sp}(R;P)]>0$, large structures reverse the pair $(P,P')$. This criterion is \emph{not} met for any of the six trade pairs A, B, D, E, F, G of Observation~\ref{obs:search} (the maximal gap is negative, between $-0.006$ and $-0.11$ nats, attained at the highest rates), and for $R\to0$ the Bhattacharyya parameter $B$ of $P'$ exceeds that of $P$ in every case.
+This strengthens the evidence of Remark~\ref{rem:search}, but only for non-degenerate ($S=0$) structures: the sphere-packing converse does not cover degenerate structures, and the criterion is sufficient for a reversal, not necessary.
+It also shows what a decisive analysis needs: the order of the whole family of exponent curves $R\mapsto E(R;P)$, not a single Rényi parameter.
+\end{remark}
+
+
+\begin{observation}[P1/M2: the ML exchange rate of the surface code at code capacity]\label{obs:m2}
+\texttt{experiments/p1\_erasure\_pauli/p1\_exchange\_rate.py} (data \texttt{results/p1\_exchange\_rate.json}) gives, for the rotated surface code with the Bayes-optimal decoder (exact for $d\le11$, truncated MPS at $d=13$),
+the finite-distance marginal rate $R^{(d)}=\partial_e\pL/\partial_p\pL$ and the exponent rate $R_\alpha=\partial_e\alpha/\partial_p\alpha$ (inverse-variance weighted fit over $d=5$--$11$) at $p_0\in\{0.04,0.06\}$, $e_0\in\{0,0.02,0.05\}$.
+\begin{itemize}
+\item Theorem~\ref{thm:rate} is never violated: $R^{(d)}\le c$ for every $d\le11$, with $R^{(d)}/c\approx0.3$--$0.6$.
+\item At $e_0=0.02,0.05$: $R_\alpha=0.205\pm0.039,\ 0.237\pm0.024$ ($p_0=0.06$; $c=0.704,\ 0.726$) and $0.196\pm0.043,\ 0.231\pm0.028$ ($p_0=0.04$; $c=0.724,\ 0.747$), i.e.\ $R_\alpha/c\approx0.3$ and a gap $c-R_\alpha\approx0.5$.
+These values lie within about one standard error of the Bhattacharyya reference $R_B=0.249,\ 0.257,\ 0.226,\ 0.233$: hypothesis $H_B$ (Conjecture~\ref{conj:HB}) is consistent with the data and not confirmed.
+\item The points with $e_0=0$ are imprecise (the $e$-derivative at $e=0$ is a difference of strata with one erasure and none); at $d=13$ the relative error of $\pL$ is $54\%$--$870\%$ and the point carries almost no weight in the fits.
+\end{itemize}
+\hfill\st{NUMERICAL}
+\end{observation}
+
+\begin{remark}[Reading of the gap]\label{rem:gap-m2}
+The measured rate lies inside the range spanned by other structures: the uncoded qubit has $R=c$, the Pauli repetition structures $\mathrm{Rep}_k$ approach $R_B$ as $k\to\infty$ ($R_B/c\approx0.25$ at $p_0=0.0213$, about $0.31$--$0.35$ at $p_0=0.04$--$0.06$; \S\ref{sec:hardened}, \texttt{checks/universal\_order\_search.py}), and the surface code sits at $R_{\rm surface}/c\approx0.3$, that is, at about the same value as these large structures.
+Since every monotone of the local free order has marginal rate in $[0,c]$ (Proposition~\ref{prop:marginal}), nothing in these data calls for further free operations: the gap $c-R_\alpha$ is where the surface-code monotone sits, a property of the code (case (A) of Problem~\ref{prob:gap}), not evidence of missing free operations. This is a reading of numbers, not a proof of (A).
+\end{remark}

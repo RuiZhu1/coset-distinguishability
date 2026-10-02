@@ -1,0 +1,127 @@
+\section{Information-theoretic bounds and experimental design}\label{sec:info}
+
+\subsection{A sandwich for $\alpha$: the Chernoff upper bound and the union lower bound}
+
+\begin{proposition}[Chernoff upper bound]\label{prop:genie}
+Let $d\ge3$ be odd, consider the rotated surface-code family and noise $\Nn_{\rm cc}(p,e)$. Then
+\[
+\alpha_+(p,e)\;\le\;\ln\frac1{B(p,e)},\qquad B(p,e)=e+(1-e)\Big(2\sqrt{\tfrac{p(1-p)}3}+\tfrac{2p}3\Big).
+\]
+More precisely, for every $d$ we have $\err_d\ge\varepsilon_{\rm genie}(d)$, where
+$\varepsilon_{\rm genie}(d)=\tfrac12\bigl(1-\mathrm{TV}(P_1^{\otimes d},Q_1^{\otimes d})\bigr)$,
+$P_1$ is the joint law of a single qubit's $(a,f)$ and $Q_1=P_1(\cdot+X)$ is the shifted law.\hfill\st{SKETCH}
+\end{proposition}
+\begin{proof}
+Take $d$ qubits $T$ in an interior column (column index $c_0$, $1\le c_0\le d-2$), and let $\bar X_T$ be the $X$-type logical operator on this column.
+
+\emph{Step 1: $\ker\sigma\cap\mathcal P_T=\{I,\bar X_T\}$.} Let $(x,z)$ be supported on $T$ with zero syndrome. Every bulk $Z$-type plaquette touching column $c_0$ meets this column in exactly
+two vertically adjacent qubits $(r',r'+1)$, and each $r'=0,\dots,d-2$ occurs once (the parities of column $c_0$ and column $c_0-1$ are complementary,
+and for an interior column the plaquettes on both sides exist); hence $x_{r'}=x_{r'+1}$ and $x\in\{0,\mathbf 1_T\}$. The same argument for the $X$-type plaquettes shows that $z$ is constant;
+moreover the $X$-type boundary detector on the top edge meets the column in exactly one qubit $(0,c_0)$, which forces $z_0=0$, so $z=0$. (For the small code $d=3$ this was verified by enumeration.)
+
+\emph{Step 2: the genie.} The genie knows $F$, $E_{T^c}$, and $\sigma(E)$, which is equivalent to knowing $\sigma(E_T)$. By Step 1, $E_T$ can only be $a$ or $a+\bar X_T$,
+and the two have different labels. The genie's Bayes error is $\tfrac12\sum_{a,f_T}\min\big(P_T(a,f_T),P_T(a+\bar X_T,f_T)\big)=\varepsilon_{\rm genie}$.
+The real observation $(\sigma(E),F)$ is a coarse-graining (F1) of the genie's observation, so $\err_d\ge\varepsilon_{\rm genie}$ (Theorem~\ref{thm:monotone}).
+
+\emph{Step 3: the exponent.} $\varepsilon_{\rm genie}$ is the equal-prior Bayes error for distinguishing $P_1$ from $Q_1$ on $d$ i.i.d.\ samples,
+whose exponent is the Chernoff information $C(P_1,Q_1)=-\ln\min_{s\in[0,1]}b_s$ \cite[\S11.9]{CT}. Since $b_s=b_{1-s}$ and $b_s$ is convex,
+the minimum is at $s=1/2$, giving $C=-\ln B$. Note that the flags live in the joint alphabet $(a,f)$ and the genie sees them, so at positions with $F=1$ the two hypotheses are \emph{identical},
+contributing $e\cdot1$ to $B$; this is the origin of the $e$ term in $B$.
+\end{proof}
+
+\noindent The proof above relies on the standard asymptotic Chernoff result (cited), and the geometric argument of Step 1 is written out for general odd $d$; hence the \st{SKETCH} tag.
+For $d=3$, $\err\ge\varepsilon_{\rm genie}$ has been verified by exact computation (check C6).
+
+\begin{proposition}[Union lower bound]\label{prop:lower}
+Let $\Phi(x)=\limsup_{d\to\infty}\tfrac1d\ln\widetilde W_d(x)$ (Corollary~\ref{cor:product}). Then
+$\alpha_-(p,e)\ge-\Phi\big(B(p,e)\big)$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+Corollary~\ref{cor:product}: $\err_d\le\tfrac12\widetilde W_d(B)$; take $-\tfrac1d\ln$ and then $\liminf$.
+\end{proof}
+
+\begin{corollary}[Sandwiched between two functions of $B$ only]\label{cor:sandwich}
+$-\Phi(B(p,e))\le\alpha_-\le\alpha_+\le-\ln B(p,e)$.\hfill\st{PROVED} given Proposition~\ref{prop:genie}
+\end{corollary}
+
+The sandwich does not constrain the derivatives of $\alpha$, so it does not directly give upper and lower bounds on the exchange rate; its role is to give the testable hypothesis $H_B$
+(Conjecture~\ref{conj:HB}): if $\alpha$ is a function of $B$ in a neighborhood, then $R_\alpha=R_B$.
+
+\subsection{Reference values for the exchange rate}
+
+The table below lists three quantities at the README work points, all computable from closed-form expressions. Here $c$ is the rigorous upper bound (Theorem~\ref{thm:rate});
+$R_B$ and $R_{\rm hash}$ are \emph{heuristic references}, \textbf{not} theorems about the $R_\alpha$ of the surface code, and serve only to give the P1 numerics an order-of-magnitude expectation:
+\[
+R_{\rm hash}(p,e)=\frac{2-H_4(p)}{(1-e)\,\log_2\!\frac{3(1-p)}{p}},\quad
+H_4(p)=-(1-p)\log_2(1-p)-p\log_2\tfrac p3,
+\]
+the slope of the level curves of the quantum hashing capacity $Q_{\rm hash}=1-2e-(1-e)H_4(p)$ (whose zero level curve gives $p\approx18.9\%$ at $e=0$
+and $e=50\%$ at $p=0$).
+
+\begin{center}
+\begin{tabular}{cc ccc}
+\toprule
+$p_0$ & $e_0$ & $c=\frac{3/4-p_0}{1-e_0}$ (upper bound) & $R_B$ & $R_{\rm hash}$ \\
+\midrule
+0.02 & 0    & 0.7300 & 0.1784 & 0.2537 \\
+0.02 & 0.02 & 0.7449 & 0.1820 & 0.2589 \\
+0.02 & 0.05 & 0.7684 & 0.1877 & 0.2671 \\
+0.04 & 0    & 0.7100 & 0.2212 & 0.2746 \\
+0.04 & 0.02 & 0.7245 & 0.2257 & 0.2802 \\
+0.04 & 0.05 & 0.7474 & 0.2328 & 0.2891 \\
+0.06 & 0    & 0.6900 & 0.2444 & 0.2840 \\
+0.06 & 0.02 & 0.7041 & 0.2494 & 0.2898 \\
+0.06 & 0.05 & 0.7263 & 0.2573 & 0.2989 \\
+\bottomrule
+\end{tabular}
+\end{center}
+(These values are printed by check C7 of \texttt{theory/checks/exact\_small\_codes.py}. The same script also gives the finite-size exchange rates $R^{(3)}$ of the $d=3$ codes,
+for example $0.54$ for the surface code ($p_0=0.02,e_0=0$); it satisfies $R^{(d)}\le c$ but lies above $R_B$ and $R_{\rm hash}$;
+how the finite-size $R^{(d)}$ evolves with $d$ is exactly what P1 is to measure.)
+
+\begin{remark}[Threshold secant]
+Using the known thresholds $p_c\approx0.189$ (at $e=0$) and $e_c=0.5$ (at $p=0$), the secant slope of the zero level curve is $0.189/0.5\approx0.38$,
+far below $c\approx0.75$. This is only a heuristic comparison of a secant (at threshold $\alpha=0$, and the local derivative at a work point is different), not a theorem.
+As a rigorous consistency check: Corollary~\ref{cor:worth} gives $p_{\rm eq}\le3e/4$, so the pure-erasure threshold must satisfy
+$e_c\ge\tfrac43p_c\approx0.25$, which is compatible with $e_c=0.5$.
+\end{remark}
+
+\subsection{Experimental design and detection limits}\label{sec:design}
+
+This part corresponds to P2. Let $T$ be the total observation time (number of rounds) and let events be a Poisson process of rate $r$.
+
+\begin{proposition}[Poisson lower bound]\label{prop:poisson}
+Let $H_0$: no burst events; $H_1$: burst events form a Poisson process of intensity $r$ (of arbitrary shape), with all other layers independent and identical.
+For any test $\varphi$ based on all data over the total time $T$, if the type-I error under $H_0$ is $\le a$, then the power under $H_1$ satisfies
+\[
+\Prob_1[\varphi=1]\;\le\;1-e^{-rT}(1-a).
+\]
+Therefore reaching power $1-\delta$ requires $T\ge\ln\!\big((1-a)/\delta\big)/r$. No method that exploits space-time patterns can beat the $1/r$ scaling.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+Under $H_1$, with probability $e^{-rT}$ no event occurs at all, and then the data have the same law as under $H_0$. Hence
+$\Prob_1[\varphi=1]\le(1-e^{-rT})+e^{-rT}\Prob_0[\varphi=1]\le1-e^{-rT}(1-a)$.
+\end{proof}
+
+\begin{proposition}[Chain of exponents for class discrimination]\label{prop:exponents}
+Let events carry a label $a\in\mathcal A$ (the class), and let the class intensities under the two hypotheses be $r_a^{(0)},r_a^{(1)}$. With events fully observed,
+the Stein exponent and the Chernoff exponent per unit time are
+\[
+D=\sum_a\Big[r^{(1)}_a\ln\frac{r^{(1)}_a}{r^{(0)}_a}-r^{(1)}_a+r^{(0)}_a\Big],\qquad
+C=\max_{s\in[0,1]}\sum_a\Big[s\,r^{(1)}_a+(1-s)\,r^{(0)}_a-(r^{(1)}_a)^s(r^{(0)}_a)^{1-s}\Big]
+\]
+(the relative entropy and Chernoff information of Poisson processes). If the actual data $Z$ are the output of the event process through a detector channel $W$, then
+\[
+D_{\rm count}\ \le\ D_{\rm pattern}\ \le\ D_{\rm event}=D,\qquad C_{\rm count}\le C_{\rm pattern}\le C,
+\]
+where ``count'' means using only the total number of detected events and ``pattern'' means the optimal test using the full space-time pattern. Hence the ratio of the numbers of rounds needed to reach the same error satisfies
+$T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}\ (\delta\to0)$, bounded above by
+$D_{\rm event}/D_{\rm count}$.\hfill The chain of inequalities is \st{PROVED} (data-processing inequality for relative entropy/R\'enyi divergences and the Poisson closed forms); the asymptotic form of the ratio of rounds relies on Stein's lemma \st{SKETCH}
+\end{proposition}
+
+\begin{problem}[O4: experimental-design theorem]\label{prob:O4}
+Under a budget constraint choose the code distance $d$, the number of rounds, and the (adaptive) strategy so as to maximize $D_{\rm pattern}(d,\text{strategy})$ or the Chernoff exponent;
+and characterize the dependence of $D_{\rm pattern}/D_{\rm count}$ on the detector channel $W$.\hfill\st{PLAN}
+\end{problem}
+\noindent The numerics of P2 estimate $D_{\rm count}$ and $D_{\rm pattern}$ separately (by Monte Carlo or analytically), report $T_{\rm count}/T_{\rm pattern}$, and compare with Proposition~\ref{prop:poisson}
+(the lower bound $\ln(1/\delta)/r$ on the number of rounds for any method).

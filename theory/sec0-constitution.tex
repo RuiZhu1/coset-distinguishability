@@ -1,0 +1,221 @@
+\setcounter{section}{-1}
+\section{Constitutional audit: the resource-theoretic structure}\label{sec:constitution}
+
+The framework of these notes is meant to be a resource theory in the standard sense. This section states the axioms that are assumed, audits the framework of \S\ref{sec:framework}
+against them, supplies the structure that was missing (Propositions~\ref{prop:category}--\ref{prop:tensor}, Theorem~\ref{thm:complete}, Propositions~\ref{prop:local-level1}--\ref{prop:marginal}), and
+lists the consequences for how results may be stated. \emph{The axiom list below is the one assumed by the author of these notes; if the reference formulation of the research group differs, replace it and redo the table in \S\ref{sec:audit-table}.}
+Section~0 is numbered so that the numbering of \S\ref{sec:framework}--\ref{sec:map} is unchanged.
+
+\subsection{The axioms assumed}\label{sec:axioms}
+
+A \emph{resource theory} consists of the following data.
+\begin{enumerate}[(RT1)]
+\item \emph{Objects}: a class $\mathcal O$ of objects.
+\item \emph{Free objects}: a subset $\mathfrak F\subseteq\mathcal O$.
+\item \emph{Free operations}: maps between objects that include the identities and are closed under composition and under parallel composition $\otimes$. A free operation uses only what is available in the object it acts on
+(in our setting: no access to the hidden variable).
+\item \emph{No resource generation and the golden rule}: free operations map $\mathfrak F$ into $\mathfrak F$, and every free object can be obtained from every object by a free operation.
+\item \emph{Preorder and monotones}: $A\succeq B$ iff some free operation maps $A$ to $B$. A monotone is a function that is monotone along $\succeq$; it is \emph{faithful} if it takes its extreme value exactly on $\mathfrak F$;
+a family of monotones is \emph{complete} if it determines $\succeq$.
+\item \emph{Composition structure}: a product $\otimes$ on objects with $\mathfrak F\otimes\mathfrak F\subseteq\mathfrak F$, and an additive (or multiplicative) monotone.
+\item \emph{Rates}: every ``exchange rate'' is an explicitly defined quantity of one of the kinds listed in \S\ref{sec:rates}.
+\end{enumerate}
+\emph{Direction convention.} The resource is guessability, $G=1-\err$. Noise destroys it; free operations are the ones that cannot create it, and $\err$ is nondecreasing along $\succeq$ (Theorem~\ref{thm:monotone}).
+
+\subsection{Two levels: objects and instances}\label{sec:levels}
+
+\begin{definition}[Objects (Level 1)]\label{def:object}
+Let $\Lambda$ be a finite label alphabet. An \emph{object} is a joint law $P(\ell,y)$ on $\Lambda\times\mathcal Y$ with $\mathcal Y$ finite; write $P_y=P(\cdot,y)\in\mathbb R_+^\Lambda$.
+A noise instance $(E,F)$ on a linear decoding structure (Definitions~\ref{def:structure}, \ref{def:instance}) induces the object of $(L(E),(\sigma(E),F))$ with $\Lambda=\F^q$ (Level 2).
+Both $\err(P)=1-\sum_y\max_\ell P(\ell,y)$ and the reductions of Definition~\ref{def:reduction} depend only on the object.
+Let $\mathfrak S_\Lambda$ be the symmetric group on $\Lambda$, acting on vectors by $(\pi v)(\pi(\ell))=v(\ell)$, and $\mathbf 1$ the all-ones vector, $u=\mathbf 1/|\Lambda|$.
+\end{definition}
+
+\begin{lemma}[Kernel form]\label{lem:kernel}
+For objects $P$ on $\Lambda\times\mathcal Y$ and $Q$ on $\Lambda\times\mathcal Y'$, a simulable reduction $P\rightsquigarrow Q$ (Definition~\ref{def:reduction}) exists iff there is a Markov kernel
+$M(y',\pi\mid y)$ ($y\in\mathcal Y$, $y'\in\mathcal Y'$, $\pi\in\mathfrak S_\Lambda$; $\sum_{y',\pi}M(y',\pi\mid y)=1$) with
+\[
+Q_{y'}=\sum_{y,\pi}M(y',\pi\mid y)\,\pi P_y\qquad\text{for all }y'\in\mathcal Y'.
+\]
+\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+Given $(\kappa,g,h)$ put $M(y',\pi\mid y)=\kappa\big(\{\xi:g(y,\xi)=y',\,h(\cdot,y,\xi)=\pi\}\mid y\big)$. Because $\xi$ is conditionally independent of $L$ given $Y$,
+\[
+\Prob[h(L,Y,\xi)=\ell',\,g(Y,\xi)=y']=\sum_{y,\ell}P(\ell,y)\sum_{\pi:\pi(\ell)=\ell'}M(y',\pi\mid y)=\sum_{y,\pi}M(y',\pi\mid y)(\pi P_y)(\ell'),
+\]
+which must equal $Q(\ell',y')$ by (ii). Conversely, given $M$ let $\xi=(y',\pi)\sim M(\cdot\mid y)$, $g(y,\xi)=y'$ and $h(\cdot,y,\xi)=\pi$; (i) holds and the same computation gives (ii).
+\end{proof}
+
+\begin{proposition}[Free operations form a category]\label{prop:category}
+The identity ($M(y',\pi\mid y)=\delta_{y'y}\delta_{\pi,\mathrm{id}}$) is a simulable reduction, and the composition of simulable reductions is a simulable reduction.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+If $M$ realizes $P\rightsquigarrow Q$ and $M'$ realizes $Q\rightsquigarrow R$, then
+\[
+M''(y'',\pi''\mid y)=\sum_{y'}\ \sum_{\pi,\pi':\,\pi'\pi=\pi''}M(y',\pi\mid y)\,M'(y'',\pi'\mid y')
+\]
+is a Markov kernel, and
+\[
+\sum_{y,\pi''}M''(y'',\pi''\mid y)\,\pi''P_y=\sum_{y',\pi'}M'(y'',\pi'\mid y')\,\pi'\Big(\sum_{y,\pi}M(y',\pi\mid y)\,\pi P_y\Big)=\sum_{y',\pi'}M'(y'',\pi'\mid y')\,\pi'Q_{y'}=R_{y''}.
+\]
+Apply Lemma~\ref{lem:kernel}.
+\end{proof}
+
+\begin{proposition}[Free objects, no resource generation, golden rule, faithfulness]\label{prop:free-obj}
+Let $\mathfrak F_\Lambda=\{u\otimes R:\ R\text{ a law on }\mathcal Y\}$ (uniform label, independent of the observation).
+(a) Simulable reductions map $\mathfrak F_\Lambda$ into $\mathfrak F_\Lambda$.
+(b) For every object $P$ and every $F\in\mathfrak F_\Lambda$ on any $\mathcal Y'$, $P\rightsquigarrow F$.
+(c) $1-\err(P)\ge1/|\Lambda|$, with equality iff $P\in\mathfrak F_\Lambda$. Hence $\err$ is a faithful monotone: it attains its maximum $1-1/|\Lambda|$ exactly on the free objects.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+(a) $\pi u=u$, so $Q_{y'}=\sum_{y,\pi}M(y',\pi\mid y)\,\pi(R(y)u)=u\sum_{y,\pi}M(y',\pi\mid y)R(y)$.
+(b) Take $M(y',\pi\mid y)=R'(y')/|\mathfrak S_\Lambda|$. Since $\frac1{|\mathfrak S_\Lambda|}\sum_\pi\pi v=(\sum_\ell v(\ell))\,u$, $Q_{y'}=R'(y')\sum_y(\sum_\ell P(\ell,y))\,u=R'(y')u$.
+(c) $\sum_y\max_\ell P(\ell,y)\ge\sum_y\frac1{|\Lambda|}\sum_\ell P(\ell,y)=1/|\Lambda|$, with equality iff every $P_y$ is flat.
+\end{proof}
+
+In the code-capacity class, the boundary $p=\tfrac34$ (any $e$) and the limit $e=1$ consist of free objects: the fault is then uniform on $V$, so the label is uniform and independent of the syndrome.
+
+\begin{proposition}[Parallel composition]\label{prop:tensor}
+For objects $P$ on $\Lambda_1\times\mathcal Y_1$ and $Q$ on $\Lambda_2\times\mathcal Y_2$ let $P\otimes Q$ be the product law on $(\Lambda_1\times\Lambda_2)\times(\mathcal Y_1\times\mathcal Y_2)$.
+(a) If $P\rightsquigarrow P'$ and $Q\rightsquigarrow Q'$ then $P\otimes Q\rightsquigarrow P'\otimes Q'$. (b) $\mathfrak F_{\Lambda_1}\otimes\mathfrak F_{\Lambda_2}\subseteq\mathfrak F_{\Lambda_1\times\Lambda_2}$.
+(c) $1-\err(P\otimes Q)=(1-\err(P))(1-\err(Q))$; hence $-\log_2(1-\err)=H_{\min}(L\mid Y)$ is an additive monotone.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+(a) Use the product kernel $M_1\otimes M_2$ with permutation $\pi_1\times\pi_2\in\mathfrak S_{\Lambda_1\times\Lambda_2}$ and Lemma~\ref{lem:kernel}. (b) is clear. (c) $\max_{(\ell_1,\ell_2)}P(\ell_1,y_1)Q(\ell_2,y_2)=\max_{\ell_1}P(\ell_1,y_1)\cdot\max_{\ell_2}Q(\ell_2,y_2)$, and the sum over $(y_1,y_2)$ factorizes.
+\end{proof}
+
+\subsection{A complete family of monotones}\label{sec:complete}
+
+Let $\Phi_\Lambda$ be the set of functions $\varphi:\mathbb R_+^\Lambda\to\mathbb R$ that are convex, positively homogeneous of degree one, and $\mathfrak S_\Lambda$-invariant. For an object put $\Phi(P)=\sum_y\varphi(P_y)$
+(``$\varphi$-guessability''). Examples: $\varphi_{\max}(v)=\max_\ell v(\ell)$, for which $\Phi(P)=1-\err(P)$; the sum of the $k$ largest entries ($k$-list success probability); the norms $\|v\|_\alpha$, $\alpha\ge1$ (Arimoto-type conditional R\'enyi quantities).
+
+\begin{theorem}[Completeness: Blackwell--Sherman--Stein with relabeling]\label{thm:complete}
+$P\rightsquigarrow Q$ if and only if $\Phi(Q)\le\Phi(P)$ for every $\varphi\in\Phi_\Lambda$. It suffices to test the functions $\varphi_c(v)=\max_{y'',\pi}\langle c_{y''},\pi v\rangle$, $c\in\mathbb R^{\mathcal Y'\times\Lambda}$.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+($\Rightarrow$) By Lemma~\ref{lem:kernel}, $Q_{y'}=\sum_{y,\pi}M(y',\pi\mid y)\pi P_y$. A convex positively homogeneous function is subadditive, and $\varphi\circ\pi=\varphi$, so
+$\varphi(Q_{y'})\le\sum_{y,\pi}M(y',\pi\mid y)\varphi(P_y)$. Summing over $y'$ gives $\Phi(Q)\le\sum_y\varphi(P_y)\sum_{y',\pi}M(y',\pi\mid y)=\Phi(P)$.
+
+($\Leftarrow$) The set $\mathcal C=\{(\sum_{y,\pi}M(y',\pi\mid y)\pi P_y)_{y'}:M\text{ a kernel}\}$ is the linear image of a polytope, hence convex and compact. If $Q\notin\mathcal C$ there is $c$ with
+$\langle c,Q\rangle:=\sum_{y'}\langle c_{y'},Q_{y'}\rangle>\max_{R\in\mathcal C}\langle c,R\rangle=\sum_y\max_{y',\pi}\langle c_{y'},\pi P_y\rangle=\Phi_c(P)$, because the rows of $M$ can be optimized independently.
+But $\langle c_{y'},Q_{y'}\rangle\le\varphi_c(Q_{y'})$ (take $\pi=\mathrm{id}$), so $\Phi_c(Q)\ge\langle c,Q\rangle>\Phi_c(P)$, and $\varphi_c\in\Phi_\Lambda$ (a maximum of linear functions, homogeneous, and invariant because $\pi'\pi$ ranges over $\mathfrak S_\Lambda$).
+\end{proof}
+
+\begin{corollary}[$\err$ alone is not complete; the free operations are maximal]\label{cor:incomplete}
+(a) $\err$ is the member $\varphi_{\max}$ of the family; it is faithful and, after the logarithm, additive, but it does not determine $\succeq$: with $\mathcal Y$ trivial,
+$P=(0.4,0.2,0.2,0.2)$ and $Q=(0.35,0.35,0.3,0)$ satisfy $\err(P)=0.60<0.65=\err(Q)$, yet the $2$-list functional gives $\Phi(Q)=0.70>0.60=\Phi(P)$, so $P\not\rightsquigarrow Q$.
+(b) If a map $T$ from objects to objects satisfies $\Phi(T(P))\le\Phi(P)$ for all $\varphi\in\Phi_\Lambda$ and all $P$, then $P\rightsquigarrow T(P)$ for every $P$: no strictly larger class of operations respects all members of the family.\hfill\st{PROVED}
+\end{corollary}
+
+\subsection{The two levels agree on the simplest class}\label{sec:levels-agree}
+
+\begin{proposition}[Level 2 $\subseteq$ Level 1]\label{prop:level-incl}
+For every linear decoding structure, an operation of type (F1), (F1$'$), (F2), (F2$'$) on instances, and in particular every local free operation (Definition~\ref{def:local}) on the code-capacity class, induces a simulable reduction of the induced objects.
+Hence the free order on instances of a structure $\mathfrak D$ is contained in the Level-1 order of the induced objects; the inclusion can be strict (nonlocal or code-dependent reductions).\hfill\st{PROVED}
+\end{proposition}
+\noindent This is Proposition~\ref{prop:free-ops}, read at the level of objects.
+
+\begin{proposition}[Single qubit: the two levels coincide]\label{prop:local-level1}
+Let $\mathfrak D_1$ be the structure of one uncoded qubit ($V=\F^2$, no checks, $L=\mathrm{id}$, $|\Lambda|=4$), and for $p,p'\in[0,\tfrac34)$, $e,e'\in[0,1)$ let $P_{p,e}$ be the induced object of $\Nn_{\rm cc}(p,e)$ on $\mathfrak D_1$. The following are equivalent:
+\begin{enumerate}[(i)]
+\item a local free operation turns $\Nn_{\rm cc}(p,e)$ into $\Nn_{\rm cc}(p',e')$;
+\item the condition (ii) of Theorem~\ref{thm:preorder};
+\item there is a simulable reduction $P_{p,e}\rightsquigarrow P_{p',e'}$ (arbitrary label permutations, not only translations);
+\item $\Phi(P_{p',e'})\le\Phi(P_{p,e})$ for all $\varphi\in\Phi_4$.
+\end{enumerate}
+\hfill\st{PROVED}\quad(numerical check N1 of \texttt{checks/constitution.py})
+\end{proposition}
+\begin{proof}
+(i)$\Leftrightarrow$(ii) is Theorem~\ref{thm:preorder}; (i)$\Rightarrow$(iii) is Proposition~\ref{prop:level-incl}; (iii)$\Leftrightarrow$(iv) is Theorem~\ref{thm:complete}. It remains to show (iii)$\Rightarrow$(ii).
+With labels $(I,X,Y,Z)$ the object is $P_0=(1-e)(\lambda\delta_I+\tfrac p3\mathbf 1)$, $P_1=\tfrac e4\mathbf 1$ ($\lambda=1-\tfrac43p$), and $\pi P_0=(1-e)(\lambda\delta_{\pi(I)}+\tfrac p3\mathbf 1)$, $\pi P_1=P_1$.
+Let $M$ be a kernel realizing the reduction. Put $b_a=\sum_{\pi:\pi(I)=a}M(0,\pi\mid0)$, $\tau=\sum_ab_a\in[0,1]$ (the mass of input $0$ sent to output $0$), and $y=\sum_\pi M(0,\pi\mid1)\in[0,1]$. Then
+\[
+Q_0=(1-e)\lambda\sum_ab_a\delta_a+c_0\mathbf 1,\qquad 1-e'=\textstyle\sum_aQ_0(a)=(1-e)\tau+e\,y .
+\]
+The output class requires $Q_0=(1-e')(\lambda'\delta_I+\tfrac{p'}3\mathbf 1)$, so $(1-e)\lambda(b_I-b_X)=(1-e')\lambda'$ and, since $b_I\le\tau$ and $b_X\ge0$,
+\[
+(1-e')\lambda'\le(1-e)\lambda\,\tau.\tag{$*$}
+\]
+If $e'\ge e$ then $(1-e)\tau\le1-e'$, and $(*)$ gives $\lambda'\le\lambda$. If $e'<e$ then $\tau\le1$ and $(*)$ gives $(1-e')\lambda'\le(1-e)\lambda$. This is (ii).
+\end{proof}
+
+\begin{remark}[Consequence for Conjecture~\ref{conj:universal}]\label{rem:conj-reform}
+Proposition~\ref{prop:local-level1} proves the \emph{all-losses} analogue of Conjecture~\ref{conj:universal}: if the operational order is taken to be $\Phi(P')\le\Phi(P)$ for all $\varphi\in\Phi_\Lambda$ and all structures (the uncoded qubit is one of them),
+it coincides with the local free order. What remains open is the \emph{single-loss} version (compare $\err=1-\Phi_{\max}$ only, over all structures), which is what decoder failure rates measure (see \S\ref{sec:single-loss} for what is proved and for the search results).
+For a fixed structure $\mathfrak D$ on $\Nn_{\rm cc}$ the three orders are nested as sets of ordered pairs:
+$\succeq_{\rm local}\ \subseteq\ \succeq_{\mathrm{L1}(\mathfrak D)}\ \subseteq\ \succeq_{\err(\mathfrak D)}$ (Proposition~\ref{prop:level-incl}, Theorem~\ref{thm:complete}, $\err=1-\Phi_{\max}$).
+\end{remark}
+
+\subsection{Rates: three different objects}\label{sec:rates}
+
+The word ``exchange rate'' is used for three different quantities. Only the first is computed in these notes and in P1.
+\begin{enumerate}[(R-a)]
+\item \emph{Marginal rate of a monotone} $M$ at a point $x_0=(p_0,e_0)$: $R_M(x_0)=\partial_eM/\partial_pM$. Examples: $R^{(d)}$ ($M=\err_d$), $R_\alpha$ ($M=\alpha$, the $d\to\infty$ exponent of a code family), $R_s$ and $R_B$ (Hellinger).
+\item \emph{One-shot conversion cost}: $p^{(d)}_{\rm eq}(p,e)$ of Corollary~\ref{cor:worth}.
+\item \emph{Asymptotic rate in the tensor-power sense}: $\sup\{m/n: A^{\otimes n}\rightsquigarrow B^{\otimes m}\}$ (approximately), which needs the product of Proposition~\ref{prop:tensor}. $A^{\otimes n}$ is $n$ independent blocks, \emph{not} the large-distance limit of one code,
+and the large-sample Blackwell order of Conjecture~\ref{conj:universal}, (S3), concerns this limit. It is not computed here.
+\end{enumerate}
+The suppression exponent $\alpha$ is a monotone for the $d$-asymptotics of one code family (Corollary~\ref{cor:alpha}); $R_\alpha$ is therefore of type (R-a). In the paper it should be called the \emph{marginal exchange rate}.
+
+The reference rates of \S\ref{sec:info} are also of type (R-a): $R_B$ is the marginal rate of the Bhattacharyya parameter $B$, which is a monotone of the local free order (Proposition~\ref{prop:hellinger}), and $R_{\rm hash}$ is the marginal rate of the hashing rate $Q_{\rm hash}$, whose monotonicity along the local free order is only checked numerically (N7); neither is a statement about the surface code.
+
+\begin{proposition}[Marginal rates of the local free order]\label{prop:marginal}
+Call $M$ a \emph{monotone of the local free order} on $\Nn_{\rm cc}$ if $M(p',e')\ge M(p,e)$ whenever condition (ii) of Theorem~\ref{thm:preorder} holds. Let $x_0=(p_0,e_0)$ with $p_0<\tfrac34$, $e_0<1$, and $c=(\tfrac34-p_0)/(1-e_0)$.
+\begin{enumerate}[(a)]
+\item If the right partial derivatives $\partial_pM$, $\partial_eM$ exist at $x_0$ then $\partial_pM\ge0$, $\partial_eM\ge0$ and $\partial_eM\le c\,\partial_pM$; hence $R_M\in[0,c]$ whenever $\partial_pM>0$.
+\item $p$ and $1-\mu$, with $\mu=(1-e)\lambda(p)$, are monotones of the local free order, with marginal rates $0$ and $c$. For $a,b\ge0$ the monotone $a\,p+b\,(1-\mu)$ has marginal rate $b\lambda_0/(a+\tfrac43b(1-e_0))$, which takes every value in $[0,c]$.
+\item The set of marginal rates of monotones of the local free order that have right partial derivatives at $x_0$ is exactly $[0,c]$. In particular $R^{(d)},R_\alpha,R_s\in[0,c]$, and Theorem~\ref{thm:rate} is the sharpest bound that follows from the free operations alone.
+\end{enumerate}
+\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+(a) By (ii), $(p_0+t,e_0)$ and $(p_0,e_0+t)$ are reachable from $x_0$ for $t\ge0$, which gives the first two inequalities. For $t>0$ the point $(p_0,e_0+t)$ reaches $(p_0+ct,e_0)$: condition (ii) holds with equality $\mu'=\mu$, because $\lambda(p_0+ct)=\lambda_0-\tfrac43ct=\lambda_0(1-e_0-t)/(1-e_0)$ (Theorem~\ref{thm:partial}). Hence $M(p_0+ct,e_0)\ge M(p_0,e_0+t)$, and expanding both sides to first order in $t$ gives $c\,\partial_pM\ge\partial_eM$.
+(b) In case $e'\ge e$, $p'\ge p$ both $p$ and $-\mu=-(1-e)\lambda(p)$ are monotone. In case $e'<e$, $(1-e')\lambda'\le(1-e)\lambda$ gives $\lambda'\le\lambda(1-e)/(1-e')<\lambda$, so $p'>p$ and $\mu'\le\mu$. Sums with nonnegative coefficients of monotones are monotones.
+$\partial_p(1-\mu)=\tfrac43(1-e_0)$ and $\partial_e(1-\mu)=\lambda_0$, so the rate of $1-\mu$ is $\tfrac34\lambda_0/(1-e_0)=c$; the formula for $a\,p+b(1-\mu)$ follows. (c) combines (a) and (b); $\err_d$ and $\alpha$ are monotones by Theorem~\ref{thm:monotone} and Corollary~\ref{cor:alpha}.
+\end{proof}
+
+\noindent In words: the free operations leave the marginal rate of any monotone somewhere in $[0,c]$, and where in this interval the surface code sits (the gap problem, Problem~\ref{prob:gap}) is a property of that code's monotone, not of the theory.
+
+\subsection{Audit table and verdict}\label{sec:audit-table}
+
+{\footnotesize
+\begin{longtable}{p{2.6cm} p{3.4cm} p{3.6cm} p{3.6cm}}
+\toprule
+Axiom & Where & Before the audit & Now \\
+\midrule
+\endfirsthead
+\toprule
+Axiom & Where & Before the audit & Now \\
+\midrule
+\endhead
+RT1 objects & Definition~\ref{def:object} & only noise instances on a fixed structure & objects at Level 1; instances are a parametrization at Level 2 \\
+RT2 free objects & Proposition~\ref{prop:free-obj} & never stated & uniform label independent of the observation; boundary $p=\tfrac34$, $e=1$ of $\Nn_{\rm cc}$ is free (N6) \\
+RT3 identity, composition & Lemma~\ref{lem:kernel}, Proposition~\ref{prop:category} & closure under composition not proved & proved (kernel form) \\
+RT3 no hidden variable & Definition~\ref{def:reduction}, Remark~\ref{rem:independence} & present ($\kappa$ depends on $y$ only) & unchanged \\
+RT3 parallel composition & Proposition~\ref{prop:tensor} & absent & proved (N4) \\
+RT4 no generation, golden rule & Proposition~\ref{prop:free-obj} & not stated & proved (N6) \\
+RT5 faithful monotone & Proposition~\ref{prop:free-obj}(c) & $\err$ used without faithfulness & $\err$ is faithful (N6) \\
+RT5 complete family & Theorem~\ref{thm:complete}, Corollary~\ref{cor:incomplete} & one monotone ($\err$) & complete family $\Phi_\Lambda$; $\err$ is one member and is not complete (N2, N3, N5) \\
+RT6 additive monotone & Proposition~\ref{prop:tensor}(c) & absent & $-\log_2(1-\err)$ additive (N4) \\
+RT7 rates & \S\ref{sec:rates}, Proposition~\ref{prop:marginal} & one undifferentiated ``local exchange rate'' & three notions separated; marginal rates of monotones fill $[0,c]$; $R_B$, $R_{\rm hash}$ are marginal rates of monotones (N1, N7) \\
+Level 1 vs.\ Level 2 & Propositions~\ref{prop:level-incl}, \ref{prop:local-level1}, Remark~\ref{rem:conj-reform} & Theorem~\ref{thm:preorder} and Conjecture~\ref{conj:universal} not distinguished by loss function & orders nested; single-qubit case settled for all losses (N1); single-loss version open \\
+\bottomrule
+\end{longtable}
+}
+
+\paragraph{Verdict.} (1) No statement of \S\ref{sec:framework}--\ref{sec:info} contradicts the axioms (all five sections were read line by line in this audit): every proof there is a proof about simulable reductions, which is a legitimate free-operation class (Propositions~\ref{prop:category}, \ref{prop:free-obj}). In particular the certification results (Theorem~\ref{thm:cc-cert} and the target Theorem~\ref{thm:burst-cert}) use only the direction ``reachable $\Rightarrow$ $\err$ ordered'' (Theorem~\ref{thm:monotone} with the reachability half of Theorem~\ref{thm:preorder}); they do not depend on Conjecture~\ref{conj:universal} or on the completeness of any family of monotones.
+(2) Three structural items were missing and are now supplied: the category and golden-rule properties, the product structure, and a complete family of monotones.
+(3) The statements below are constrained by the audit and must be worded accordingly.
+(4) The audit moves one open point: the all-losses form of Conjecture~\ref{conj:universal} is proved for the uncoded qubit; the single-loss form (decoder failure rates) is the real conjecture (Remark~\ref{rem:conj-reform}).
+
+\subsection{Claim hygiene: what may be stated}\label{sec:hygiene}
+\begin{enumerate}[(1)]
+\item The free operations, preorder, and monotones are stated at Level 1, for arbitrary finite label--observation pairs, with no reference to the surface code (Definition~\ref{def:object}, Lemma~\ref{lem:kernel}).
+\item $\err$ is a faithful monotone, additive after $-\log_2(1-\cdot)$, but not a complete one. The complete family is $\Phi_\Lambda$ (Theorem~\ref{thm:complete}); statements about ``the'' order must say which monotones are meant.
+\item ``Exchange rate'' means the \emph{marginal} rate of a monotone, (R-a). It lies in $[0,c]$ for every monotone of the local free order; the asymptotic rate (R-c) is a different quantity and is not computed here. The reference values $R_B$ and $R_{\rm hash}$ of \S\ref{sec:info} are marginal rates of the monotones $B$ and $Q_{\rm hash}$ (the latter checked only numerically).
+\item ``Necessary and sufficient'' conditions are claimed only for free reachability on $\Nn_{\rm cc}$ (Theorem~\ref{thm:preorder}), which coincides with Level-1 reachability for the uncoded qubit (Proposition~\ref{prop:local-level1}). For a code with syndromes and for the single loss $\err$ the iff is open.
+\item The $d\to\infty$ exponent of one code family and the tensor-power limit are different asymptotics and must not be conflated.
+\item All statements concern the Bayes-optimal decoder; they are not statements about MWPM (Remark~\ref{rem:ml-only}).
+\end{enumerate}
+\noindent\emph{To do (author):} relate Theorem~\ref{thm:complete} and Proposition~\ref{prop:marginal} to the relative-majorization / dichotomy literature of the resource-theory community; references are to be supplied by the author and are deliberately not cited here.

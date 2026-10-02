@@ -1,0 +1,26 @@
+{
+  "script": "experiments/p1_erasure_pauli/mps_invalid_check.py",
+  "d11": {
+    "samples": 4500,
+    "samples_repaired_by_larger_chi": 427,
+    "samples_with_classes_dropped_at_max_chi": 0,
+    "dropped_classes": 0,
+    "min_exact_gap_nats": null,
+    "median_exact_gap_nats": null,
+    "decisions_differing_from_exact": 55
+  },
+  "d13": {
+    "samples": 1000,
+    "samples_repaired_by_larger_chi": 20,
+    "samples_with_classes_dropped_at_max_chi": 0,
+    "decisions_differing_between_chi8_and_chi16": 2,
+    "seconds": 145.6026816368103
+  },
+  "versions": {
+    "lcd": "0.0.1",
+    "numpy": "2.4.6"
+  },
+  "git_commit": "f101ef084cfc67948aeee8cc93c15e1abec4f4e6",
+  "git_dirty_src": false,
+  "date": "2026-10-02T04:47:30+00:00"
+}

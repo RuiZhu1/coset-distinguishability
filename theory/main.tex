@@ -1,0 +1,87 @@
+% Logical Coset Distinguishability (LCD): theory notes -- main file
+% Build:  cd theory && latexmk -pdf main.tex      (plain pdflatex; see theory/README.md for packages)
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\usepackage{xcolor}
+\usepackage{enumerate}
+
+% ---------- theorem environments ----------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{problem}[theorem]{Open problem}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{observation}[theorem]{Numerical observation}
+
+% ---------- status tags (greppable): PROVED / SKETCH / NUMERICAL / CONJECTURE / PLAN ----------
+%  PROVED     a complete argument is in the notes (still to be checked line by line by the author; see theory/README.md)
+%  SKETCH     the argument is complete in outline; some steps cite standard results or are not yet expanded
+%  NUMERICAL  observed in the exact computations of theory/checks; no proof yet
+%  CONJECTURE an explicit conjecture
+%  PLAN       only a statement and a proof route
+\newcommand{\st}[1]{{\small\textsc{[\textcolor{red!60!black}{#1}]}}}
+
+% ---------- notation ----------
+\newcommand{\F}{\mathbb{F}_2}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\err}{\varepsilon^{\star}}           % Bayes (maximum-likelihood) error = logical failure probability
+\newcommand{\pL}{p_{\mathrm{L}}}
+\newcommand{\Dep}{\mathrm{Dep}}
+\newcommand{\Nn}{\mathcal{N}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\wt}{\operatorname{wt}}
+\newcommand{\BC}{\mathfrak{B}}                    % Bhattacharyya / Hellinger coefficient
+\renewcommand{\Pr}{\Prob}
+
+\title{Notes on logical coset distinguishability\\\large Monotonicity lemma, local exchange-rate bound, preorder, conditional certification, and experimental design}
+\author{LCD project (theory track)}
+\date{\today\ --- draft, continuously updated}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}\noindent
+These notes are the working draft of the four classes of theoretical results in \texttt{ABSTRACT.md}. Every statement carries a status tag
+(\st{PROVED}, \st{SKETCH}, \st{NUMERICAL}, \st{CONJECTURE}, \st{PLAN}) and is matched in \S\ref{sec:map}
+with a numerical check in the repository: \textbf{theory leads, numerics test the theory}.
+Section~0 audits the framework against the axioms of a resource theory (free objects, composition, golden rule, a complete family of monotones, three distinct notions of ``rate'').
+Results with a complete written proof: (i) monotonicity under the three free operations; (ii) the representation of erasure, leakage, and burst events in the model, and the boundary of validity;
+(iii) the exact upper bound on the marginal exchange rate
+$R_{e\to p}\le (3/4-p_0)/(1-e_0)$, which is the sharp bound on the marginal rate of every monotone of the free order (Proposition~\ref{prop:marginal}); (iv) a complete characterization of the preorder of local free operations on the code-capacity Pauli-plus-erasure class;
+(v) a finite-sample certificate that can be computed in closed form (code capacity). The remaining items are statements with proof routes.
+\end{abstract}
+
+\tableofcontents
+
+\input{sec0-constitution}
+\input{sec1-framework}
+\input{sec2-representation}
+\input{sec3-exchange}
+\input{sec4-certification}
+\input{sec5-information}
+\input{sec6-map}
+
+\begin{thebibliography}{99}
+\bibitem{DKLP} E.~Dennis, A.~Kitaev, A.~Landahl, J.~Preskill, \emph{Topological quantum memory}, J.\ Math.\ Phys.\ 43, 4452 (2002).
+\bibitem{BSV} S.~Bravyi, M.~Suchara, A.~Vargo, \emph{Efficient algorithms for maximum likelihood decoding in the surface code}, Phys.\ Rev.\ A 90, 032326 (2014).
+\bibitem{BV} S.~Bravyi, A.~Vargo, \emph{Simulation of rare events in quantum error correction}, Phys.\ Rev.\ A 88, 062308 (2013).
+\bibitem{CF} C.~T.~Chubb, S.~T.~Flammia, \emph{Statistical mechanical models for quantum codes with correlated noise}, Ann.\ Inst.\ Henri Poincar\'e D 8, 269 (2021).
+\bibitem{DZ} N.~Delfosse, G.~Z\'emor, \emph{Linear-time maximum likelihood decoding of surface codes over the quantum erasure channel}, Phys.\ Rev.\ Research 2, 033042 (2020).
+\bibitem{Blackwell} D.~Blackwell, \emph{Equivalent comparisons of experiments}, Ann.\ Math.\ Stat.\ 24, 265 (1953).
+\bibitem{MPST} X.~Mu, L.~Pomatto, P.~Strack, O.~Tamuz, \emph{From Blackwell dominance in large samples to R\'enyi divergences and back again}, Econometrica 89, 475 (2021).
+\bibitem{CT} T.~Cover, J.~Thomas, \emph{Elements of Information Theory}, 2nd ed., Wiley (2006), Ch.~11.
+\bibitem{LeCam} L.~Le Cam, \emph{Asymptotic Methods in Statistical Decision Theory}, Springer (1986).
+\end{thebibliography}
+\end{document}

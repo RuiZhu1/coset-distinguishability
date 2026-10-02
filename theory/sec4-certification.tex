@@ -1,0 +1,176 @@
+\section{Conditional certification: finite-sample upper bounds}\label{sec:cert}
+
+Goal: within the model class, give finite-sample upper bounds on $\pL(d)$ at large code distance \emph{directly}, rather than estimating $\alpha$ first and extrapolating.
+The proof skeleton has three layers: \emph{(A) the statistical layer} (confidence upper bounds on the parameters from data); \emph{(B) the monotonicity layer} (upper bounds on the parameters give a ``dominating'' model,
+and Theorem~\ref{thm:monotone} gives an upper bound on $\err$); \emph{(C) the computational layer} (an explicit upper bound on $\err_d$ for the dominating model).
+This section proves the code-capacity case completely (Theorem~\ref{thm:cc-cert}) and reduces the case with burst and chip-scale events (Theorem~\ref{thm:burst-cert})
+to three explicit open lemmas.
+
+\paragraph{Which decoder.}
+All upper bounds in this section are upper bounds for \emph{maximum-likelihood (Bayes-optimal) decoding}, stated as ``there is a decoder (ML with the noise parameters known)
+whose logical failure probability does not exceed $U$''. By optimality, this is \emph{not} an upper bound on the failure rate of the suboptimal decoder actually used in an experiment (such as MWPM).
+Conversely, the \emph{lower bounds} of this section (the floor, Lemma~\ref{lem:floor}) hold for any decoder.
+
+\subsection{(C) The union (Bhattacharyya) upper bound}
+
+\begin{lemma}[Union bound]\label{lem:union}
+Let $(E,F)$ be any noise instance on a linear decoding structure $(V,\sigma,L)$, and let $K=\ker\sigma\setminus\ker L$
+(faults that are undetected but flip an observable). Then
+\[
+\err(E,F)\;\le\;\tfrac12\sum_{G\in K}\BC(P;G),\qquad
+\BC(P;G):=\sum_{E,F}\sqrt{P(E,F)\,P(E+G,F)}.
+\]
+\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+Fix an observation $y=(s,f)$, write $P(\ell,y)=\Prob[L=\ell,Y=y]$, and let the ML decision be $\ell^\ast(y)$. Then
+$\err=\sum_y\sum_{\ell\ne\ell^\ast}P(\ell,y)$. For $\ell\ne\ell^\ast$ we have $P(\ell,y)\le P(\ell^\ast,y)$, hence
+$P(\ell,y)\le\sqrt{P(\ell,y)P(\ell^\ast,y)}$, and so
+\[
+\err\le\sum_y\sum_{\{\ell,\ell'\}}\sqrt{P(\ell,y)P(\ell',y)}\quad(\text{sum over unordered label pairs}).
+\]
+Write $c(s,\ell)=\{E:\sigma(E)=s,L(E)=\ell\}$, so that $P(\ell,s,f)=\sum_{A\in c(s,\ell)}P(A,f)$.
+From $\sqrt{\sum_ix_i}\le\sum_i\sqrt{x_i}$ we get
+\[
+\sqrt{P(\ell,s,f)P(\ell',s,f)}\le\sum_{A\in c(s,\ell)}\sum_{B\in c(s,\ell')}\sqrt{P(A,f)P(B,f)}.
+\]
+Summing over $s$, $\{\ell,\ell'\}$, and $f$, the right side becomes a sum over \emph{unordered} fault pairs $\{A,B\}$ with $\sigma(A)=\sigma(B)$ and $L(A)\ne L(B)$.
+Put $G=A+B\in K$; the map $(A,B)\mapsto(A,G)$ is a bijection from ordered pairs onto $V\times K$, and the number of unordered pairs is half of that,
+which gives $\tfrac12\sum_{G\in K}\sum_{A,f}\sqrt{P(A,f)P(A+G,f)}$.
+\end{proof}
+
+\begin{corollary}[Product form and weight enumerators at code capacity]\label{cor:product}
+For $\Nn_{\rm cc}(p,e)$ and a stabilizer code $(n,S)$ we have $K=N(S)\setminus S$, and for $G\in K$
+$\BC(P;G)=B(p,e)^{\wt(G)}$, with $B=e+(1-e)\beta_{\rm dep}(p)$ ($\wt$ the Pauli weight). Hence
+\[
+\err_d(p,e)\le\tfrac12\widetilde W_d\big(B(p,e)\big),\qquad
+\widetilde W_d(x)=\sum_{G\in N(S)\setminus S}x^{\wt(G)}=W_{N(S)}(x)-W_S(x),
+\]
+and by the MacWilliams identity $W_{N(S)}(x)=\dfrac1{|S|}\sum_{g\in S}(1+3x)^{n-\wt(g)}(1-x)^{\wt(g)}$ this can be computed from the weight distribution of the stabilizer group.
+\hfill\st{PROVED}
+\end{corollary}
+\begin{proof}
+Single qubit: with flag $f=1$ (probability $e$) the law is uniform and invariant under the shift, contributing $e\cdot1$; with flag $f=0$ the contribution is
+$(1-e)\sum_a\sqrt{\Dep_p(a)\Dep_p(a+G_j)}=(1-e)\beta_{\rm dep}(p)$ (the three shifts $G_j\in\{X,Y,Z\}$ are symmetric;
+the pairs $(I,G_j),(G_j,I)$ give $2\sqrt{(1-p)p/3}$, and the other two nontrivial Paulis pair with each other and give $2p/3$).
+Qubits with $G_j=I$ contribute $1$. Independence gives the product form. The MacWilliams identity is a standard result.
+\end{proof}
+
+\noindent For the three $d=3$ codes the inequality $\err\le\tfrac12\widetilde W(B)$ passes in \texttt{theory/checks} (check C5).
+For general $d$, $W_S$ can be computed by tensor networks (a 4-dimensional leg per lattice site; the transfer-matrix width grows exponentially with $d$); the feasible range of $d$ is to be benchmarked, and \emph{no commitment is made here}.
+
+\subsection{(A) The statistical layer: confidence upper bounds on the parameters}
+
+\begin{lemma}[Estimating $e$ from the flags]\label{lem:flags}
+Among $M$ independent samples there are $nM$ qubit-samples in total, and the flags $F_{ij}$ are i.i.d.\ Bernoulli($e$). Let
+$\bar e=\bar e(\delta_1)$ be the one-sided Clopper--Pearson upper limit; then $\Prob[e\le\bar e]\ge1-\delta_1$.\hfill\st{PROVED}
+\end{lemma}
+
+\begin{lemma}[Estimating $\lambda$ from syndrome frequencies]\label{lem:lambda}
+Fix an $X$-type stabilizer generator $g_0$ of weight $w_0$. Among the samples in which none of the qubits in its support is flagged (say there are $M'$ of them),
+the syndrome bit is i.i.d.\ Bernoulli with parameter $\tfrac12(1-\lambda^{w_0})$ (exact when conditioning on the flag pattern).
+Let $\overline{P}$ be the Clopper--Pearson upper limit for this parameter (confidence level $1-\delta_2$); then
+$\lambda\ge\underline\lambda:=(1-2\overline P)_+^{1/w_0}$, that is, $p\le\bar p:=\tfrac34(1-\underline\lambda)$,
+with probability $\ge1-\delta_2$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+Without flags, every qubit in the support of $g_0$ is depolarized with probability $p$; an $X$-type detector flips if and only if the number of $\{Y,Z\}$-type errors in the support is odd,
+and each qubit contributes the eigenvalue $1-\tfrac43p=\lambda$, so $\Pr[\text{bit}=1]=\tfrac12(1-\lambda^{w_0})$.
+Conditioned on the flags the samples are independent, hence the count is exactly binomial.
+\end{proof}
+
+\begin{theorem}[Finite-sample certification at code capacity]\label{thm:cc-cert}
+Let the data be $M$ independent samples (flags and syndromes) of code-capacity noise $\Nn_{\rm cc}(p,e)$, and let $\delta=\delta_1+\delta_2$.
+Let $\bar e,\bar p$ be as in Lemmas~\ref{lem:flags} and~\ref{lem:lambda}. Then with probability at least $1-\delta$, simultaneously for \emph{all} $d$,
+\[
+\err_d(p,e)\;\le\;\err_d(\bar p,\bar e)\;\le\;\tfrac12\widetilde W_d\big(B(\bar p,\bar e)\big).
+\]
+\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+On the event $\{e\le\bar e\}\cap\{p\le\bar p\}$, Theorem~\ref{thm:preorder} (case $e'\ge e$, $p'\ge p$) shows that
+$\Nn_{\rm cc}(\bar p,\bar e)$ is obtained from $\Nn_{\rm cc}(p,e)$ by a local free operation (superpose erasure, then superpose depolarizing noise),
+so Theorem~\ref{thm:monotone} gives the first inequality; the second is Corollary~\ref{cor:product}.
+The probability of this event is $\ge1-\delta_1-\delta_2$ by the union bound.
+\end{proof}
+
+This is a certificate that \emph{does not depend on any $\pL$ data}: flag and syndrome statistics suffice to give upper bounds for all $d$. The price is the looseness of the union bound
+(its threshold lies far below the true ML threshold). Replacing the union bound by a tighter, equally monotone bound (for example calibrated with measured small-$d$ failure rates) is the next step.
+
+\subsection{The case with local bursts and chip-scale events}
+
+Let the model class be that of Definition~\ref{def:events}. Let $q_c=1-e^{-r_c\,T_{\rm tot}}$ be the probability of at least one chip-scale event within the total time $T_{\rm tot}$.
+
+\begin{lemma}[Floor from chip-scale events]\label{lem:floor}
+Let ${\err}^{(0)}$ be the $\err$ of the same noise with the chip-scale layer removed. Then
+\[
+\err\;\le\;q_c+(1-q_c)\,{\err}^{(0)}.
+\]
+If in addition \textbf{(K)} holds: given a chip event, the observable $L(E)\in\F^q$ is uniform and independent of $Y=(\sigma(E),F)$, then
+\[
+\err\;\ge\;q_c\,(1-2^{-q}).
+\]
+So the ``floor'' $\err\sim q_c\propto r_cT_{\rm tot}$ is independent of $d$; the upper bound does not need (K), and the lower bound holds equally for the failure rate of any decoder.
+\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+Upper bound: process the full problem with the optimal ML decoder $\hat g_0$ for the problem without the chip layer. Let $C$ be the event ``at least one chip event''.
+$\Prob[\hat g_0\text{ fails}]\le\Prob[C]+\Prob[C^c]\,{\err}^{(0)}$, because on $C^c$ the data follow the noise without the chip layer (the layers are independent).
+$\err$ does not exceed the failure rate of any decoder.
+
+Lower bound: consider a genie decoder that knows $C$; its failure rate does not exceed $\err$ (the (F1) case of Theorem~\ref{thm:monotone}: the real observation is a coarse-graining of the genie's observation).
+On $C$, by (K) any guess fails with probability $1-2^{-q}$.
+(K) holds for ``whole-chip completely depolarizing events'': a uniform $E_{\rm chip}$ makes $(\sigma,L)(E)$ uniform on $\F^{n-k}\times\F^{2k}$ (surjectivity),
+so $L$ is independent of $\sigma$; the flags are independent of $E_{\rm chip}$.
+\end{proof}
+
+\begin{lemma}[Union bound for burst mixtures]\label{lem:burst-union}
+Let $E=E_{\rm bg}+E_{\rm burst}$, and suppose that conditioned on the burst configuration $\mathcal C$ the noise is a product measure over qubits, with configuration law $\pi$. Then
+\[
+\BC(P;G)\;\le\;\sum_{\mathcal C,\mathcal C'}\sqrt{\pi(\mathcal C)\pi(\mathcal C')}\;\prod_{j}\beta_j(\mathcal C,\mathcal C';G_j),
+\]
+where $\beta_j(\mathcal C,\mathcal C';G_j)=\sum_{a,f}\sqrt{P_{\mathcal C,j}(a,f)P_{\mathcal C',j}(a+G_j,f)}$.
+\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+$P=\sum_{\mathcal C}\pi(\mathcal C)P_{\mathcal C}$. From $\sqrt{\sum x_i}\le\sum\sqrt{x_i}$,
+\[
+\sqrt{P(E,F)P(E+G,F)}\le\sum_{\mathcal C,\mathcal C'}\sqrt{\pi(\mathcal C)\pi(\mathcal C')}\sqrt{P_{\mathcal C}(E,F)P_{\mathcal C'}(E+G,F)}.
+\]
+Sum over $(E,F)$ and use the product measure.
+\end{proof}
+\noindent Note that one cannot simply ``condition on $\mathcal C$ and treat $\mathcal C$ as known'': that yields the failure rate of a decoder that knows the configuration,
+which is \emph{lower} than $\err$ (the genie is stronger), not an upper bound. Lemma~\ref{lem:burst-union} is the correct treatment of an unknown configuration, but its right side sums over two independent burst configurations simultaneously
+and is therefore loose.
+
+\begin{theorem}[Conditional certification with bursts and chip events (target statement)]\label{thm:burst-cert}
+Let the true parameters be $\theta=(p,e,r,\vartheta,r_c)$, with shape $\vartheta=(R,T_b,p_b)$ in a known finite class $\Theta_\vartheta$ (if the monotonicity of Problem~\ref{prob:O1} holds one may replace it by a shape upper bound; otherwise the right side below is maximized over $\vartheta\in\Theta_\vartheta$).
+Suppose the confidence upper limits obtained from data satisfy $\Prob[p\le\bar p,\ e\le\bar e,\ r\le\bar r,\ r_c\le\bar r_c]\ge1-\delta$. Then
+with probability $\ge1-\delta$, for all $d,T_{\rm tot}$,
+\[
+\err_{d,T_{\rm tot}}(\theta)\;\le\;\bar q_c+(1-\bar q_c)\,\tfrac12\sum_{G\in K}\ \sum_{\mathcal C,\mathcal C'}\sqrt{\pi_{\bar\theta}(\mathcal C)\pi_{\bar\theta}(\mathcal C')}\prod_j\beta_j(\mathcal C,\mathcal C';G_j),
+\]
+where $\bar q_c=1-e^{-\bar r_cT_{\rm tot}}$ and $\pi_{\bar\theta}$ is the burst-configuration law for the parameter upper limits.\hfill\st{PLAN}
+\end{theorem}
+
+\noindent\textbf{Components already proved:} monotonicity in the rate directions (Proposition~\ref{prop:rate-mono}), the floor (Lemma~\ref{lem:floor}),
+the union bounds (Lemmas~\ref{lem:union} and~\ref{lem:burst-union}); the argument for substituting $\bar\theta$ is the same as in Theorem~\ref{thm:cc-cert}.
+\textbf{Three pieces are still missing:}
+\begin{problem}[O1: monotonicity in the shape parameters]\label{prob:O1}
+For unflagged bursts, is $\err$ monotone in $p_b,R,T_b$? (Remark~\ref{rem:shape} shows that free operations do not give it; if it fails,
+one must take the worst case over a finite class of shapes, or use a union bound over shapes.)
+\end{problem}
+\begin{problem}[O2: parameter identification under contamination]\label{prob:O2}
+Bursts and chip events contaminate the syndrome statistics, and the i.i.d.\ premise of Lemma~\ref{lem:lambda} fails. One needs a robust confidence upper limit for $p$ (for example an estimate that excludes windows with high-weight detection events)
+and confidence upper limits for $r,r_c$ (from event-detection statistics, connected to the Poisson lower bound of P2, \S\ref{sec:design}).
+\end{problem}
+\begin{problem}[O3: explicit estimates for the burst sum]\label{prob:O3}
+Turn the double sum over configurations on the right side of Lemma~\ref{lem:burst-union} into an explicit exponential function (cluster expansion); a domain of convergence is needed,
+together with a proof that for $d\gg R$ it only changes the exponent and produces no $d$-independent floor.
+\end{problem}
+
+\paragraph{Division of numerical checks (see \S\ref{sec:map}).}
+The circuit-level stim + MWPM data of P2 can check: (i) the floor $\err\ge q_c(1-2^{-q})$ and its scaling $\propto r_cT_{\rm tot}$
+(the lower bound holds for any decoder, so the MWPM failure rate must not fall below it); (ii) unbiasedness of the parameter estimators (milestone M3); and
+(iii) that bursts reduce the exponent rather than create a floor. The \emph{upper-bound} parts concern ML, and MWPM data cannot falsify them;
+they must be checked with exact ML at small $d$ (\texttt{lcd.decoders.ExactTNMLDecoder}) or with tensor-network ML for code capacity with burst clusters (M1).

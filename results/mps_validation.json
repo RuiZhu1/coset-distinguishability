@@ -1,0 +1,1499 @@
+{
+  "script": "experiments/p1_erasure_pauli/mps_validation.py",
+  "args": {
+    "seed": "20241005",
+    "jobs": "4",
+    "max_strata": "4",
+    "screen": "400000",
+    "max_fail": "1200",
+    "n_ok": "1200",
+    "anchor": "120",
+    "out": "/home/user/coset-distinguishability/results/mps_validation.json"
+  },
+  "summary": [
+    {
+      "d": 11,
+      "p": 0.04,
+      "chi": 3,
+      "strata": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "tested_samples": 8890,
+      "ml_failing_samples_tested": 364,
+      "changed_decisions": 16,
+      "changed_among_ml_failures": 6,
+      "rel_change_of_pL_contribution": 0.007547290620264968,
+      "rel_se": 0.007398713199151183,
+      "seconds_per_decode": 0.00635478699311981
+    },
+    {
+      "d": 11,
+      "p": 0.04,
+      "chi": 4,
+      "strata": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "tested_samples": 8890,
+      "ml_failing_samples_tested": 364,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.008575384161877761
+    },
+    {
+      "d": 11,
+      "p": 0.04,
+      "chi": 6,
+      "strata": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "tested_samples": 8890,
+      "ml_failing_samples_tested": 364,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.013580876090294125
+    },
+    {
+      "d": 11,
+      "p": 0.04,
+      "chi": 8,
+      "strata": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "tested_samples": 8890,
+      "ml_failing_samples_tested": 364,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.02074815018711159
+    },
+    {
+      "d": 11,
+      "p": 0.06,
+      "chi": 3,
+      "strata": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "tested_samples": 9544,
+      "ml_failing_samples_tested": 554,
+      "changed_decisions": 24,
+      "changed_among_ml_failures": 4,
+      "rel_change_of_pL_contribution": 0.018945895972012516,
+      "rel_se": 0.005877440341334959,
+      "seconds_per_decode": 0.005774211769088869
+    },
+    {
+      "d": 11,
+      "p": 0.06,
+      "chi": 4,
+      "strata": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "tested_samples": 9544,
+      "ml_failing_samples_tested": 554,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.008435215872353453
+    },
+    {
+      "d": 11,
+      "p": 0.06,
+      "chi": 6,
+      "strata": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "tested_samples": 9544,
+      "ml_failing_samples_tested": 554,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.013361359397390388
+    },
+    {
+      "d": 11,
+      "p": 0.06,
+      "chi": 8,
+      "strata": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "tested_samples": 9544,
+      "ml_failing_samples_tested": 554,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.020377414074825028
+    },
+    {
+      "d": 13,
+      "p": 0.04,
+      "chi": 3,
+      "strata": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "tested_samples": 8136,
+      "ml_failing_samples_tested": 212,
+      "changed_decisions": 14,
+      "changed_among_ml_failures": 5,
+      "rel_change_of_pL_contribution": 0.006234014103241647,
+      "rel_se": 0.005589785989545009,
+      "seconds_per_decode": 0.008358227337107062
+    },
+    {
+      "d": 13,
+      "p": 0.04,
+      "chi": 4,
+      "strata": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "tested_samples": 8136,
+      "ml_failing_samples_tested": 212,
+      "changed_decisions": 1,
+      "changed_among_ml_failures": 1,
+      "rel_change_of_pL_contribution": -0.001343852166591471,
+      "rel_se": 0.0013438521665914706,
+      "seconds_per_decode": 0.013161126337348693
+    },
+    {
+      "d": 13,
+      "p": 0.04,
+      "chi": 6,
+      "strata": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "tested_samples": 8136,
+      "ml_failing_samples_tested": 212,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.02185754391158526
+    },
+    {
+      "d": 13,
+      "p": 0.04,
+      "chi": 8,
+      "strata": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "tested_samples": 8136,
+      "ml_failing_samples_tested": 212,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.03345685670877165
+    },
+    {
+      "d": 13,
+      "p": 0.06,
+      "chi": 3,
+      "strata": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "tested_samples": 9701,
+      "ml_failing_samples_tested": 392,
+      "changed_decisions": 29,
+      "changed_among_ml_failures": 4,
+      "rel_change_of_pL_contribution": 0.7498701955573122,
+      "rel_se": 0.42080669078308547,
+      "seconds_per_decode": 0.008916778656638114
+    },
+    {
+      "d": 13,
+      "p": 0.06,
+      "chi": 4,
+      "strata": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "tested_samples": 9701,
+      "ml_failing_samples_tested": 392,
+      "changed_decisions": 3,
+      "changed_among_ml_failures": 2,
+      "rel_change_of_pL_contribution": 0.06001300064445965,
+      "rel_se": 0.06341470933867223,
+      "seconds_per_decode": 0.01280196872853872
+    },
+    {
+      "d": 13,
+      "p": 0.06,
+      "chi": 6,
+      "strata": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "tested_samples": 9701,
+      "ml_failing_samples_tested": 392,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.02231224041435424
+    },
+    {
+      "d": 13,
+      "p": 0.06,
+      "chi": 8,
+      "strata": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "tested_samples": 9701,
+      "ml_failing_samples_tested": 392,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.03474266508005762
+    },
+    {
+      "d": 15,
+      "p": 0.04,
+      "chi": 3,
+      "strata": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "tested_samples": 6289,
+      "ml_failing_samples_tested": 52,
+      "changed_decisions": 9,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 10.34143327100096,
+      "rel_se": 10.240325412346325,
+      "seconds_per_decode": 0.01161432895204542
+    },
+    {
+      "d": 15,
+      "p": 0.04,
+      "chi": 4,
+      "strata": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "tested_samples": 6289,
+      "ml_failing_samples_tested": 52,
+      "changed_decisions": 1,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.03135120382921751,
+      "rel_se": 0.03135120382921752,
+      "seconds_per_decode": 0.01630079707563161
+    },
+    {
+      "d": 15,
+      "p": 0.04,
+      "chi": 6,
+      "strata": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "tested_samples": 6289,
+      "ml_failing_samples_tested": 52,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.02923817672116568
+    },
+    {
+      "d": 15,
+      "p": 0.04,
+      "chi": 8,
+      "strata": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "tested_samples": 6289,
+      "ml_failing_samples_tested": 52,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.04918047237418007
+    },
+    {
+      "d": 15,
+      "p": 0.04,
+      "chi": 12,
+      "strata": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "tested_samples": 6289,
+      "ml_failing_samples_tested": 52,
+      "changed_decisions": 0,
+      "changed_among_ml_failures": 0,
+      "rel_change_of_pL_contribution": 0.0,
+      "rel_se": 0.0,
+      "seconds_per_decode": 0.10004314099133757
+    }
+  ],
+  "tasks": [
+    {
+      "d": 15,
+      "p": 0.04,
+      "w": 14,
+      "screen": 400000,
+      "mwpm_failures_total": 124,
+      "group_F": 124,
+      "group_O": 1143,
+      "P_w": 0.031546182931767607,
+      "per_chi": {
+        "3": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.012381643033347548,
+          "max_truncation_weight": 1.9941903046568579,
+          "invalid_classes": 63
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.01596342360023071,
+          "max_truncation_weight": 0.19107381686726388,
+          "invalid_classes": 94
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.02937694920642976,
+          "max_truncation_weight": 0.007613339955228175,
+          "invalid_classes": 68
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.04691682110269331,
+          "max_truncation_weight": 0.00021479125644842804,
+          "invalid_classes": 42
+        },
+        "12": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.096011291269063,
+          "max_truncation_weight": 1.176638144025211e-06,
+          "invalid_classes": 13
+        }
+      },
+      "ref_seconds_per_decode": 0.18710305320059303,
+      "anchor": {
+        "n": 120,
+        "changed": 0,
+        "ml_failures": 5
+      },
+      "f_ref_mean": 1.5e-05,
+      "f_ref_se": 5.997967135296556e-06,
+      "ml_failing_samples_tested": 6
+    },
+    {
+      "d": 15,
+      "p": 0.04,
+      "w": 15,
+      "screen": 400000,
+      "mwpm_failures_total": 205,
+      "group_F": 205,
+      "group_O": 1224,
+      "P_w": 0.01848956832945271,
+      "per_chi": {
+        "3": {
+          "changed": 2,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0008190747549019608,
+          "se_diff": 0.0008165785818543107,
+          "seconds_per_decode": 0.011163729733733384,
+          "max_truncation_weight": 2.508235709257871,
+          "invalid_classes": 87
+        },
+        "4": {
+          "changed": 1,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 2.5e-06,
+          "se_diff": 2.5000000000000006e-06,
+          "seconds_per_decode": 0.016348723350829222,
+          "max_truncation_weight": 0.36521819354331897,
+          "invalid_classes": 109
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.02825650558178036,
+          "max_truncation_weight": 0.018159405611753634,
+          "invalid_classes": 94
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.04750660952360502,
+          "max_truncation_weight": 0.00041028687440233894,
+          "invalid_classes": 44
+        },
+        "12": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.09994609828092069,
+          "max_truncation_weight": 3.7806667036782723e-06,
+          "invalid_classes": 5
+        }
+      },
+      "ref_seconds_per_decode": 0.18525778821834407,
+      "anchor": {
+        "n": 120,
+        "changed": 0,
+        "ml_failures": 2
+      },
+      "f_ref_mean": 1.7500000000000002e-05,
+      "f_ref_se": 6.516382070913097e-06,
+      "ml_failing_samples_tested": 7
+    },
+    {
+      "d": 15,
+      "p": 0.04,
+      "w": 16,
+      "screen": 400000,
+      "mwpm_failures_total": 441,
+      "group_F": 441,
+      "group_O": 1221,
+      "P_w": 0.010111482680169441,
+      "per_chi": {
+        "3": {
+          "changed": 1,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 2.5e-06,
+          "se_diff": 2.4999999999999994e-06,
+          "seconds_per_decode": 0.011376017124070444,
+          "max_truncation_weight": 2.2505248773063657,
+          "invalid_classes": 110
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.015798664265160956,
+          "max_truncation_weight": 0.3075464086643139,
+          "invalid_classes": 137
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.02961106133948738,
+          "max_truncation_weight": 0.03872976181705756,
+          "invalid_classes": 99
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.048237750820017605,
+          "max_truncation_weight": 0.005254608400283436,
+          "invalid_classes": 59
+        },
+        "12": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.10276371018263981,
+          "max_truncation_weight": 4.5306895366213595e-06,
+          "invalid_classes": 4
+        }
+      },
+      "ref_seconds_per_decode": 0.18657188811457115,
+      "anchor": {
+        "n": 120,
+        "changed": 0,
+        "ml_failures": 1
+      },
+      "f_ref_mean": 3.5e-05,
+      "f_ref_se": 9.214921200274731e-06,
+      "ml_failing_samples_tested": 14
+    },
+    {
+      "d": 15,
+      "p": 0.04,
+      "w": 17,
+      "screen": 400000,
+      "mwpm_failures_total": 693,
+      "group_F": 693,
+      "group_O": 1238,
+      "P_w": 0.005179656569008405,
+      "per_chi": {
+        "3": {
+          "changed": 6,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 1.5e-05,
+          "se_diff": 6.101560967717569e-06,
+          "seconds_per_decode": 0.011535925917030307,
+          "max_truncation_weight": 2.46020280744172,
+          "invalid_classes": 150
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.017092377086305545,
+          "max_truncation_weight": 0.5662376566047682,
+          "invalid_classes": 154
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.029708190756965215,
+          "max_truncation_weight": 0.015519955962172061,
+          "invalid_classes": 109
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.05406070805040435,
+          "max_truncation_weight": 0.0013597480683080689,
+          "invalid_classes": 60
+        },
+        "12": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.10145146423272676,
+          "max_truncation_weight": 6.928430826708767e-06,
+          "invalid_classes": 5
+        }
+      },
+      "ref_seconds_per_decode": 0.18604098781287393,
+      "anchor": {
+        "n": 120,
+        "changed": 0,
+        "ml_failures": 2
+      },
+      "f_ref_mean": 6.249999999999999e-05,
+      "f_ref_se": 1.2281324230533584e-05,
+      "ml_failing_samples_tested": 25
+    },
+    {
+      "d": 13,
+      "p": 0.04,
+      "w": 11,
+      "screen": 400000,
+      "mwpm_failures_total": 286,
+      "group_F": 286,
+      "group_O": 1248,
+      "P_w": 0.038260703097001275,
+      "per_chi": {
+        "3": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.008736788216283766,
+          "max_truncation_weight": 3.6371308530955666,
+          "invalid_classes": 76
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.014551241052819044,
+          "max_truncation_weight": 0.2726652313458248,
+          "invalid_classes": 98
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.02101290832131596,
+          "max_truncation_weight": 0.004816783838539262,
+          "invalid_classes": 64
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.03223745872641791,
+          "max_truncation_weight": 0.00016391022900516918,
+          "invalid_classes": 26
+        }
+      },
+      "ref_seconds_per_decode": 0.08301206953056166,
+      "f_ref_mean": 5.75e-05,
+      "f_ref_se": 1.151753049798132e-05,
+      "ml_failing_samples_tested": 23
+    },
+    {
+      "d": 13,
+      "p": 0.04,
+      "w": 12,
+      "screen": 400000,
+      "mwpm_failures_total": 582,
+      "group_F": 582,
+      "group_O": 1207,
+      "P_w": 0.020990246837938265,
+      "per_chi": {
+        "3": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.007822642051820452,
+          "max_truncation_weight": 2.1066521905344784,
+          "invalid_classes": 100
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.012076921073866664,
+          "max_truncation_weight": 0.4509083263757378,
+          "invalid_classes": 104
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.023175135079944113,
+          "max_truncation_weight": 0.01417606640491338,
+          "invalid_classes": 60
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.034304198637696334,
+          "max_truncation_weight": 0.0008035377298751903,
+          "invalid_classes": 31
+        }
+      },
+      "ref_seconds_per_decode": 0.07987507739634804,
+      "f_ref_mean": 8e-05,
+      "f_ref_se": 1.3759678177399754e-05,
+      "ml_failing_samples_tested": 32
+    },
+    {
+      "d": 13,
+      "p": 0.04,
+      "w": 13,
+      "screen": 400000,
+      "mwpm_failures_total": 1217,
+      "group_F": 1200,
+      "group_O": 1205,
+      "P_w": 0.010562399851142011,
+      "per_chi": {
+        "3": {
+          "changed": 7,
+          "changed_among_ml_failures": 2,
+          "mean_diff": 7.60625e-06,
+          "se_diff": 6.7072826750825045e-06,
+          "seconds_per_decode": 0.008743995638746234,
+          "max_truncation_weight": 2.4793529487851367,
+          "invalid_classes": 146
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.01310749737983434,
+          "max_truncation_weight": 0.3728524206523856,
+          "invalid_classes": 148
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.020978766419535614,
+          "max_truncation_weight": 0.04704215635469533,
+          "invalid_classes": 91
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.033577176786014296,
+          "max_truncation_weight": 0.0029437082978668,
+          "invalid_classes": 25
+        }
+      },
+      "ref_seconds_per_decode": 0.0808146303260153,
+      "f_ref_mean": 0.0010251131224066389,
+      "f_ref_se": 0.0008276341353951343,
+      "ml_failing_samples_tested": 79
+    },
+    {
+      "d": 13,
+      "p": 0.04,
+      "w": 14,
+      "screen": 400000,
+      "mwpm_failures_total": 2161,
+      "group_F": 1200,
+      "group_O": 1208,
+      "P_w": 0.004903971359458772,
+      "per_chi": {
+        "3": {
+          "changed": 7,
+          "changed_among_ml_failures": 3,
+          "mean_diff": 4.502083333333334e-06,
+          "se_diff": 1.1915649737938137e-05,
+          "seconds_per_decode": 0.008129483441577797,
+          "max_truncation_weight": 2.1385815892971527,
+          "invalid_classes": 178
+        },
+        "4": {
+          "changed": 1,
+          "changed_among_ml_failures": 1,
+          "mean_diff": -4.502083333333334e-06,
+          "se_diff": 4.502083333333332e-06,
+          "seconds_per_decode": 0.012908845842874724,
+          "max_truncation_weight": 0.2825298408212603,
+          "invalid_classes": 167
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.02226336582554535,
+          "max_truncation_weight": 0.03785779559018611,
+          "invalid_classes": 86
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.033708592684958065,
+          "max_truncation_weight": 0.002235558384671522,
+          "invalid_classes": 33
+        }
+      },
+      "ref_seconds_per_decode": 0.08249012754605062,
+      "f_ref_mean": 0.00035116250000000003,
+      "f_ref_se": 3.8463399680288236e-05,
+      "ml_failing_samples_tested": 78
+    },
+    {
+      "d": 13,
+      "p": 0.06,
+      "w": 14,
+      "screen": 400000,
+      "mwpm_failures_total": 2219,
+      "group_F": 1200,
+      "group_O": 1272,
+      "P_w": 0.054777440869176706,
+      "per_chi": {
+        "3": {
+          "changed": 7,
+          "changed_among_ml_failures": 1,
+          "mean_diff": 0.0015774733097484279,
+          "se_diff": 0.0011052486640752614,
+          "seconds_per_decode": 0.008855730102285984,
+          "max_truncation_weight": 3.2455343148982863,
+          "invalid_classes": 166
+        },
+        "4": {
+          "changed": 1,
+          "changed_among_ml_failures": 1,
+          "mean_diff": -4.622916666666667e-06,
+          "se_diff": 4.622916666666665e-06,
+          "seconds_per_decode": 0.012198753727292552,
+          "max_truncation_weight": 0.4718931612215066,
+          "invalid_classes": 134
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.022201925612576185,
+          "max_truncation_weight": 0.06415941480040821,
+          "invalid_classes": 66
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.03513848318636996,
+          "max_truncation_weight": 0.002537494764287017,
+          "invalid_classes": 21
+        }
+      },
+      "ref_seconds_per_decode": 0.08178530184968004,
+      "f_ref_mean": 0.00039757083333333336,
+      "f_ref_se": 4.132361382489491e-05,
+      "ml_failing_samples_tested": 86
+    },
+    {
+      "d": 13,
+      "p": 0.06,
+      "w": 15,
+      "screen": 400000,
+      "mwpm_failures_total": 3813,
+      "group_F": 1200,
+      "group_O": 1190,
+      "P_w": 0.03612980142435054,
+      "per_chi": {
+        "3": {
+          "changed": 6,
+          "changed_among_ml_failures": 1,
+          "mean_diff": 0.0008561568802521009,
+          "se_diff": 0.0008325150209308876,
+          "seconds_per_decode": 0.008315427033971045,
+          "max_truncation_weight": 3.312193586175469,
+          "invalid_classes": 135
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.012541618706292189,
+          "max_truncation_weight": 0.4607281278636875,
+          "invalid_classes": 138
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.022637559679262807,
+          "max_truncation_weight": 0.07253156621919378,
+          "invalid_classes": 56
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.03535109104970509,
+          "max_truncation_weight": 0.005393810872223314,
+          "invalid_classes": 21
+        }
+      },
+      "ref_seconds_per_decode": 0.08182467506520419,
+      "f_ref_mean": 0.00069905,
+      "f_ref_se": 7.176450705242156e-05,
+      "ml_failing_samples_tested": 88
+    },
+    {
+      "d": 13,
+      "p": 0.06,
+      "w": 16,
+      "screen": 400000,
+      "mwpm_failures_total": 6188,
+      "group_F": 1200,
+      "group_O": 1216,
+      "P_w": 0.022196766300598334,
+      "per_chi": {
+        "3": {
+          "changed": 6,
+          "changed_among_ml_failures": 1,
+          "mean_diff": 5.156666666666667e-05,
+          "se_diff": 3.155605017519816e-05,
+          "seconds_per_decode": 0.009693068779067488,
+          "max_truncation_weight": 2.697132001378366,
+          "invalid_classes": 183
+        },
+        "4": {
+          "changed": 1,
+          "changed_among_ml_failures": 1,
+          "mean_diff": -1.2891666666666667e-05,
+          "se_diff": 1.2891666666666665e-05,
+          "seconds_per_decode": 0.01326192935176243,
+          "max_truncation_weight": 0.753874803758165,
+          "invalid_classes": 143
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.021297348552192282,
+          "max_truncation_weight": 0.18690197954381926,
+          "invalid_classes": 57
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.03505683744585277,
+          "max_truncation_weight": 0.016812626241475122,
+          "invalid_classes": 17
+        }
+      },
+      "ref_seconds_per_decode": 0.08690928445746567,
+      "f_ref_mean": 0.0030115927631578945,
+      "f_ref_se": 0.0011516608629878178,
+      "ml_failing_samples_tested": 110
+    },
+    {
+      "d": 13,
+      "p": 0.06,
+      "w": 17,
+      "screen": 400000,
+      "mwpm_failures_total": 9384,
+      "group_F": 1200,
+      "group_O": 1223,
+      "P_w": 0.012751333832258625,
+      "per_chi": {
+        "3": {
+          "changed": 10,
+          "changed_among_ml_failures": 1,
+          "mean_diff": 0.0001564,
+          "se_diff": 6.168315445040453e-05,
+          "seconds_per_decode": 0.00880288871122794,
+          "max_truncation_weight": 3.1802669259722536,
+          "invalid_classes": 201
+        },
+        "4": {
+          "changed": 1,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0007984791496320525,
+          "se_diff": 0.0007984791496320525,
+          "seconds_per_decode": 0.013205573128807708,
+          "max_truncation_weight": 0.9269856712448008,
+          "invalid_classes": 155
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.023112127813385678,
+          "max_truncation_weight": 0.2450565924667694,
+          "invalid_classes": 63
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.033424248638302644,
+          "max_truncation_weight": 0.031751323867420043,
+          "invalid_classes": 14
+        }
+      },
+      "ref_seconds_per_decode": 0.08372723018144017,
+      "f_ref_mean": 0.0036692582992641047,
+      "f_ref_se": 0.001145015284030004,
+      "ml_failing_samples_tested": 108
+    },
+    {
+      "d": 11,
+      "p": 0.04,
+      "w": 8,
+      "screen": 400000,
+      "mwpm_failures_total": 445,
+      "group_F": 445,
+      "group_O": 1202,
+      "P_w": 0.058512798326397004,
+      "per_chi": {
+        "3": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.005565495077016213,
+          "max_truncation_weight": 2.218624052873835,
+          "invalid_classes": 66
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.008460422103594633,
+          "max_truncation_weight": 0.1384238929785272,
+          "invalid_classes": 74
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.01494867568603775,
+          "max_truncation_weight": 0.003838869265115204,
+          "invalid_classes": 21
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.020475833866186552,
+          "max_truncation_weight": 0.00010397874304991633,
+          "invalid_classes": 3
+        }
+      },
+      "ref_seconds_per_decode": 0.013624561723247035,
+      "f_ref_mean": 9.25e-05,
+      "f_ref_se": 1.4577379737113248e-05,
+      "ml_failing_samples_tested": 37
+    },
+    {
+      "d": 11,
+      "p": 0.04,
+      "w": 9,
+      "screen": 400000,
+      "mwpm_failures_total": 1330,
+      "group_F": 1200,
+      "group_O": 1220,
+      "P_w": 0.030610862087420594,
+      "per_chi": {
+        "3": {
+          "changed": 3,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 8.3125e-06,
+          "se_diff": 4.795219753065737e-06,
+          "seconds_per_decode": 0.007031226453702312,
+          "max_truncation_weight": 2.8142405797853236,
+          "invalid_classes": 92
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.008307268698353413,
+          "max_truncation_weight": 0.31959178368799734,
+          "invalid_classes": 101
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.013175583575382706,
+          "max_truncation_weight": 0.01629696758965872,
+          "invalid_classes": 49
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.02024117668798147,
+          "max_truncation_weight": 0.0013340241625760712,
+          "invalid_classes": 7
+        }
+      },
+      "ref_seconds_per_decode": 0.013298520963054058,
+      "f_ref_mean": 0.00027846875,
+      "f_ref_se": 2.6563855961604625e-05,
+      "ml_failing_samples_tested": 101
+    },
+    {
+      "d": 11,
+      "p": 0.04,
+      "w": 10,
+      "screen": 400000,
+      "mwpm_failures_total": 2843,
+      "group_F": 1200,
+      "group_O": 1237,
+      "P_w": 0.014285068974129636,
+      "per_chi": {
+        "3": {
+          "changed": 3,
+          "changed_among_ml_failures": 2,
+          "mean_diff": -5.922916666666666e-06,
+          "se_diff": 1.0261644240637118e-05,
+          "seconds_per_decode": 0.005983326148438953,
+          "max_truncation_weight": 2.3161857785627435,
+          "invalid_classes": 125
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.008141258088692222,
+          "max_truncation_weight": 0.22131126301162998,
+          "invalid_classes": 107
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.01309676232962125,
+          "max_truncation_weight": 0.01012125193269539,
+          "invalid_classes": 38
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.0211820674813278,
+          "max_truncation_weight": 0.0008102619294180289,
+          "invalid_classes": 2
+        }
+      },
+      "ref_seconds_per_decode": 0.01325250718747195,
+      "f_ref_mean": 0.0006455979166666667,
+      "f_ref_se": 5.8986367876394705e-05,
+      "ml_failing_samples_tested": 109
+    },
+    {
+      "d": 11,
+      "p": 0.04,
+      "w": 11,
+      "screen": 400000,
+      "mwpm_failures_total": 5669,
+      "group_F": 1200,
+      "group_O": 1186,
+      "P_w": 0.006006222182304509,
+      "per_chi": {
+        "3": {
+          "changed": 10,
+          "changed_among_ml_failures": 4,
+          "mean_diff": 2.3620833333333336e-05,
+          "se_diff": 3.735716035498594e-05,
+          "seconds_per_decode": 0.006839100293321762,
+          "max_truncation_weight": 2.01193898357422,
+          "invalid_classes": 162
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.009392587756870779,
+          "max_truncation_weight": 0.3847191621795012,
+          "invalid_classes": 128
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.013102482770134797,
+          "max_truncation_weight": 0.010908295503549952,
+          "invalid_classes": 37
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.021093522712950535,
+          "max_truncation_weight": 0.0006037756272009268,
+          "invalid_classes": 7
+        }
+      },
+      "ref_seconds_per_decode": 0.01314795277044739,
+      "f_ref_mean": 0.0030206388947442383,
+      "f_ref_se": 0.001181187795765414,
+      "ml_failing_samples_tested": 117
+    },
+    {
+      "d": 11,
+      "p": 0.06,
+      "w": 10,
+      "screen": 400000,
+      "mwpm_failures_total": 2872,
+      "group_F": 1200,
+      "group_O": 1214,
+      "P_w": 0.07959390537066183,
+      "per_chi": {
+        "3": {
+          "changed": 5,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 2.9916666666666668e-05,
+          "se_diff": 1.3356804256700463e-05,
+          "seconds_per_decode": 0.005794635170633969,
+          "max_truncation_weight": 2.507286116252645,
+          "invalid_classes": 92
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.008347588426926556,
+          "max_truncation_weight": 0.30133889875546893,
+          "invalid_classes": 85
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.013295043275291107,
+          "max_truncation_weight": 0.036095271715400536,
+          "invalid_classes": 18
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.021670285393210018,
+          "max_truncation_weight": 0.0009839346581300386,
+          "invalid_classes": 1
+        }
+      },
+      "ref_seconds_per_decode": 0.014195418693649937,
+      "f_ref_mean": 0.0006761166666666667,
+      "f_ref_se": 6.0560241788705244e-05,
+      "ml_failing_samples_tested": 113
+    },
+    {
+      "d": 11,
+      "p": 0.06,
+      "w": 11,
+      "screen": 400000,
+      "mwpm_failures_total": 5746,
+      "group_F": 1200,
+      "group_O": 1185,
+      "P_w": 0.05126648063526176,
+      "per_chi": {
+        "3": {
+          "changed": 6,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 7.1825e-05,
+          "se_diff": 2.9261230236867677e-05,
+          "seconds_per_decode": 0.005702869847135724,
+          "max_truncation_weight": 2.0064903670165877,
+          "invalid_classes": 131
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.008669874603143527,
+          "max_truncation_weight": 0.3563783479374249,
+          "invalid_classes": 82
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.014259155341414287,
+          "max_truncation_weight": 0.026492057212007036,
+          "invalid_classes": 27
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.020529115524931772,
+          "max_truncation_weight": 0.0031136098399203,
+          "invalid_classes": 3
+        }
+      },
+      "ref_seconds_per_decode": 0.013079365844246727,
+      "f_ref_mean": 0.002459792827004219,
+      "f_ref_se": 0.0008420917048521381,
+      "ml_failing_samples_tested": 137
+    },
+    {
+      "d": 11,
+      "p": 0.06,
+      "w": 12,
+      "screen": 400000,
+      "mwpm_failures_total": 10003,
+      "group_F": 1200,
+      "group_O": 1164,
+      "P_w": 0.029996345052546787,
+      "per_chi": {
+        "3": {
+          "changed": 3,
+          "changed_among_ml_failures": 1,
+          "mean_diff": 2.0839583333333333e-05,
+          "se_diff": 3.6105250558949376e-05,
+          "seconds_per_decode": 0.005870849045400087,
+          "max_truncation_weight": 3.649632751154223,
+          "invalid_classes": 126
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.008268911322159614,
+          "max_truncation_weight": 1.07019572504494,
+          "invalid_classes": 73
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.012958841275442676,
+          "max_truncation_weight": 0.06421624227589272,
+          "invalid_classes": 16
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.01975125790449165,
+          "max_truncation_weight": 0.0047549723089542854,
+          "invalid_classes": 1
+        }
+      },
+      "ref_seconds_per_decode": 0.013715115799718298,
+      "f_ref_mean": 0.005638804768041236,
+      "f_ref_se": 0.001469102507173571,
+      "ml_failing_samples_tested": 153
+    },
+    {
+      "d": 11,
+      "p": 0.06,
+      "w": 13,
+      "screen": 400000,
+      "mwpm_failures_total": 16632,
+      "group_F": 1200,
+      "group_O": 1181,
+      "P_w": 0.016053690396371195,
+      "per_chi": {
+        "3": {
+          "changed": 10,
+          "changed_among_ml_failures": 3,
+          "mean_diff": 0.0001386,
+          "se_diff": 0.00010954550141714604,
+          "seconds_per_decode": 0.005728493013185696,
+          "max_truncation_weight": 2.4589880975476004,
+          "invalid_classes": 156
+        },
+        "4": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.008454489137184114,
+          "max_truncation_weight": 0.93667415531128,
+          "invalid_classes": 108
+        },
+        "6": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.012932397697413483,
+          "max_truncation_weight": 0.03497991738960774,
+          "invalid_classes": 30
+        },
+        "8": {
+          "changed": 0,
+          "changed_among_ml_failures": 0,
+          "mean_diff": 0.0,
+          "se_diff": 0.0,
+          "seconds_per_decode": 0.019558997476666676,
+          "max_truncation_weight": 0.0032855772015726054,
+          "invalid_classes": 4
+        }
+      },
+      "ref_seconds_per_decode": 0.012372487335333249,
+      "f_ref_mean": 0.007562797798475868,
+      "f_ref_se": 0.0014588740286789362,
+      "ml_failing_samples_tested": 151
+    }
+  ],
+  "versions": {
+    "lcd": "0.0.1",
+    "numpy": "2.4.6"
+  },
+  "git_commit": "958ed7e4ffab5b687ea8ec479bb3cbdd0c2b01e6",
+  "git_dirty_src": false,
+  "wall_seconds": 1783.678160905838,
+  "date": "2026-10-01T13:06:25+00:00"
+}

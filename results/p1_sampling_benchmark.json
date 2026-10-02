@@ -1,0 +1,26 @@
+{
+  "script": "experiments/p1_erasure_pauli/sampling_benchmark.py",
+  "args": {
+    "dmin": "5",
+    "dmax": "15",
+    "ps": "[0.02, 0.04, 0.06]",
+    "budget": "1500000.0",
+    "n0": "1000",
+    "seed": "20241001",
+    "delta": "0.05",
+    "out": "/home/user/coset-distinguishability/results/p1_sampling_benchmark"
+  },
+  "decoder": "MWPM (PyMatching), X/Z decoded independently, uniform edge weights; not ML",
+  "noise": "code-capacity depolarizing, e = 0",
+  "estimator": "weight-stratified, Neyman allocation, 3 rounds",
+  "versions": {
+    "lcd": "0.0.1",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "pymatching": "2.4.0"
+  },
+  "git_commit": "a8211597c536fc49b1e1bf3e812ebfbe358a2d86",
+  "git_dirty_src": false,
+  "date": "2026-10-01T10:45:31+00:00",
+  "note": "npz arrays are [k, w, N, fails] per stratum; the MWPM table does not depend on p"
+}

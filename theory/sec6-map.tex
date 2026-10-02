@@ -1,0 +1,110 @@
+\section{Theory--numerics map and open problems}\label{sec:map}
+
+Principle: \textbf{every theorem comes with a numerical falsification test}. A passing test does not prove the theorem, but a violation shows that the theorem (or the implementation) is wrong;
+conversely, numerical results decide which statement to prove next.
+
+\subsection{The correspondence table}
+
+{\footnotesize
+\begin{longtable}{p{3.7cm} p{4.5cm} p{3.2cm} p{2.6cm}}
+\toprule
+Theoretical statement & Numerical check & Location / milestone & Status \\
+\midrule
+\endfirsthead
+\toprule
+Theoretical statement & Numerical check & Location / milestone & Status \\
+\midrule
+\endhead
+Section~\ref{sec:constitution}\ (resource-theory axioms: category, free objects, golden rule, product, complete family $\Phi_\Lambda$) &
+LP reachability against condition (ii) of Theorem~\ref{thm:preorder} (N1); LP duality for Theorem~\ref{thm:complete} (N2, N3); $\err$ not complete (N5); free objects (N6); product (N4) &
+\texttt{theory/checks/constitution.py} & passes \\
+Proposition~\ref{prop:marginal}\ (marginal rates of monotones fill $[0,c]$) &
+$R^{(d)}\in[0,c]$ for exact ML (C7, C1); the monotones $p$, $1-\mu$, $B$ (and numerically $Q_{\rm hash}$) ordered on reachable pairs (N1, N7) &
+\texttt{theory/checks} & passes \\
+Theorem~\ref{thm:monotone}, Proposition~\ref{prop:free-ops}\ (monotonicity) &
+$\err(p,e)$ nondecreasing in $p,e$; superposing independent layers does not decrease it (C1, C2) &
+\texttt{theory/checks}\ (exact ML, 3 codes) & passes \\
+Theorem~\ref{thm:partial}\ (partial flag discarding) &
+$\err(p,e_0{+}\delta)\le\err(p'',e_0)$, about $300$ random parameter/code draws (C3) &
+same & passes \\
+Theorem~\ref{thm:preorder}\ (necessity in the preorder) &
+reachable pairs are $\err$-ordered (C4); also the fraction of ``unreachable yet ordered'' pairs (finite-$d$ evidence that the operational order is strictly larger than the free order) &
+same & passes; about 15\% of unreachable pairs are still ordered \\
+Lemma~\ref{lem:union}, Corollary~\ref{cor:product}\ (union bound) &
+$\err\le\tfrac12\widetilde W(B)$ (C5) & same & passes \\
+Proposition~\ref{prop:genie}\ (genie lower bound) &
+$\err_{d=3}\ge\varepsilon_{\rm genie}$ (C6); recheck with exact ML for $d\ge5$ &
+same / M1 & passes at $d=3$ \\
+Theorem~\ref{thm:rate}\ (exchange-rate bound) &
+finite $d$: $R^{(d)}\le c$ (C7); \textbf{P1: $R_{e\to p}\le c(p_0,e_0)$, and report $\Delta=c-R$, $R_B$, $R_{\rm hash}$} (done for $d\le11$, Observation~\ref{obs:m2}) &
+\texttt{theory/checks}; P1 / M2 & passes at finite $d$ and in P1 ($R^{(d)}/c\approx0.3$--$0.6$) \\
+Remark~\ref{rem:envelope}\ (envelope argument for ML derivatives) &
+$\partial_\theta\err$ equals the derivative of the frozen-decoder failure rate (C8); verified with the exact ML decoder at $d=5,7$ (\texttt{envelope\_check.py}); truncated-MPS ML (decisions equal to exact on all tested samples) not yet tested directly &
+\texttt{theory/checks}; M1 & passes on 3 small codes and at $d=5,7$ \\
+Observation~\ref{obs:sharp}\ ($[[5,1,3]]$ attains equality) &
+scan $R^{(d)}/c$ at $e_0{=}0$ over a library of random stabilizer codes &
+extend \texttt{theory/checks} & observed for 3 codes \\
+Conjecture~\ref{conj:universal}\ (code-universal order = free order), single-loss form &
+for unreachable pairs, search all linear structures on $n\le3$ qubits (exhaustive) and $n=4,5$ (hill-climbing) for one that \emph{reverses} the $\err$ order; proved for $\mu'>\mu$ or $\nu'>\nu$ (Proposition~\ref{prop:two-structures}); no reversal of trade pairs found (Observation~\ref{obs:search}) &
+\texttt{theory/checks/universal\_order\_search.py} & evidence against; $n\ge6$ not searched \\
+Conjecture~\ref{conj:HB}\ ($H_B$) &
+compare the $R_\alpha$ of P1 with the analytic $R_B$ &
+P1 / M2 & consistent within about one standard error at $e_0>0$ (Observation~\ref{obs:m2}); not confirmed \\
+Theorem~\ref{thm:cc-cert}\ (code-capacity certificate) &
+(i) simulate calibration data and check that the coverage of $\bar e,\bar p$ is $\ge1-\delta$; (ii) compare with the $\err_d$ of exact/TN ML (the certificate must be $\ge$) &
+\texttt{experiments/}\ / M1 & to do \\
+Lemma~\ref{lem:floor}\ (chip-event floor) &
+stim: $\pL\ge q_c(1-2^{-q})$ and $\propto r_cT$; the floor is independent of $d$ &
+P2 / M3--M4 & to do \\
+Proposition~\ref{prop:poisson}\ (Poisson lower bound) &
+any test needs at least $\ln((1-a)/\delta)/r$ rounds &
+P2 / M4 & to do \\
+Proposition~\ref{prop:exponents}\ (chain of exponents) &
+estimate $D_{\rm count}$ and $D_{\rm pattern}$ and verify $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ &
+P2 / M4 & to do \\
+\bottomrule
+\end{longtable}
+}
+
+\paragraph{A second use of the exact small-code computation.}
+\texttt{exact\_small\_codes.py} gives the \emph{exact} maximum-likelihood $\err(p,e)$ for codes with $n\le9$, and serves directly as the oracle for M1 (the ML decoder):
+on the $d=3$ rotated surface code the ML decoder of \texttt{lcd.decoders.ExactTNMLDecoder} must agree with it to machine precision, which is a stronger gate than the sanity checks in the README.
+This gate has been passed (\texttt{tests/test\_tn\_ml.py} compares coset sums with brute-force enumeration to $10^{-12}$, and \texttt{experiments/p1\_erasure\_pauli/crosscheck\_ml.py} compares the stratified ML estimate with erasures against the oracle).
+
+\paragraph{Division of tests: MWPM cannot falsify upper bounds for ML.}
+Lemma~\ref{lem:union}, Theorem~\ref{thm:cc-cert}, and similar statements are upper bounds for ML, while the MWPM failure rate is $\ge\err$,
+so MWPM data can neither confirm nor refute these bounds; one must use exact ML (small $d$) or tensor-network ML.
+Lower bounds (the floor, the Poisson lower bound, the genie lower bound) hold for any decoder and can be tested with stim + MWPM.
+
+\subsection{List of open problems}
+
+\begin{enumerate}
+\item \textbf{The gap problem} (Problem~\ref{prob:gap}): does $c-R_\alpha$ come from code dependence or from incompleteness of the free operations?
+  \emph{Prerequisite numerics}: the $R_\alpha$ of P1; \emph{theoretical route}: the Blackwell/R\'enyi route of Conjecture~\ref{conj:universal}.
+\item \textbf{Single-loss form of Conjecture~\ref{conj:universal}} (Remark~\ref{rem:conj-reform}, \S\ref{sec:single-loss}): does the code-universal order of $\err=1-\Phi_{\max}$ alone coincide with the local free order? The all-losses form is proved (Proposition~\ref{prop:local-level1}); the single-loss form is proved on $\{\mu'>\mu\}\cup\{\nu'>\nu\}$ and the search gives evidence against it on the trade region. \emph{To settle it:} a proof of non-reversal for all $n$, or structures with $\err_A\approx p$ for all $|A|<k$ for every $k$. 
+  \emph{Prerequisite numerics}: counterexample search over a library of stabilizer codes; for orders of the surface code, the nesting $\succeq_{\rm local}\subseteq\succeq_{\mathrm{L1}}\subseteq\succeq_{\err}$.
+\item \textbf{Asymptotic rates in the tensor-power sense} (R-c of \S\ref{sec:rates}): not computed; needs the large-sample Blackwell order.
+\item \textbf{O1} (Problem~\ref{prob:O1}): monotonicity of $\err$ in the shape parameters $p_b,R,T_b$ for unflagged bursts.
+\item \textbf{O2} (Problem~\ref{prob:O2}): confidence upper limits for the parameters under contamination by burst/chip events.
+\item \textbf{O3} (Problem~\ref{prob:O3}): explicit estimates for the union bound for burst mixtures (cluster expansion).
+\item \textbf{O4} (Problem~\ref{prob:O4}): the experimental-design theorem.
+\item \textbf{O5}: certification for \emph{suboptimal decoders} (MWPM): this needs a Peierls-type upper bound for that decoder; the bounds of these notes are for ML only.
+\item \textbf{O6}: a proof of Observation~\ref{obs:sharp}: for which classes of codes (perfect codes, transitive codes) does flagging a single qubit leave the ML decision unchanged?
+\item \textbf{O7}: tightening the union bound (calibrating with measured small-$d$ failure rates) so that certification is no longer vacuous at realistic parameters.
+\end{enumerate}
+
+\subsection{Near-term order of work (in parallel with M0--M5)}
+
+\begin{center}
+\begin{tabular}{p{1.3cm}p{6.8cm}p{6.2cm}}
+\toprule
+Theory track & Content & Interlock with the numerics track \\
+\midrule
+T0 & constitutional audit (\S\ref{sec:constitution}), framework, monotonicity, representation (this document, \S\ref{sec:framework}--\ref{sec:repr}) + exact small-code checks & oracle and sanity checks for M0/M1 \\
+T1 & exchange-rate bound, preorder theorem (\S\ref{sec:exchange}) & M2: report $R\le c$ and the gap $\Delta$ \\
+T2 & counterexample search for Conjecture~\ref{conj:universal}; proof of Observation~\ref{obs:sharp} & extend \texttt{checks}; no large computation needed \\
+T3 & code-capacity certification + O1--O3 (\S\ref{sec:cert}) & M3/M4: floor, parameter identification \\
+T4 & information-theoretic bounds and experimental design (\S\ref{sec:info}) & M4: compare $T_{\rm count}/T_{\rm pattern}$ \\
+\bottomrule
+\end{tabular}
+\end{center}

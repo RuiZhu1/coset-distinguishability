@@ -1,0 +1,483 @@
+{
+  "script": "experiments/p1_erasure_pauli/mps_erasure_check.py",
+  "seed": 20241007,
+  "results": [
+    {
+      "d": 11,
+      "k": 6,
+      "w": 12,
+      "p": 0.05,
+      "N": 4000,
+      "exact_failure_fraction": 0.02,
+      "exact_seconds_per_decode": 0.015306143403053283,
+      "per_chi": {
+        "4": {
+          "changed": 1,
+          "ml_failing": 80,
+          "mean_diff": -0.00025,
+          "seconds_per_decode": 0.009923392951488495,
+          "max_truncation_weight": 0.808787297819802,
+          "invalid_classes": 225,
+          "samples_repaired_by_fallback": 217
+        },
+        "6": {
+          "changed": 0,
+          "ml_failing": 80,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.01381329596042633,
+          "max_truncation_weight": 0.06873758014450317,
+          "invalid_classes": 50,
+          "samples_repaired_by_fallback": 50
+        },
+        "8": {
+          "changed": 0,
+          "ml_failing": 80,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.020779647707939147,
+          "max_truncation_weight": 0.01118390941072377,
+          "invalid_classes": 6,
+          "samples_repaired_by_fallback": 6
+        },
+        "12": {
+          "changed": 0,
+          "ml_failing": 80,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.03487594544887543,
+          "max_truncation_weight": 0.00013921097542095656,
+          "invalid_classes": 0,
+          "samples_repaired_by_fallback": 0
+        }
+      }
+    },
+    {
+      "d": 11,
+      "k": 6,
+      "w": 14,
+      "p": 0.05,
+      "N": 4000,
+      "exact_failure_fraction": 0.0425,
+      "exact_seconds_per_decode": 0.015441226184368134,
+      "per_chi": {
+        "4": {
+          "changed": 1,
+          "ml_failing": 170,
+          "mean_diff": 0.00025,
+          "seconds_per_decode": 0.010091410338878632,
+          "max_truncation_weight": 1.4902649482796027,
+          "invalid_classes": 249,
+          "samples_repaired_by_fallback": 243
+        },
+        "6": {
+          "changed": 0,
+          "ml_failing": 170,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.01397265374660492,
+          "max_truncation_weight": 0.18155874665570737,
+          "invalid_classes": 63,
+          "samples_repaired_by_fallback": 62
+        },
+        "8": {
+          "changed": 0,
+          "ml_failing": 170,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.020275999426841735,
+          "max_truncation_weight": 0.010660874578353807,
+          "invalid_classes": 4,
+          "samples_repaired_by_fallback": 4
+        },
+        "12": {
+          "changed": 0,
+          "ml_failing": 170,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.034755009412765506,
+          "max_truncation_weight": 0.0002455830757496308,
+          "invalid_classes": 0,
+          "samples_repaired_by_fallback": 0
+        }
+      }
+    },
+    {
+      "d": 11,
+      "k": 8,
+      "w": 11,
+      "p": 0.05,
+      "N": 4000,
+      "exact_failure_fraction": 0.018,
+      "exact_seconds_per_decode": 0.01577410650253296,
+      "per_chi": {
+        "4": {
+          "changed": 1,
+          "ml_failing": 72,
+          "mean_diff": 0.00025,
+          "seconds_per_decode": 0.009836357295513153,
+          "max_truncation_weight": 0.6656503510358712,
+          "invalid_classes": 196,
+          "samples_repaired_by_fallback": 193
+        },
+        "6": {
+          "changed": 0,
+          "ml_failing": 72,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.013922050297260284,
+          "max_truncation_weight": 0.11320591515919097,
+          "invalid_classes": 42,
+          "samples_repaired_by_fallback": 42
+        },
+        "8": {
+          "changed": 0,
+          "ml_failing": 72,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.020485681772232055,
+          "max_truncation_weight": 0.01602367928918148,
+          "invalid_classes": 3,
+          "samples_repaired_by_fallback": 3
+        },
+        "12": {
+          "changed": 0,
+          "ml_failing": 72,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.034921748638153075,
+          "max_truncation_weight": 0.00016818371451322948,
+          "invalid_classes": 0,
+          "samples_repaired_by_fallback": 0
+        }
+      }
+    },
+    {
+      "d": 11,
+      "k": 8,
+      "w": 13,
+      "p": 0.05,
+      "N": 4000,
+      "exact_failure_fraction": 0.0465,
+      "exact_seconds_per_decode": 0.0153169903755188,
+      "per_chi": {
+        "4": {
+          "changed": 3,
+          "ml_failing": 186,
+          "mean_diff": -0.00025,
+          "seconds_per_decode": 0.010027347087860107,
+          "max_truncation_weight": 0.9172884806665266,
+          "invalid_classes": 241,
+          "samples_repaired_by_fallback": 227
+        },
+        "6": {
+          "changed": 0,
+          "ml_failing": 186,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.014151045858860015,
+          "max_truncation_weight": 0.1561333645594497,
+          "invalid_classes": 52,
+          "samples_repaired_by_fallback": 52
+        },
+        "8": {
+          "changed": 0,
+          "ml_failing": 186,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.020836906850337983,
+          "max_truncation_weight": 0.02565089214372276,
+          "invalid_classes": 5,
+          "samples_repaired_by_fallback": 5
+        },
+        "12": {
+          "changed": 0,
+          "ml_failing": 186,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.03474873059988022,
+          "max_truncation_weight": 0.000220752416913662,
+          "invalid_classes": 0,
+          "samples_repaired_by_fallback": 0
+        }
+      }
+    },
+    {
+      "d": 11,
+      "k": 10,
+      "w": 10,
+      "p": 0.05,
+      "N": 4000,
+      "exact_failure_fraction": 0.018,
+      "exact_seconds_per_decode": 0.01609536910057068,
+      "per_chi": {
+        "4": {
+          "changed": 0,
+          "ml_failing": 72,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.009318487346172332,
+          "max_truncation_weight": 0.4747856944287262,
+          "invalid_classes": 178,
+          "samples_repaired_by_fallback": 174
+        },
+        "6": {
+          "changed": 0,
+          "ml_failing": 72,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.013421881675720214,
+          "max_truncation_weight": 0.054571310029496604,
+          "invalid_classes": 42,
+          "samples_repaired_by_fallback": 42
+        },
+        "8": {
+          "changed": 0,
+          "ml_failing": 72,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.021825594007968904,
+          "max_truncation_weight": 0.008278131906137853,
+          "invalid_classes": 2,
+          "samples_repaired_by_fallback": 2
+        },
+        "12": {
+          "changed": 0,
+          "ml_failing": 72,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.03581420826911926,
+          "max_truncation_weight": 0.0001579127490485343,
+          "invalid_classes": 0,
+          "samples_repaired_by_fallback": 0
+        }
+      }
+    },
+    {
+      "d": 11,
+      "k": 10,
+      "w": 12,
+      "p": 0.05,
+      "N": 4000,
+      "exact_failure_fraction": 0.0375,
+      "exact_seconds_per_decode": 0.015783275067806243,
+      "per_chi": {
+        "4": {
+          "changed": 1,
+          "ml_failing": 150,
+          "mean_diff": 0.00025,
+          "seconds_per_decode": 0.00944883382320404,
+          "max_truncation_weight": 0.7801661043213779,
+          "invalid_classes": 192,
+          "samples_repaired_by_fallback": 187
+        },
+        "6": {
+          "changed": 0,
+          "ml_failing": 150,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.013697485208511353,
+          "max_truncation_weight": 0.3402177419671038,
+          "invalid_classes": 48,
+          "samples_repaired_by_fallback": 48
+        },
+        "8": {
+          "changed": 0,
+          "ml_failing": 150,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.02185671430826187,
+          "max_truncation_weight": 0.02826991742981436,
+          "invalid_classes": 3,
+          "samples_repaired_by_fallback": 3
+        },
+        "12": {
+          "changed": 0,
+          "ml_failing": 150,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.03581452918052673,
+          "max_truncation_weight": 0.0005485987174751795,
+          "invalid_classes": 0,
+          "samples_repaired_by_fallback": 0
+        }
+      }
+    },
+    {
+      "d": 13,
+      "k": 4,
+      "w": 16,
+      "p": 0.05,
+      "N": 1500,
+      "exact_failure_fraction": 0.004,
+      "exact_seconds_per_decode": 0.08367723035812379,
+      "per_chi": {
+        "4": {
+          "changed": 0,
+          "ml_failing": 6,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.015923020044962564,
+          "max_truncation_weight": 0.592840295718559,
+          "invalid_classes": 136,
+          "samples_repaired_by_fallback": 130
+        },
+        "6": {
+          "changed": 0,
+          "ml_failing": 6,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.023412440458933512,
+          "max_truncation_weight": 0.10304733399994867,
+          "invalid_classes": 52,
+          "samples_repaired_by_fallback": 50
+        },
+        "8": {
+          "changed": 0,
+          "ml_failing": 6,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.03713932545979818,
+          "max_truncation_weight": 0.022602941498033373,
+          "invalid_classes": 12,
+          "samples_repaired_by_fallback": 12
+        },
+        "12": {
+          "changed": 0,
+          "ml_failing": 6,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.06398684899012248,
+          "max_truncation_weight": 0.0011909099635860826,
+          "invalid_classes": 0,
+          "samples_repaired_by_fallback": 0
+        }
+      }
+    },
+    {
+      "d": 13,
+      "k": 8,
+      "w": 15,
+      "p": 0.05,
+      "N": 1500,
+      "exact_failure_fraction": 0.004666666666666667,
+      "exact_seconds_per_decode": 0.08456817054748535,
+      "per_chi": {
+        "4": {
+          "changed": 0,
+          "ml_failing": 7,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.014972586790720622,
+          "max_truncation_weight": 0.548580238497135,
+          "invalid_classes": 101,
+          "samples_repaired_by_fallback": 98
+        },
+        "6": {
+          "changed": 0,
+          "ml_failing": 7,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.03122787316640218,
+          "max_truncation_weight": 0.053673680909584014,
+          "invalid_classes": 51,
+          "samples_repaired_by_fallback": 51
+        },
+        "8": {
+          "changed": 0,
+          "ml_failing": 7,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.03486690632502238,
+          "max_truncation_weight": 0.004291364470951314,
+          "invalid_classes": 10,
+          "samples_repaired_by_fallback": 10
+        },
+        "12": {
+          "changed": 0,
+          "ml_failing": 7,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.07115066194534302,
+          "max_truncation_weight": 0.00021044254955749072,
+          "invalid_classes": 1,
+          "samples_repaired_by_fallback": 1
+        }
+      }
+    },
+    {
+      "d": 13,
+      "k": 6,
+      "w": 18,
+      "p": 0.05,
+      "N": 1500,
+      "exact_failure_fraction": 0.014666666666666666,
+      "exact_seconds_per_decode": 0.08149310207366943,
+      "per_chi": {
+        "4": {
+          "changed": 0,
+          "ml_failing": 22,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.014804582913716634,
+          "max_truncation_weight": 1.2639326251993395,
+          "invalid_classes": 130,
+          "samples_repaired_by_fallback": 125
+        },
+        "6": {
+          "changed": 0,
+          "ml_failing": 22,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.02454236427942912,
+          "max_truncation_weight": 0.11422536471580429,
+          "invalid_classes": 56,
+          "samples_repaired_by_fallback": 54
+        },
+        "8": {
+          "changed": 0,
+          "ml_failing": 22,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.035968375364939374,
+          "max_truncation_weight": 0.009765995868247869,
+          "invalid_classes": 24,
+          "samples_repaired_by_fallback": 24
+        },
+        "12": {
+          "changed": 0,
+          "ml_failing": 22,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.06297966496149698,
+          "max_truncation_weight": 0.0003459860307315141,
+          "invalid_classes": 1,
+          "samples_repaired_by_fallback": 1
+        }
+      }
+    },
+    {
+      "d": 13,
+      "k": 8,
+      "w": 17,
+      "p": 0.05,
+      "N": 1500,
+      "exact_failure_fraction": 0.013333333333333334,
+      "exact_seconds_per_decode": 0.08027171182632446,
+      "per_chi": {
+        "4": {
+          "changed": 0,
+          "ml_failing": 20,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.015908355712890624,
+          "max_truncation_weight": 1.139190151619313,
+          "invalid_classes": 135,
+          "samples_repaired_by_fallback": 131
+        },
+        "6": {
+          "changed": 0,
+          "ml_failing": 20,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.0223829878171285,
+          "max_truncation_weight": 0.268767676375219,
+          "invalid_classes": 39,
+          "samples_repaired_by_fallback": 39
+        },
+        "8": {
+          "changed": 0,
+          "ml_failing": 20,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.03453756030400594,
+          "max_truncation_weight": 0.049217144973686636,
+          "invalid_classes": 9,
+          "samples_repaired_by_fallback": 9
+        },
+        "12": {
+          "changed": 0,
+          "ml_failing": 20,
+          "mean_diff": 0.0,
+          "seconds_per_decode": 0.06196570285161336,
+          "max_truncation_weight": 0.00022980002247521288,
+          "invalid_classes": 0,
+          "samples_repaired_by_fallback": 0
+        }
+      }
+    }
+  ],
+  "versions": {
+    "lcd": "0.0.1",
+    "numpy": "2.4.6"
+  },
+  "git_commit": "d359b0ac51c3653be96f60be66ad00395cb6e987",
+  "git_dirty_src": false,
+  "date": "2026-10-01T13:59:13+00:00"
+}
