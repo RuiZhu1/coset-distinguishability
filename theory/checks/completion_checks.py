@@ -9,7 +9,8 @@
   K4  O1 is false: exact rational computation of a burst model on the d = 3 rotated surface code in which eps*
       DEcreases when the burst strength p_b increases from 1/2 to 3/4 (Prop. 4.11)
   K5  [[5,1,3]]: certificate (exact integer polynomials) that flagging one qubit never changes the ML decision for
-      0 < p < 3/4, hence R^(d) = c exactly at e0 = 0 (Prop. 3.32); Steane and d = 3 surface code violate it
+      0 < p < 3/4, hence R^(d) = c exactly at e0 = 0 (Prop. 3.32); tie-aware: the d = 3 surface code violates (E1),
+      Steane satisfies (E1) but has exact ML ties (its R^(d) < c comes from (E2))
   K6  concavity of eps*_A along one qubit's rate and the right-derivative form of the rate bound (Lemma 3.28, Thm 3.30)
   K7  contamination only lowers the parity expectation of a check (Lemma 4.12(b)), exact
 
@@ -345,24 +346,33 @@ def k5_perfect_code() -> None:
     print("\n=== K5 single-flag invariance of the ML decision (Prop. 3.32) ===")
     ok, why = single_flag_certificate(five_qubit())
     check("K5 [[5,1,3]]: unique ML decision, unchanged by any single flag, for all 0 < p < 3/4 (exact certificate)", ok, why)
-    # the condition fails for Steane and for the d = 3 surface code (so R^(d) < c there, Thm 3.31)
-    for name, Sg in (("Steane", steane()), ("rotated d=3", rotated_surface_d3())):
+    # tie-aware (E1): some class that is ML-optimal without the flag stays ML-optimal with it.  The d = 3 surface code
+    # violates it; Steane satisfies it but has exact ML ties, and R^(d) < c there comes from (E2) (Thm 3.31).
+    # (An earlier version took the first argmax and so reported a spurious violation for Steane.)
+    for name, Sg, expect_violation in (("Steane", steane(), False), ("rotated d=3", rotated_surface_d3(), True)):
         st = code_structure(Sg)
         syn_of = np.full(st.ncls, -1)
         syn_of[st.cls] = st.syn
-        changed = False
+        bad, ties = 0, 0
         for p in (0.01, 0.05):
             P0 = mixture_law(st, p, 0, [], 0, 0)
             W0 = np.bincount(st.cls, weights=P0, minlength=st.ncls)
+            for s in np.unique(st.syn):
+                cl = np.flatnonzero(syn_of == s)
+                ties += int((W0[cl] >= W0[cl].max() * (1 - 1e-9)).sum() > 1)
             for j in range(st.n):
                 Pj = mixture_law(st, p, 0, [], 0, 0, erased=(j,))
                 Wj = np.bincount(st.cls, weights=Pj, minlength=st.ncls)
                 for s in np.unique(st.syn):
                     cl = np.flatnonzero(syn_of == s)
-                    cs = cl[np.argmax(W0[cl])]
-                    if Wj[cs] < Wj[cl].max() * (1 - 1e-9):
-                        changed = True
-        check(f"K5 {name}: some single flag changes the ML decision (p = 0.01, 0.05)", changed)
+                    O0 = set(cl[W0[cl] >= W0[cl].max() * (1 - 1e-9)])
+                    Oj = set(cl[Wj[cl] >= Wj[cl].max() * (1 - 1e-9)])
+                    bad += not (O0 & Oj)
+        if expect_violation:
+            check(f"K5 {name}: (E1) violated (tie-aware; p = 0.01, 0.05)", bad > 0, f"({bad} syndrome-flag pairs)")
+        else:
+            check(f"K5 {name}: (E1) holds (tie-aware) but the ML class is not unique (p = 0.01, 0.05)", bad == 0 and ties > 0,
+                  f"({ties} tied syndromes)")
 
 
 # --------------------------------------------------------------------------------------------------------------

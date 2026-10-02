@@ -19,7 +19,8 @@ theory/
 ├── checks/hardened_structures_search.py  obstruction lemmas on all structures with n <= 3, small-p marginal rates, n = 6 hill-climbing (about 15 min)
 ├── checks/exponent_criterion.py  channel-coding exponent criterion for large structures (seconds)
 ├── checks/completion_checks.py   checks K1-K7 of the theory-completion results (genie, burst bound, O1 counterexample, [[5,1,3]] certificate; about 4 min and 150 MB, `make -C theory completion`)
-└── checks/handproof_checks.py   checks H1-H5 of the pen-and-paper pass ([[5,1,3]] polynomials, self-avoiding walks, bounds vs data, small DEM, pattern gain; seconds)
+├── checks/handproof_checks.py   checks H1-H5 of the pen-and-paper pass ([[5,1,3]] polynomials, self-avoiding walks, bounds vs data, small DEM, pattern gain; seconds)
+└── checks/second_pass_checks.py checks L1-L4 (E1 on a code library, Stein exponents, MWPM simulation vs Peierls, coverage of Thm 4.14 at d = 3; about 1 min; writes results/second_pass_checks.json)
 ```
 
 ## Build and run
@@ -89,10 +90,10 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Lemmas 3.28, 3.29 | One qubit: failure rates affine and $\varepsilon^\star$ concave in its rate, rate $3/4$ = erased; Danskin form of the envelope identity (one-sided derivatives = min over ML rules) | PROVED | K6 |
 | Theorem 3.30 | Rate bound with one-sided derivatives, $\partial_e\varepsilon^\star\le c\,\partial_p^+\varepsilon^\star$, no differentiability assumption | PROVED | K6, C7 |
 | Theorem 3.31 (O6) | Equality in the rate bound iff one extra flag never changes the ML decision (E1), plus a tie condition (E2) | PROVED | `checks/sharp_codes_scan.py` |
-| Proposition 3.32 | $[[5,1,3]]$: (E1) and unique ML decision for all $0<p<3/4$, so $R^{(d)}=c$ exactly at $e_0=0$; Steane and $d=3$ surface violate (E1) | PROVED (computer-assisted, exact integers; also by hand, Proposition 3.36) | K5 |
+| Proposition 3.32 | $[[5,1,3]]$: (E1) and unique ML decision for all $0<p<3/4$, so $R^{(d)}=c$ exactly at $e_0=0$; $d=3$ surface violates (E1); Steane satisfies (E1) but fails (E2) (ML ties), $R/c\to0.857$ numerically | PROVED (computer-assisted, exact integers; also by hand, Proposition 3.36) | K5 |
 | Proposition 3.33 | (E1) in polynomial form at $e_0=0$; for small $p$ it is a lexicographic condition on class polynomials | PROVED | -- |
 | Lemma 3.34 | Split-logical syndromes: every code has two classes with minimum weights $\lfloor d/2\rfloor,\lceil d/2\rceil$ in one syndrome, so minimum weights never decide (E1) | PROVED | -- |
-| Corollary 3.35 | First-order obstruction to (E1) by multiplicities at small $p$ | PROVED | check on a code library (to write) |
+| Corollary 3.35 | First-order obstruction to (E1) by multiplicities at small $p$ | PROVED | L1 (160 random codes: (E1) fails for 138, obstruction detects 113) |
 | Proposition 3.36 (O6) | $[[5,1,3]]$ by hand: closed-form class polynomials; one flag at a single-error syndrome makes all four classes exactly equally likely; equality $R=c$ for all $p$ | PROVED | H1 (table), K5 |
 | Proposition 3.37 | Gap problem: no code-universally sound enlargement of the free operations lowers $c$; the gap $c-R_\alpha$ is code dependence | PROVED | -- |
 | Observation 3.26 / Remark 3.27 | P1/M2: ML exchange rate of the surface code, $d=5$--$11$, six work points: $R^{(d)}\le c$ everywhere; $R_\alpha/c\approx0.3$ at $e_0>0$, $R_\alpha\approx R_B$ | NUMERICAL | `results/p1_exchange_rate.json` |
@@ -103,8 +104,8 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Lemma 4.8 | Tilted Bhattacharyya bound $\mathfrak B(P;G)\le\mathbb E_P\sqrt{Q(X+G)/Q(X)}$ | PROVED | K3 |
 | Theorem 4.10 (O3) | Single-sum product bound for unflagged burst mixtures, $\varepsilon^\star\le\tfrac12\widetilde W(B_{\rm burst})$, uniform in the burst strength; no floor | PROVED | K3 |
 | Lemma 4.12, Proposition 4.13 (O2) | Limits for $p,e$ robust to contamination; burst-rate limits need a detection efficiency; impossible without a strength floor | PROVED | K7 |
-| Theorem 4.14 | Conditional certification with bursts + chip events (code capacity), uniform over burst strengths | PROVED | coverage simulation (to do) |
-| Theorem 4.15, Corollary 4.16 (O5) | Peierls bound and finite-sample certificate for MWPM with erasures, $p_L^{\rm MWPM}\le 2dB_M(3B_M)^{d-1}/(1-3B_M)$ | PROVED | MWPM simulation (to do) |
+| Theorem 4.14 | Conditional certification with bursts + chip events (code capacity), uniform over burst strengths | PROVED | L4 (d = 3: coverage 0.95-0.99, certificate >= eps* always, vacuous) |
+| Theorem 4.15, Corollary 4.16 (O5) | Peierls bound and finite-sample certificate for MWPM with erasures, $p_L^{\rm MWPM}\le 2dB_M(3B_M)^{d-1}/(1-3B_M)$ | PROVED | L3 (20 points, d = 3-9) |
 | Definition 4.17, Theorem 4.18 (O3, space-time) | Burst union bound for any linear decoding structure (circuit level, stim DEMs): $\varepsilon^\star\le\tfrac12\widetilde W^{\mathcal L}(\bar B)$, uniform in burst strength | PROVED | H4 |
 | Lemma 4.19 (O2, space-time) | Parameter limits from one detector: firing probability $\ge\tfrac12(1-\prod\lambda_\ell)$ under contamination | PROVED | H4 |
 | Theorem 4.20 | Conditional certification with bursts + chip events for any linear decoding structure (needs $\widetilde W^{\mathcal L}$ of the DEM, not computed) | PROVED | -- |
@@ -116,7 +117,7 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Proposition 5.6 | Chain of exponents $D_{\rm count}\le D_{\rm pattern}\le D_{\rm event}$ | PROVED (chain; ratio of rounds under the marking model, Theorem 5.10) | **P2 (M4)** |
 | Open problem 5.7 (O4) | Experimental-design theorem | two-hypothesis part PROVED under (M) (5.8-5.11); composite hypotheses open | -- |
 | Lemma 5.8, Theorem 5.9 | Marked Poisson model: $D_{\rm pattern}=D_{\rm count}+\Lambda_1D(\pi_1\|\pi_0)$; weak-signal gain $1+\chi^2$ | PROVED | H5 (identity); **P2 (M4)** |
-| Theorem 5.10 | Stein form: $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ (also Chernoff/Bayes) | PROVED | **P2 (M4)** |
+| Theorem 5.10 | Stein form: $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ (also Chernoff/Bayes) | PROVED | L2; **P2 (M4)** |
 | Theorem 5.11 | Adaptive designs do not beat the best single experiment (Stein, weak converse); optimal design maximizes $D_i/c_i$ | PROVED | -- |
 
 Section 0 is the constitutional audit; the axiom list it uses is an assumption of the author of these notes and must be confirmed or replaced (see its first subsection). Numbers refer to the numbering in `main.pdf` (checked against the `.aux` file whenever this table is updated).

@@ -69,20 +69,20 @@ $\ker\sigma$ on every interior column, $d\le41$ (K1); exact $\varepsilon_{\rm ge
 Lemmas~\ref{lem:concave}, \ref{lem:danskin}, Theorem~\ref{thm:rate-right} &
 concavity along one qubit; $\partial_e\err\le c\,\partial_p^+\err$ on 3 codes (K6) & same & passes \\
 Theorem~\ref{thm:equality}, Proposition~\ref{prop:five-sharp} (O6) &
-exact integer certificate of (E1) for $[[5,1,3]]$, $0<p<\tfrac34$; violation for Steane and $d=3$ surface (K5); (E1)$\Leftrightarrow R^{(d)}=c$ on a code library (\texttt{sharp\_codes\_scan.py}) & same & K5 passes \\
+exact integer certificate of (E1) for $[[5,1,3]]$, $0<p<\tfrac34$; violation for the $d=3$ surface code, and for Steane (E1) with failure of (E2) (K5, tie-aware); (E1)$\Leftrightarrow R^{(d)}=c$ on a code library (\texttt{sharp\_codes\_scan.py}) & same & K5 passes \\
 Lemma~\ref{lem:tilted}, Theorem~\ref{thm:burst-product} (O3) &
 $\BC\le\E_P[h]\le B_{\rm burst}^{\wt G}$ per logical, $\err\le\tfrac12\sum\BC\le\tfrac12\widetilde W(B_{\rm burst})$, exact ML on $[[5,1,3]]$ and $d=3$ surface (K3) & same & passes \\
 Proposition~\ref{prob:O1} (O1 negative) & exact rational $\err$ at $p_b=\tfrac12$ and $\tfrac34$ (K4) & same & passes \\
 Lemma~\ref{lem:robust}(b) (O2) & exact parity expectation under burst contamination $\le\lambda^{w_0}$ (K7) & same & passes (after fixing an integer-overflow bug in the check) \\
-Theorem~\ref{thm:burst-cert} & coverage simulation with bursts; compare with exact ML at $d=3$ & \texttt{experiments/} & to do \\
-Theorem~\ref{thm:mwpm-peierls}, Corollary~\ref{cor:mwpm-cert} (O5) & simulated MWPM failure rate must lie below the bound ($e=0$; $e>0$ with the erasure-aware MWPM) & \texttt{lcd} + pymatching & to do \\
+Theorem~\ref{thm:burst-cert} & coverage simulation with Poisson bursts on one plaquette, $d=3$, 300 runs per point; certificate vs exact $\err$ (L4) & \texttt{second\_pass\_checks.py} & coverage $0.95$--$0.99$; certificate $\ge\err$ always, but vacuous ($\approx80$--$100$) \\
+Theorem~\ref{thm:mwpm-peierls}, Corollary~\ref{cor:mwpm-cert} (O5) & simulated MWPM failure rate below the bound, $d=3$--$9$, $p\le0.03$, with and without erasure (L3) & \texttt{second\_pass\_checks.py} & passes (20 points) \\
 \multicolumn{4}{l}{\emph{Pen-and-paper pass (checks H1--H5 in \texttt{theory/checks/handproof\_checks.py}, seconds)}} \\
 Proposition~\ref{prop:hash} ($Q_{\rm hash}$ monotone; tensor-power conditions) & $Q_{\rm hash}$ ordered on reachable pairs (N7, already passing) & \texttt{constitution.py} & passes (N7) \\
-Propositions~\ref{prop:lex}--\ref{prop:five-hand}, Lemma~\ref{lem:split} (O6) & class polynomials of $[[5,1,3]]$ in the table of Proposition~\ref{prop:five-hand}; first-order obstruction on a code library & \texttt{handproof\_checks.py} (H1) & table and factorizations pass; obstruction on a library to write \\
+Propositions~\ref{prop:lex}--\ref{prop:five-hand}, Lemma~\ref{lem:split} (O6) & class polynomials of $[[5,1,3]]$ in the table of Proposition~\ref{prop:five-hand}; first-order obstruction and the lexicographic criterion on $[[5,1,3]]$, Steane, $d=3$ surface and 160 random codes, $n=4$--$7$ (L1) & \texttt{handproof\_checks.py} (H1), \texttt{second\_pass\_checks.py} (L1) & pass; (E1) fails at small $p$ for 138 of 160 random codes, the obstruction detects 113 \\
 Proposition~\ref{prop:gap-A} (gap is code dependence) & none needed (follows from proved results) & -- & -- \\
 Theorem~\ref{thm:st-burst}, Lemma~\ref{lem:st-robust}, Theorem~\ref{thm:st-cert} (space-time O2, O3) & exact ML on a small repetition-code or $d=3$ phenomenological DEM with planted bursts: $\err\le\tfrac12\widetilde W^{\mathcal L}(\bar B)$; detector firing $\ge\tfrac12(1-\prod\lambda_\ell)$ (two-round repetition-code DEM, 8 locations, H4) & \texttt{handproof\_checks.py} & passes \\
 Propositions~\ref{prop:ml-peierls}, \ref{prop:saw} (O7) & $c_m$ for $m\le14$ by enumeration and the quoted ranges (H2); bounds above all valid MWPM and ML data points of P1 and of the certificate check (H3) & \texttt{handproof\_checks.py} & passes (36 points; smallest ratio 190) \\
-Lemma~\ref{lem:poisson-kl}, Theorems~\ref{thm:pattern-gain}--\ref{thm:adaptive} (O4) & Monte Carlo of a marked Poisson model: $T_{\rm count}/T_{\rm pattern}$ against $1+\Lambda_1D(\pi_1\|\pi_0)/D_{\rm count}$; the identity and the weak-signal limit on random models (H5) & P2 / M4; \texttt{handproof\_checks.py} & identity passes (H5); Monte Carlo to do \\
+Lemma~\ref{lem:poisson-kl}, Theorems~\ref{thm:pattern-gain}--\ref{thm:adaptive} (O4) & Monte Carlo of a marked Poisson model: $T_{\rm count}/T_{\rm pattern}$ against $1+\Lambda_1D(\pi_1\|\pi_0)/D_{\rm count}$; the identity and the weak-signal limit on random models (H5) ; Stein exponents by importance sampling, $T\le12800$ (L2) & \texttt{second\_pass\_checks.py}; P2 / M4 & identity (H5) and convergence (L2) pass; surface-code $W$ to do \\
 \bottomrule
 \end{longtable}
 }

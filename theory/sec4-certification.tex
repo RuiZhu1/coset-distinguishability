@@ -244,6 +244,8 @@ On the confidence event, the model $\bar\theta$ with the same strength and chip 
 Hence $\err(\theta)\le\err(\bar\theta)$ (Proposition~\ref{prop:rate-mono}). Lemma~\ref{lem:floor} gives $\err(\bar\theta)\le\bar q_c+(1-\bar q_c){\err}^{(0)}(\bar\theta)$, and Theorem~\ref{thm:burst-product} bounds ${\err}^{(0)}(\bar\theta)$ (and trivially ${\err}^{(0)}\le1$).
 \end{proof}
 
+\noindent \emph{Coverage check} (L4 of \texttt{checks/second\_pass\_checks.py}): at $d=3$ with Poisson bursts on one plaquette, $\bar e$ from flags, $\bar p$ from a weight-$2$ check off the region, and $\bar r$ from the region's own check with the efficiency $\eta=\tfrac12(1-\lambda(0.2)^4)$ of Lemma~\ref{lem:robust}(c), the confidence event has coverage $0.95$--$0.99$ ($300$ runs per point, target $0.95$) and the certificate exceeds the exact $\err$ on every covering run; but it is vacuous there (median $80$--$100$): the factor $\kappa^V$ with $\bar\rho\approx\bar r$ (dominated by background firings of the detector) dominates at $d=3$.
+
 \noindent Compared with the earlier target statement: no monotonicity in the shape is needed (Proposition~\ref{prob:O1} shows it fails), and the double configuration sum is replaced by the product bound. The space-time (circuit-level) version is Theorem~\ref{thm:st-cert}; what it still lacks for a computed number is the location-weight enumerator of the detector error model.
 
 \paragraph{Division of numerical checks (see \S\ref{sec:map}).}
