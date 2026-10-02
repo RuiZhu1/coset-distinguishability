@@ -15,7 +15,9 @@ theory/
 ├── checks/exact_small_codes.py  exact ML checks (no sampling, no approximation) on three codes with n <= 9
 ├── checks/constitution.py       structural checks of section 0 (LP over simulable reductions; about 4 s)
 ├── checks/structures.py         exact eps*(p, e) of any linear decoding structure (nested subspaces S < N of F_2^{2n}), enumeration of all structures
-└── checks/universal_order_search.py  counterexample search for the single-loss form of Conjecture 3.11 (about 8 min; `make -C theory search`)
+├── checks/universal_order_search.py  counterexample search for the single-loss form of Conjecture 3.11 (about 8 min; `make -C theory search`)
+├── checks/hardened_structures_search.py  obstruction lemmas on all structures with n <= 3, small-p marginal rates, n = 6 hill-climbing (about 15 min)
+└── checks/exponent_criterion.py  channel-coding exponent criterion for large structures (seconds)
 ```
 
 ## Build and run
@@ -76,6 +78,11 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Observation 3.17 | Exhaustive search over all linear structures on $n\le3$ qubits, hill-climbing for $n=4,5$: minimal marginal rate ($0$ at $e_0=0$, positive for $e_0>0$); trade pairs (less Pauli, more erasure) are not reversed by any structure found | NUMERICAL | `checks/universal_order_search.py` (S2-S4) |
 | Conjecture 3.11 | Code-universal operational order = local free order. All-losses form: proved (Proposition 0.9, Remark 0.10). Single-loss form ($\varepsilon^\star$ only): proved for pairs with $\mu'>\mu$ or $\nu'>\nu$ (Proposition 3.16); **numerical evidence against it** for the remaining ``trade'' pairs (Observation 3.17) | CONJECTURE (evidence against) | `checks/universal_order_search.py` |
 | Conjecture 3.12 | $H_B$: $\alpha$ is a function of the Bhattacharyya parameter $B$, $R_\alpha=R_B$ | CONJECTURE | **P1 (M2)** |
+| Lemma 3.19 | Erasure jump: a logical operator supported on $T$ forces $\varepsilon^\star_A\ge\tfrac12$ for $A\supseteq T$ | PROVED | S1 of `checks/hardened_structures_search.py` (all structures, $n\le3$) |
+| Lemma 3.20 | Erasure-only failure $\varepsilon^\star_A(0)=1-2^{-r(A)}$ | PROVED | S2 (all structures, $n\le3$) |
+| Lemma 3.21 / Corollary 3.22 | Failure of order $j$ in $p$ needs a logical of weight $\le2j$; hence no erasure hardening beyond order $2j$ | PROVED | S3 ($j=1$, all structures, $n\le3$) |
+| Proposition 3.23 | Marginal rate of $\mathrm{Rep}_k$ at $p\to0$ is $c\cdot2e/(2e+(k-1)(1-e))$; the infimum over structures tends to 0 as $p_0\to0$ | PROVED | S4 (all structures, $n\le3$: $0.0523\,c$, $0.2003\,c$ at $p_0=10^{-4}$) |
+| Observation 3.24 / Remark 3.25 | Checks of the lemmas; channel-coding exponent criterion for large $S=0$ structures (sufficient for reversal) is not met by any of the six trade pairs | NUMERICAL | `checks/exponent_criterion.py` |
 | Lemma 4.1 / Corollary 4.2 | Union (Bhattacharyya) bound $\varepsilon^\star\le\tfrac12\widetilde W(B)$ | PROVED | C5 |
 | Theorem 4.5 | Finite-sample certification at code capacity (independent of $p_L$ data) | PROVED | coverage simulation (to do) |
 | Lemma 4.6 | Floor from chip-scale events, $\varepsilon^\star\ge q_c(1-2^{-q})$, and upper bound | PROVED | **P2 (M3-M4)** |

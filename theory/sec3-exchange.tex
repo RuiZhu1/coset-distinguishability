@@ -33,7 +33,7 @@ and when $\partial_p\err_d>0$, $R^{(d)}:=\partial_e\err_d/\partial_p\err_d\le c(
 
 (b) Suppose the limit $\alpha=\alpha_-=\alpha_+$ exists, has right derivatives with respect to $p$ and $e$ at $(p_0,e_0)$, and $\partial_p\alpha<0$. Then the local exchange rate satisfies
 \[
-R_{e\to p}(p_0,e_0)=-\frac{\partial_e\alpha}{\partial_p\alpha}\;\le\;\frac{3/4-p_0}{1-e_0}.
+R_{e\to p}(p_0,e_0)=\frac{\partial_e\alpha}{\partial_p\alpha}=\frac{-\partial_e\alpha}{-\partial_p\alpha}\;\le\;\frac{3/4-p_0}{1-e_0}.
 \]
 \hfill\st{PROVED}
 \end{theorem}
@@ -41,7 +41,7 @@ R_{e\to p}(p_0,e_0)=-\frac{\partial_e\alpha}{\partial_p\alpha}\;\le\;\frac{3/4-p
 In Theorem~\ref{thm:partial}, $p''=p_0+c\,\delta$ is linear in $\delta$. (a): subtract $\err_d(p_0,e_0)$ from both sides and divide by $\delta\downarrow0$;
 the left side tends to $\partial_e\err_d$ and the right side to $c\,\partial_p\err_d$. (b): the same for $\alpha$ gives
 $\partial_e\alpha\ge c\,\partial_p\alpha$; since $-\partial_p\alpha>0$, multiplying by $-1$ gives
-$-\partial_e\alpha\le c(-\partial_p\alpha)$, and dividing by $-\partial_p\alpha$ gives the claim.
+$-\partial_e\alpha\le c(-\partial_p\alpha)$, and dividing by $-\partial_p\alpha>0$ gives $\partial_e\alpha/\partial_p\alpha\le c$. (Both derivatives of $\alpha$ are negative, so $R_{e\to p}>0$; an earlier version of the statement carried a spurious minus sign in front of the ratio, which the proof did not use.)
 \end{proof}
 
 \paragraph{Constitutional reading.}
@@ -267,5 +267,61 @@ The unreachable pairs not covered by Proposition~\ref{prop:two-structures} form 
 \begin{remark}[Reading of the search]\label{rem:search}
 (1) The search found \emph{no} structure that reverses a pair of the trade region beyond what $\mu$, $\nu$ and $\mathrm{Rep}_3$ already do, and the margins are clear (ratios between $1.28$ and $3.66$ in the hill-climbing runs). This is evidence that the single-loss form of Conjecture~\ref{conj:universal} \emph{fails} in the trade region for linear structures, but it is not a proof: $n\ge6$ is not searched, and reversals for large $n$ would be governed by exponents, which are not controlled here.
 (2) If the failure persists for all $n$, the code-universal $\err$-order is strictly larger than the free order, while the all-losses order equals it (Proposition~\ref{prop:local-level1}). The extra comparabilities are then a property of the single loss, not evidence of missing free operations; no new free operation is needed for the uncoded theory.
-(3) In terms of marginal rates (\S\ref{sec:rates}): $\inf_{\mathfrak D}R_{\mathfrak D}(x_0)$ is $0$ at $e_0=0$ and, in all searches, positive at $e_0>0$; the marginal rates of the structure monotones then fill at most $[r_{\min},c]$ with $r_{\min}>0$, with $c$ attained by the uncoded qubit. A proof of $r_{\min}>0$ would be a universal \emph{lower} bound on the exchange rate, complementing Theorem~\ref{thm:rate}; it is not available.
+(3) In terms of marginal rates (\S\ref{sec:rates}): $\inf_{\mathfrak D}R_{\mathfrak D}(x_0)$ is $0$ at $e_0=0$ and, in all searches at $p_0\ge0.02$, positive at $e_0>0$, with $c$ attained by the uncoded qubit. Proposition~\ref{prop:rate-small-p} shows that the infimum tends to $0$ as $p_0\to0$ at fixed $e_0$ (large repetition structures), so a universal lower bound on the exchange rate, complementing Theorem~\ref{thm:rate}, cannot be uniform in $p_0$; whether it is positive for each fixed $p_0>0$ is open and is a question about large structures (\S\ref{sec:hardened}).
+\end{remark}
+
+\subsection{Erasure-hardened structures: obstructions, and what does not follow}\label{sec:hardened}
+
+A structure is \emph{erasure-hardened of order $k$} if its failure probability with erased set $A$ does not exceed its failure probability without erasures, to leading order in $p$, for every $|A|<k$.
+The structure $F_2$ is hardened of order $2$ with failure $\err_\emptyset=p$; a hardened family of arbitrary order would settle the single-loss form of Conjecture~\ref{conj:universal} at first order.
+Write $V_A$ for the Paulis supported on $A\subseteq\{1,\dots,n\}$, $\err_A(p)$ for the ML failure probability with erased set $A$, and $d_K$ for the minimal weight of an element of $N\setminus S$ (the shortest logical operator).
+
+\begin{lemma}[Erasure jump]\label{lem:jump}
+If $G\in N\setminus S$ is supported on $T$, then $\err_A(p)\ge\tfrac12$ for every $A\supseteq T$ and every $p$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+Given $A$, the law $P_A$ of the fault is uniform on the qubits of $A$, so $P_A(E+G)=P_A(E)$ for all $E$. Since $G\in N=\ker\sigma$ the syndrome is unchanged, and since $G\notin S$ the class $E+S$ is mapped to a different class $E+G+S$ of the same syndrome with the same weight.
+Hence for every syndrome $s$ the best class $c^\ast$ has a twin $c^\ast+G\neq c^\ast$ of equal weight, so $\max_cW(c)\le\tfrac12\sum_{c'}W(c')$; summing over $s$ gives success probability $\le\tfrac12$.
+\end{proof}
+
+\begin{lemma}[Erasure-only failure]\label{lem:erasure-only}
+$\err_A(0)=1-2^{-r(A)}$ with $r(A)=\dim(N\cap V_A)-\dim(S\cap V_A)$ (the number of independent logical operators supported on $A$). Hence the erasure-only failure of any structure is $\err(0,e)=\mathbb E_A\big[1-2^{-r(A)}\big]$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+At $p=0$ the fault is uniform on $V_A$. Its syndromes are the cosets of $N\cap V_A$ in $V_A$; inside one syndrome the classes are the cosets of $S\cap V_A$, all of the same size, so there are $2^{r(A)}$ equally likely classes and the best guess succeeds with probability $2^{-r(A)}$.
+\end{proof}
+
+\begin{lemma}[Failure of order $j$ needs a logical operator of weight $\le2j$]\label{lem:first-order}
+If $\err_\emptyset(p)/p^j\not\to0$ as $p\to0$, then $d_K\le2j$. In particular, if $\err_\emptyset(p)/p\not\to0$ then $d_K\le2$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+Suppose $d_K>2j$. Two faults of weight $\le j$ with the same syndrome differ by an element of $N$ of weight $\le2j$, which must lie in $S$; so all faults of weight $\le j$ with a given syndrome lie in one class $c_0$, and every other class of that syndrome contains only faults of weight $>j$, hence has weight $\le Cp^{j+1}$, while $W(c_0)\ge(p/3)^j(1-p)^n$. For small $p$ the class $c_0$ wins, so only faults of weight $>j$ cause failures and $\err_\emptyset=O(p^{j+1})$.
+\end{proof}
+
+\begin{corollary}[Hardening beyond order $2j$ is impossible]\label{cor:hardening}
+If $\err_\emptyset(p)=\Theta(p^j)$, there is $A$ with $|A|\le2j$ and $\err_A\ge\tfrac12$, so $\err(p,e)\ge\tfrac12e^{2j}$. A structure that fails at first order in $p$ cannot be erasure-hardened of any order $\ge3$: some pair of erasures already costs at least $\tfrac12$. In particular there is no structure with $\err_A(p)=\Theta(p)$ for all $|A|\le2$.\hfill\st{PROVED}
+\end{corollary}
+
+\begin{proposition}[The marginal rate at small $p$ is not bounded below]\label{prop:rate-small-p}
+For the Pauli repetition code $\mathrm{Rep}_k$ ($k$ copies of the Pauli, $S=0$, $N=\langle X^{\otimes k},Z^{\otimes k}\rangle$; $\mathrm{Rep}_1$ is the uncoded qubit and $\mathrm{Rep}_2=F_2$),
+\[
+\lim_{p\to0}\frac{R_{\mathrm{Rep}_k}(p,e)}{c(p,e)}=\frac{2e}{2e+(k-1)(1-e)}\qquad(0<e<1).
+\]
+Consequently, for every $e_0\in(0,1)$ and $\delta>0$ there is $p_\delta>0$ such that for all $p_0<p_\delta$ some structure has $R/c<\delta$: $r_{\min}(p_0,e_0)/c\to0$ as $p_0\to0$, so no lower bound on the marginal rate can be uniform in $p_0$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+With $m$ non-erased copies the failure is $\err_m=\tfrac34$ for $m=0$, $\err_1=\err_2=p$ (Proposition~\ref{prop:two-structures} and the single-copy case), and $\err_m=O(p^2)$ for $m\ge3$ (every single copy error is corrected by the majority). Hence
+$\err(p,e)=\sum_m\binom km(1-e)^me^{k-m}\err_m(p)$ gives $\partial_e\err(0,e)=\tfrac34ke^{k-1}$ and
+$\partial_p\err(0,e)=k(1-e)e^{k-1}+\binom k2(1-e)^2e^{k-2}$; divide by $c(0,e)=\tfrac34/(1-e)$. For fixed $k$ the limit $p\to0$ is attained continuously, and the right side tends to $0$ as $k\to\infty$.
+\end{proof}
+
+\begin{observation}[Checks of Lemmas~\ref{lem:jump}--\ref{lem:first-order} and of the small-$p$ rate]\label{obs:hardened}
+\texttt{checks/hardened\_structures\_search.py} verifies Lemma~\ref{lem:jump} ($\err_A\ge\tfrac12$ on the support of a minimum-weight logical), Lemma~\ref{lem:erasure-only} (to $10^{-12}$) and Lemma~\ref{lem:first-order} ($j=1$) on \emph{every} linear structure on $n\le3$ qubits ($92{,}881$ at $n=3$); the smallest marginal rate over these structures at $p_0=10^{-4}$ is $0.0523\,c$ at $e_0=0.05$ and $0.2003\,c$ at $e_0=0.2$ (attained by $\mathrm{Rep}_3$, $R/c\to e_0$), against $2e_0/(1+e_0)=0.095,\ 0.333$ for $F_2$. At the moderate rate $p_0=0.0213$, hill-climbing at $n=6$ (about $1.3\times10^4$ evaluations per point) finds nothing below $F_2$ at $e_0=0.05$ ($0.0952\,c$) and reaches $0.2352\,c$ at $e_0=0.2$ ($0.2419\,c$ at $n=4$, $0.2365\,c$ at $n=5$): no erasure-hardened structure of order $3$ appears, as Corollary~\ref{cor:hardening} predicts for structures that fail at first order.\hfill\st{NUMERICAL}
+\end{observation}
+
+\begin{remark}[Large structures and channel-coding exponents]\label{rem:exponents}
+For $S=0$ a structure with $2^q$ labels is a linear code of rate $R=q\ln2/n$ on the additive Pauli channel with erasure flags known to the decoder, and $\err$ is its ML decoding error. Gallager's random-coding and expurgated exponents $E_r,E_{\rm ex}$ are achieved by random linear codes and the sphere-packing exponent $E_{\rm sp}$ bounds every code from below (see \texttt{checks/exponent\_criterion.py} for the formulas).
+So if $\max_R[\max(E_r,E_{\rm ex})(R;P')-E_{\rm sp}(R;P)]>0$, large structures reverse the pair $(P,P')$. This criterion is \emph{not} met for any of the six trade pairs A, B, D, E, F, G of Observation~\ref{obs:search} (the maximal gap is negative, between $-0.006$ and $-0.11$ nats, attained at the highest rates), and for $R\to0$ the Bhattacharyya parameter $B$ of $P'$ exceeds that of $P$ in every case.
+This strengthens the evidence of Remark~\ref{rem:search}, but only for non-degenerate ($S=0$) structures: the sphere-packing converse does not cover degenerate structures, and the criterion is sufficient for a reversal, not necessary.
+It also shows what a decisive analysis needs: the order of the whole family of exponent curves $R\mapsto E(R;P)$, not a single Rényi parameter.
 \end{remark}

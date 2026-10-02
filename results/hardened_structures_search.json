@@ -1,0 +1,62 @@
+{
+  "exhaustive_n1": {
+    "structures": 7,
+    "jump_violations": 0,
+    "worst_jump_value": 0.5,
+    "replace_violations": 0,
+    "first_order_structures": 7,
+    "first_order_violations": 0,
+    "min_R_over_c_p_to_0": {
+      "0.05": 0.9999999996772544,
+      "0.2": 0.9999999996156261
+    }
+  },
+  "exhaustive_n2": {
+    "structures": 446,
+    "jump_violations": 0,
+    "worst_jump_value": 0.4999999999999999,
+    "replace_violations": 0,
+    "first_order_structures": 446,
+    "first_order_violations": 0,
+    "min_R_over_c_p_to_0": {
+      "0.05": 0.09523809506540587,
+      "0.2": 0.333333332858264
+    }
+  },
+  "exhaustive_n3": {
+    "structures": 92881,
+    "jump_violations": 0,
+    "worst_jump_value": 0.49999999999999967,
+    "replace_violations": 0,
+    "first_order_structures": 92143,
+    "first_order_violations": 0,
+    "min_R_over_c_p_to_0": {
+      "0.05": 0.05225970488785452,
+      "0.2": 0.20032691415166773
+    }
+  },
+  "s5_n6": [
+    {
+      "n": 6,
+      "p0": 0.0213,
+      "e0": 0.05,
+      "best_R_over_c": 0.09523809358761243,
+      "two_e_over_one_plus_e": 0.09523809523809523,
+      "evaluations": 12839
+    },
+    {
+      "n": 6,
+      "p0": 0.0213,
+      "e0": 0.2,
+      "best_R_over_c": 0.2352279108661703,
+      "two_e_over_one_plus_e": 0.33333333333333337,
+      "evaluations": 12966
+    }
+  ],
+  "script": "theory/checks/hardened_structures_search.py",
+  "budget_seconds": 240.0,
+  "git_commit": "de5fbe18052769c20dcd3c42b7c03ccb058be4e1",
+  "git_dirty_src": false,
+  "numpy": "2.4.6",
+  "date": "2026-10-02T03:33:34+00:00"
+}
