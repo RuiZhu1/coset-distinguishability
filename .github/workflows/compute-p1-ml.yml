@@ -68,22 +68,17 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
       - run: pip install -e .
+      # The step's own timeout stops it like a cancel; continue-on-error keeps the job going so the table (saved after
+      # every round) is still uploaded. A cancel of the run skips the upload. `exec` makes python the step's process, so
+      # the runner's interrupt reaches it directly.
       - name: Run ${{ matrix.tag }}
+        timeout-minutes: ${{ fromJSON(inputs.minutes) }}
+        continue-on-error: true
         env:
           D: ${{ matrix.d }}
           POINT: ${{ matrix.point }}
           SCALE: ${{ inputs.scale }}
-          MINUTES: ${{ inputs.minutes }}
-        run: |
-          set +e
-          timeout "${MINUTES}m" python experiments/p1_erasure_pauli/p1_exchange_rate.py run --workers 1 --ds "$D" --points "$POINT" --scale "$SCALE"
-          status=$?
-          set -e
-          if [ "$status" -eq 124 ]; then
-            echo "::notice::time cap reached for ${{ matrix.tag }}; the table keeps the rounds finished so far"
-          elif [ "$status" -ne 0 ]; then
-            exit "$status"
-          fi
+        run: exec python experiments/p1_erasure_pauli/p1_exchange_rate.py run --workers 1 --ds "$D" --points "$POINT" --scale "$SCALE"
       - uses: actions/upload-artifact@v4
         with:
           name: table-${{ matrix.tag }}
@@ -92,7 +87,8 @@ jobs:
 
   collect:
     needs: [plan, run]
-    if: ${{ always() && needs.plan.result == 'success' }}
+    # !cancelled(), not always(): a cancelled run must not merge and push (always() runs even after a cancel)
+    if: ${{ !cancelled() && needs.plan.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -114,6 +110,7 @@ jobs:
           pattern: table-*
           path: downloaded
       - name: Keep, for each job, only the table it worked on
+        id: merge
         run: |
           python3 - <<'EOF'
           import json, shutil
@@ -130,9 +127,17 @@ jobs:
               else:
                   print("missing (job failed or produced nothing):", name)
           EOF
+          if git diff --quiet -- results/p1_m2/tables; then
+            echo "::warning::no table changed; nothing to analyze or push"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Analyze
+        if: steps.merge.outputs.changed == 'true'
         run: python experiments/p1_erasure_pauli/p1_exchange_rate.py analyze --boot 500
       - name: Push to a new branch
+        if: steps.merge.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: compute/p1-ml-${{ github.run_id }}
