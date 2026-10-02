@@ -131,7 +131,7 @@ D_{\rm count}\ \le\ D_{\rm pattern}\ \le\ D_{\rm event}=D,\qquad C_{\rm count}\l
 \]
 where ``count'' means using only the total number of detected events and ``pattern'' means the optimal test using the full space-time pattern. Hence the ratio of the numbers of rounds needed to reach the same error satisfies
 $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}\ (\delta\to0)$, bounded above by
-$D_{\rm event}/D_{\rm count}$.\hfill The chain of inequalities is \st{PROVED} (data-processing inequality for relative entropy/R\'enyi divergences and the Poisson closed forms); the asymptotic form of the ratio of rounds relies on Stein's lemma \st{SKETCH}
+$D_{\rm event}/D_{\rm count}$.\hfill The chain of inequalities is \st{PROVED} (data-processing inequality for relative entropy/R\'enyi divergences and the Poisson closed forms); the asymptotic form of the ratio of rounds is \st{PROVED} under the marking model (M) of \S\ref{sec:design-theorems} (Theorem~\ref{thm:stein-rounds}; the error held at a fixed level is the one under $H_1$)
 \end{proposition}
 
 \begin{problem}[O4: experimental-design theorem]\label{prob:O4}
@@ -140,3 +140,79 @@ and characterize the dependence of $D_{\rm pattern}/D_{\rm count}$ on the detect
 \end{problem}
 \noindent The numerics of P2 estimate $D_{\rm count}$ and $D_{\rm pattern}$ separately (by Monte Carlo or analytically), report $T_{\rm count}/T_{\rm pattern}$, and compare with Proposition~\ref{prop:poisson}
 (the lower bound $\ln(1/\delta)/r$ on the number of rounds for any method).
+
+\subsection{Experimental design under the marking model (O4)}\label{sec:design-theorems}
+
+This subsection proves the asymptotic part of Proposition~\ref{prop:exponents}, gives an exact formula for the gain of pattern methods over counting, and shows that adaptive choice among experiments does not improve the Stein exponent. Time is measured in rounds.
+
+\paragraph{Assumption (M): marked Poisson observation.} Under hypothesis $h\in\{0,1\}$, (i) events of class $a$ occur as independent Poisson processes of rate $r^{(h)}_a$ per round; (ii) each event independently produces one observed \emph{mark} $z$ in a finite set $\mathcal Z$ with probability $W(z\mid a)$ ($\sum_zW(z\mid a)\le1$; the deficit is the probability that the event is not seen); (iii) spurious marks from the background form an independent Poisson process of intensity $b(z)$ per round, the same under both hypotheses; (iv) the marks of different events are observed separately and are assigned to the round in which the event occurs. Put
+\[
+\lambda_h(z)=b(z)+\sum_ar^{(h)}_aW(z\mid a),\qquad\Lambda_h=\sum_z\lambda_h(z),\qquad\pi_h=\lambda_h/\Lambda_h,
+\]
+and assume $\lambda_0(z)>0\Leftrightarrow\lambda_1(z)>0$ and $\Lambda_0,\Lambda_1>0$.
+(M) idealizes the clustering of P2: (iv) fails when events overlap in space-time, which is rare when $r$ times the event volume is small.
+
+\begin{lemma}[Divergences of the observed data]\label{lem:poisson-kl}
+Under (M) the data of $T$ rounds consist of independent counts $N_z\sim{\rm Poisson}(T\lambda_h(z))$, and given the counts the rounds of the marks are i.i.d.\ uniform (independently of $h$). Hence the relative entropy of the data of $T$ rounds under $H_1$ relative to $H_0$ is $T D_{\rm pattern}$, and that of the total count $N=\sum_zN_z$ is $TD_{\rm count}$, where
+\[
+D_{\rm pattern}=\sum_z\Big[\lambda_1\ln\frac{\lambda_1}{\lambda_0}-\lambda_1+\lambda_0\Big](z),\qquad D_{\rm count}=\Lambda_1\ln\frac{\Lambda_1}{\Lambda_0}-\Lambda_1+\Lambda_0 .
+\]
+The same holds for the Chernoff information, with $C_{\rm pattern}=\max_s\sum_z[s\lambda_1+(1-s)\lambda_0-\lambda_1^s\lambda_0^{1-s}](z)$ and its count analogue. $D_{\rm event}$ and $C$ of Proposition~\ref{prop:exponents} are the case $W={\rm id}$, $b=0$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+By the marking and superposition theorems for Poisson processes, the marks of type $z$ form independent Poisson processes of rates $\lambda_h(z)$. The law of the data is the product over $z$ of the count laws times the conditional law of the rounds, which does not depend on $h$; relative entropy and Chernoff coefficients of products factorize, and $D({\rm Poisson}(\mu_1)\|{\rm Poisson}(\mu_0))=\mu_1\ln(\mu_1/\mu_0)-\mu_1+\mu_0$, $\sum_n{\rm Pois}_{\mu_1}(n)^s{\rm Pois}_{\mu_0}(n)^{1-s}=\exp(\mu_1^s\mu_0^{1-s}-s\mu_1-(1-s)\mu_0)$. $N$ is Poisson with mean $T\Lambda_h$.
+\end{proof}
+
+\begin{theorem}[What pattern information is worth]\label{thm:pattern-gain}
+Under (M),
+\[
+D_{\rm pattern}=D_{\rm count}+\Lambda_1\,D(\pi_1\|\pi_0).
+\]
+Hence $D_{\rm pattern}\ge D_{\rm count}$, with equality iff $\pi_1=\pi_0$ (the marks carry no information: $\lambda_1(z)/\lambda_0(z)$ does not depend on $z$), and
+\[
+\frac{D_{\rm pattern}}{D_{\rm count}}=1+\frac{\Lambda_1D(\pi_1\|\pi_0)}{D_{\rm count}}.
+\]
+$D_{\rm pattern}$ does not increase when the marks are coarse-grained, $z\mapsto z'$ with a kernel $K(z'\mid z)$ (equivalently $W\mapsto KW$, $b\mapsto Kb$).
+In the weak-signal limit $H_1$: one extra class $a^\ast$ of rate $\epsilon$ on top of $H_0$ (so $\lambda_1=\lambda_0+\epsilon w$, $w=W(\cdot\mid a^\ast)$, $\|w\|_1>0$),
+\[
+\lim_{\epsilon\to0}\frac{D_{\rm pattern}}{D_{\rm count}}=1+\chi^2\big(\hat w\,\big\|\,\pi_0\big),\qquad\hat w=w/\|w\|_1,
+\]
+so the gain of pattern methods for weak signals is exactly one plus the $\chi^2$-distance between the mark distribution of the sought events and that of all other marks.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+Write $\lambda_h=\Lambda_h\pi_h$: $\sum_z\lambda_1\ln(\lambda_1/\lambda_0)=\Lambda_1\ln(\Lambda_1/\Lambda_0)+\Lambda_1\sum_z\pi_1\ln(\pi_1/\pi_0)$, and $\sum_z(\lambda_0-\lambda_1)=\Lambda_0-\Lambda_1$. Equality: $D(\pi_1\|\pi_0)=0$ iff $\pi_1=\pi_0$.
+Coarse-graining: $D_{\rm pattern}=\sum_z\lambda_0\,f(\lambda_1/\lambda_0)$ with $f(t)=t\ln t-t+1$ convex, so the log-sum (Jensen) inequality gives monotonicity under any kernel, exactly as for $f$-divergences.
+Weak signal: $D({\rm Pois}(\mu+\epsilon w)\|{\rm Pois}(\mu))=\tfrac{\epsilon^2w^2}{2\mu}+O(\epsilon^3)$ term by term, so $D_{\rm pattern}=\tfrac{\epsilon^2}2\sum_zw(z)^2/\lambda_0(z)+O(\epsilon^3)$ and $D_{\rm count}=\tfrac{\epsilon^2}2\|w\|_1^2/\Lambda_0+O(\epsilon^3)$; the ratio tends to $\Lambda_0\sum_z\hat w^2/\lambda_0=\sum_z\hat w^2/\pi_0=1+\chi^2(\hat w\|\pi_0)$.
+\end{proof}
+
+\begin{theorem}[Stein form of the ratio of rounds]\label{thm:stein-rounds}
+Assume (M) and fix $a\in(0,1)$. Among tests based on $T$ rounds whose error under $H_1$ is at most $a$, let $\beta_T$ be the smallest error under $H_0$, and let $T^\ast(\delta)=\min\{T\in\mathbb N:\beta_T\le\delta\}$. If $0<D<\infty$, then
+\[
+\lim_{\delta\to0}\frac{T^\ast(\delta)}{\ln(1/\delta)}=\frac1D,
+\]
+with $D=D_{\rm pattern}$ for tests that use all data and $D=D_{\rm count}$ for tests that use the total count only. Hence $T^\ast_{\rm count}(\delta)/T^\ast_{\rm pattern}(\delta)\to D_{\rm pattern}/D_{\rm count}$, as stated in Proposition~\ref{prop:exponents}.
+For the Bayes error with fixed priors the same holds with the Chernoff informations $C_{\rm pattern},C_{\rm count}$; holding the error under $H_0$ fixed instead gives the reversed divergences $D(P_0\|P_1)$, for which Theorem~\ref{thm:pattern-gain} holds with the roles of $0$ and $1$ exchanged.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+By Lemma~\ref{lem:poisson-kl} the data of $T$ rounds are $T$ i.i.d.\ blocks with per-block divergence $D$. Stein's lemma \cite[Thm.~11.8.3]{CT} (for every fixed $a\in(0,1)$, with the roles of the hypotheses as stated) gives $-\tfrac1T\ln\beta_T\to D$.
+$\beta_T>0$ for every $T$, since the two laws are mutually absolutely continuous, and $\beta_T$ is nonincreasing (a test may ignore rounds); hence $T^\ast(\delta)\to\infty$ as $\delta\to0$.
+Given $\eta>0$ choose $T_\eta$ with $e^{-(D+\eta)T}\le\beta_T\le e^{-(D-\eta)T}$ for $T\ge T_\eta$. Then $T^\ast(\delta)\le\max\{T_\eta,\lceil\ln(1/\delta)/(D-\eta)\rceil\}$, and for $\delta$ so small that $T^\ast(\delta)\ge T_\eta$, $\delta\ge\beta_{T^\ast}\ge e^{-(D+\eta)T^\ast}$, i.e.\ $T^\ast\ge\ln(1/\delta)/(D+\eta)$. Let $\eta\to0$.
+The count version is the same argument applied to the Poisson count process. The Bayes version uses the Chernoff theorem \cite[Thm.~11.9.1]{CT} in place of Stein's lemma.
+\end{proof}
+
+\begin{theorem}[Adaptive designs do not beat the best single experiment (Stein)]\label{thm:adaptive}
+Let $\mathcal I$ be a finite set of experiments (for example: run a patch of distance $d$ for one round with a given readout and clustering scheme). Experiment $i$ costs $c_i>0$ and yields data with law $P_{h,i}$ under $H_h$, with $D_i:=D(P_{1,i}\|P_{0,i})<\infty$. An adaptive design chooses the next experiment as a function of all past data (and private randomness), stops when the total cost would exceed a budget $\mathcal B$, and then decides. Let $D^\ast=\max_iD_i/c_i$.
+If the design has error at most $a$ under $H_1$, its error $\alpha_0$ under $H_0$ satisfies
+\[
+\ln\frac1{\alpha_0}\;\le\;\frac{\mathcal B\,D^\ast+\ln2}{1-a}.
+\]
+Repeating the single experiment $i^\ast=\arg\max_iD_i/c_i$ achieves $\liminf_{\mathcal B\to\infty}\tfrac1{\mathcal B}\ln\tfrac1{\alpha_0}\ge D^\ast$ at every fixed $a\in(0,1)$. Hence the optimal exponent per unit cost, in the limit $a\to0$, is $D^\ast$, and it is attained by a non-adaptive design.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+Let $Q_h$ be the law of the whole transcript (choices and data) under $H_h$. The number of steps is at most $\mathcal B/\min_ic_i$. By the chain rule for relative entropy, and because the choice at step $t$ has the same conditional law given the past under both hypotheses,
+$D(Q_1\|Q_0)=\E_{Q_1}\sum_tD_{i_t}\le D^\ast\,\E_{Q_1}\sum_tc_{i_t}\le D^\ast\mathcal B$.
+Let $x=Q_1[\text{decide }1]\ge1-a$ and $y=Q_0[\text{decide }1]=\alpha_0$. Data processing to the binary decision gives $D(Q_1\|Q_0)\ge x\ln\tfrac xy+(1-x)\ln\tfrac{1-x}{1-y}\ge x\ln\tfrac1y-\ln2$, which is the bound. Achievability is Stein's lemma for $\lfloor\mathcal B/c_{i^\ast}\rfloor$ i.i.d.\ uses of $i^\ast$.
+\end{proof}
+
+\noindent\emph{Reading for P2.} Theorems~\ref{thm:pattern-gain}--\ref{thm:adaptive} settle the two-hypothesis part of O4 (Problem~\ref{prob:O4}) under (M): the design question reduces to computing $D_{\rm pattern}(i)/c_i$ for each candidate $i$ (distance, readout, clustering) and taking the largest; the gain over counting is $\Lambda_1D(\pi_1\|\pi_0)$, which for weak signals is governed by $\chi^2(\hat w\|\pi_0)$; and the Poisson bound (Proposition~\ref{prop:poisson}) remains the floor for every design.
+What is \emph{not} settled: (a) composite hypotheses (unknown shape, unknown rates), where adaptive designs can help and the relevant exponent is a minimax over the composite alternative; (b) the strong converse at fixed $a$ for adaptive designs (Theorem~\ref{thm:adaptive} uses the weak converse; the strong converse for classical adaptive discrimination is known in the literature but not reproduced here); (c) the Chernoff (Bayes) exponent for adaptive designs; (d) the computation of $D_{\rm pattern}(d)$ for the surface code, which needs the mark channel $W$ of P2; (e) the regime where (iv) fails (overlapping events).

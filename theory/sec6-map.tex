@@ -42,8 +42,8 @@ Remark~\ref{rem:envelope}\ (envelope argument for ML derivatives) &
 $\partial_\theta\err$ equals the derivative of the frozen-decoder failure rate (C8); verified with the exact ML decoder at $d=5,7$ (\texttt{envelope\_check.py}); truncated-MPS ML (decisions equal to exact on all tested samples) not yet tested directly &
 \texttt{theory/checks}; M1 & passes on 3 small codes and at $d=5,7$ \\
 Observation~\ref{obs:sharp}\ ($[[5,1,3]]$ attains equality) &
-scan $R^{(d)}/c$ at $e_0{=}0$ over a library of random stabilizer codes &
-extend \texttt{theory/checks} & observed for 3 codes \\
+scan $R^{(d)}/c$ at $e_0{=}0$ over $[[5,1,3]]$, Steane, Shor, $d=3$ surface and 300 random $[[n,1]]$ codes, $n\le8$ (\texttt{checks/sharp\_codes\_scan.py}, \texttt{results/sharp\_codes\_scan.json}) &
+\texttt{theory/checks} & done, no failure; equality now proved for $[[5,1,3]]$ (Propositions~\ref{prop:five-sharp}, \ref{prop:five-hand}) \\
 Conjecture~\ref{conj:universal}\ (code-universal order = free order), single-loss form &
 for unreachable pairs, search all linear structures on $n\le3$ qubits (exhaustive) and $n=4,5$ (hill-climbing) for one that \emph{reverses} the $\err$ order; proved for $\mu'>\mu$ or $\nu'>\nu$ (Proposition~\ref{prop:two-structures}); no reversal of trade pairs found (Observation~\ref{obs:search}) &
 \texttt{theory/checks/universal\_order\_search.py} & evidence against; $n\ge6$ not searched \\
@@ -60,7 +60,7 @@ Proposition~\ref{prop:poisson}\ (Poisson lower bound) &
 any test needs at least $\ln((1-a)/\delta)/r$ rounds &
 P2 / M4 & to do \\
 Proposition~\ref{prop:exponents}\ (chain of exponents) &
-estimate $D_{\rm count}$ and $D_{\rm pattern}$ and verify $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ &
+estimate $D_{\rm count}$ and $D_{\rm pattern}$ and verify $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ (the limit itself is now Theorem~\ref{thm:stein-rounds}) &
 P2 / M4 & to do \\
 \multicolumn{4}{l}{\emph{Results of the theory-completion pass (checks K1--K7 in \texttt{theory/checks/completion\_checks.py})}} \\
 Proposition~\ref{prop:genie}, Step 1 and the finite-$d$ bound &
@@ -76,6 +76,13 @@ Proposition~\ref{prob:O1} (O1 negative) & exact rational $\err$ at $p_b=\tfrac12
 Lemma~\ref{lem:robust}(b) (O2) & exact parity expectation under burst contamination $\le\lambda^{w_0}$ (K7) & same & written, to run \\
 Theorem~\ref{thm:burst-cert} & coverage simulation with bursts; compare with exact ML at $d=3$ & \texttt{experiments/} & to do \\
 Theorem~\ref{thm:mwpm-peierls}, Corollary~\ref{cor:mwpm-cert} (O5) & simulated MWPM failure rate must lie below the bound ($e=0$; $e>0$ with the erasure-aware MWPM) & \texttt{lcd} + pymatching & to do \\
+\multicolumn{4}{l}{\emph{Pen-and-paper pass (no new code; checks listed are to be written)}} \\
+Proposition~\ref{prop:hash} ($Q_{\rm hash}$ monotone; tensor-power conditions) & $Q_{\rm hash}$ ordered on reachable pairs (N7, already passing) & \texttt{constitution.py} & passes (N7) \\
+Propositions~\ref{prop:lex}--\ref{prop:five-hand}, Lemma~\ref{lem:split} (O6) & class polynomials of $[[5,1,3]]$ in the table of Proposition~\ref{prop:five-hand}; first-order obstruction on a code library & extend \texttt{completion\_checks.py} & to write (K5 already certifies the conclusion) \\
+Proposition~\ref{prop:gap-A} (gap is code dependence) & none needed (follows from proved results) & -- & -- \\
+Theorem~\ref{thm:st-burst}, Lemma~\ref{lem:st-robust}, Theorem~\ref{thm:st-cert} (space-time O2, O3) & exact ML on a small repetition-code or $d=3$ phenomenological DEM with planted bursts: $\err\le\tfrac12\widetilde W^{\mathcal L}(\bar B)$; detector firing $\ge\tfrac12(1-\prod\lambda_\ell)$ & new check & to write \\
+Propositions~\ref{prop:ml-peierls}, \ref{prop:saw} (O7) & enumerate $c_K$ for $K\le16$; compare the bounds with exact/TN ML and MWPM & new check & to write \\
+Lemma~\ref{lem:poisson-kl}, Theorems~\ref{thm:pattern-gain}--\ref{thm:adaptive} (O4) & Monte Carlo of a marked Poisson model: $T_{\rm count}/T_{\rm pattern}$ against $1+\Lambda_1D(\pi_1\|\pi_0)/D_{\rm count}$ & P2 / M4 & to do \\
 \bottomrule
 \end{longtable}
 }
@@ -93,18 +100,17 @@ Lower bounds (the floor, the Poisson lower bound, the genie lower bound) hold fo
 \subsection{List of open problems}
 
 \begin{enumerate}
-\item \textbf{The gap problem} (Problem~\ref{prob:gap}): does $c-R_\alpha$ come from code dependence or from incompleteness of the free operations?
-  \emph{Prerequisite numerics}: the $R_\alpha$ of P1; \emph{theoretical route}: the Blackwell/R\'enyi route of Conjecture~\ref{conj:universal}.
+\item \textbf{The gap problem} (Problem~\ref{prob:gap}): \emph{qualitative part settled}: no code-universally sound enlargement of the free operations lowers the bound $c$, so the gap is code dependence (Proposition~\ref{prop:gap-A}). Open: the quantitative value $R_\alpha\approx0.3c$ of the surface code, i.e.\ hypothesis $H_B$ (Conjecture~\ref{conj:HB}; heuristic support at small $B$ in \S\ref{sec:o6-gap}).
 \item \textbf{Single-loss form of Conjecture~\ref{conj:universal}} (Remark~\ref{rem:conj-reform}, \S\ref{sec:single-loss}): does the code-universal order of $\err=1-\Phi_{\max}$ alone coincide with the local free order? The all-losses form is proved (Proposition~\ref{prop:local-level1}); the single-loss form is proved on $\{\mu'>\mu\}\cup\{\nu'>\nu\}$ and the search gives evidence against it on the trade region. \emph{To settle it:} a proof of non-reversal for all $n$, or structures with $\err_A\approx p$ for all $|A|<k$ for every $k$. 
   \emph{Prerequisite numerics}: counterexample search over a library of stabilizer codes; for orders of the surface code, the nesting $\succeq_{\rm local}\subseteq\succeq_{\mathrm{L1}}\subseteq\succeq_{\err}$.
-\item \textbf{Asymptotic rates in the tensor-power sense} (R-c of \S\ref{sec:rates}): not computed; needs the large-sample Blackwell order.
+\item \textbf{Asymptotic rates in the tensor-power sense} (R-c of \S\ref{sec:rates}): necessary conditions proved (multiplicative $\Phi_\alpha$, additive $H(L\mid Y)$; Proposition~\ref{prop:hash}). Open: sufficiency for large $n$ or with catalysts, in particular for trade pairs, and a rule for changing the label alphabet ($m\ne n$).
 \item \textbf{O1} (Proposition~\ref{prob:O1}): \emph{answered negatively}: $\err$ is not monotone in the burst strength $p_b$ (exact counterexample on the $d=3$ surface code). Not needed for certification (Theorem~\ref{thm:burst-cert}). The radius and duration directions are untested.
-\item \textbf{O2} (Lemma~\ref{lem:robust}, Proposition~\ref{prop:no-rate-limit}): \emph{partly settled}. Limits for $p$ and $e$ are robust to contamination; limits for burst rates need a detection efficiency, and without a strength floor no uniformly valid limit exists. Open: a certificate uniform over weak bursts, and the circuit-level version.
-\item \textbf{O3} (Theorem~\ref{thm:burst-product}): \emph{settled at code capacity}: a single-sum product bound $\tfrac12\widetilde W(B_{\rm burst})$, with no floor. Open: the written space-time version.
-\item \textbf{O4} (Problem~\ref{prob:O4}): the experimental-design theorem (open).
+\item \textbf{O2} (Lemma~\ref{lem:robust}, Proposition~\ref{prop:no-rate-limit}): \emph{partly settled}. Limits for $p$ and $e$ are robust to contamination; limits for burst rates need a detection efficiency, and without a strength floor no uniformly valid limit exists. Space-time version: Lemma~\ref{lem:st-robust}. Open: a certificate uniform over weak bursts, and a certified lower bound on the detection efficiency.
+\item \textbf{O3} (Theorem~\ref{thm:burst-product}): \emph{settled at code capacity}: a single-sum product bound $\tfrac12\widetilde W(B_{\rm burst})$, with no floor; for any linear decoding structure (circuit level) by Theorems~\ref{thm:st-burst}, \ref{thm:st-cert}. Open: computing $\widetilde W^{\mathcal L}$ for a circuit-level detector error model.
+\item \textbf{O4} (Problem~\ref{prob:O4}): \emph{two-hypothesis part settled under the marking model}: exact pattern gain $D_{\rm pattern}=D_{\rm count}+\Lambda_1D(\pi_1\|\pi_0)$, Stein form of the ratio of rounds, and adaptive designs do not beat the best single experiment (Theorems~\ref{thm:pattern-gain}--\ref{thm:adaptive}). Open: composite hypotheses, the adaptive strong converse and Chernoff exponent, overlapping events, and $D_{\rm pattern}(d)$ for the surface code.
 \item \textbf{O5} (Theorem~\ref{thm:mwpm-peierls}, Corollary~\ref{cor:mwpm-cert}): \emph{settled for code-capacity MWPM with erasures} by a Peierls bound; crude constants. Open: phenomenological and circuit-level MWPM, and sharper constants.
-\item \textbf{O6} (Theorem~\ref{thm:equality}, Proposition~\ref{prop:five-sharp}): \emph{first half settled}: equality in the rate bound holds iff one extra flag never changes the ML decision (plus a tie condition); proved for $[[5,1,3]]$ at all $p$. Open: which code classes satisfy the criterion.
-\item \textbf{O7}: tightening the union bound (calibrating with measured small-$d$ failure rates) so that certification is no longer vacuous at realistic parameters.
+\item \textbf{O6} (Theorem~\ref{thm:equality}, Proposition~\ref{prop:five-sharp}): \emph{first half settled}: equality in the rate bound holds iff one extra flag never changes the ML decision (plus a tie condition); proved for $[[5,1,3]]$ at all $p$, now also by hand (Proposition~\ref{prop:five-hand}: one flag at a single-error syndrome makes the four classes exactly equally likely); small-$p$ criterion and first-order obstruction (Proposition~\ref{prop:lex}, Corollary~\ref{cor:first-order-e1}); minimum weights never decide it (Lemma~\ref{lem:split}). Open: whether all perfect-tensor codes satisfy it, and other families.
+\item \textbf{O7}: tightening the union bound so that certification is no longer vacuous at realistic parameters. \emph{Partial}: a closed-form ML certificate for every $d$ via MWPM (Proposition~\ref{prop:ml-peierls}) and a self-avoiding-walk refinement extending its range from $4.29\%$ to about $4.9\%$ (Proposition~\ref{prop:saw}). Open: anything close to the ML threshold $18.9\%$.
 \end{enumerate}
 
 \subsection{Near-term order of work (in parallel with M0--M5)}
@@ -115,10 +121,10 @@ Lower bounds (the floor, the Poisson lower bound, the genie lower bound) hold fo
 Theory track & Content & Interlock with the numerics track \\
 \midrule
 T0 & constitutional audit (\S\ref{sec:constitution}), framework, monotonicity, representation (this document, \S\ref{sec:framework}--\ref{sec:repr}) + exact small-code checks & oracle and sanity checks for M0/M1 \\
-T1 & exchange-rate bound, preorder theorem (\S\ref{sec:exchange}) & M2: report $R\le c$ and the gap $\Delta$ \\
-T2 & counterexample search for Conjecture~\ref{conj:universal}; proof of Observation~\ref{obs:sharp} & extend \texttt{checks}; no large computation needed \\
-T3 & code-capacity certification + O1--O3 (\S\ref{sec:cert}) & M3/M4: floor, parameter identification \\
-T4 & information-theoretic bounds and experimental design (\S\ref{sec:info}) & M4: compare $T_{\rm count}/T_{\rm pattern}$ \\
+T1 & exchange-rate bound, preorder theorem (\S\ref{sec:exchange}); done, gap shown to be code dependence (Proposition~\ref{prop:gap-A}); open: $H_B$ & M2: report $R\le c$ and the gap $\Delta$ (done) \\
+T2 & counterexample search for Conjecture~\ref{conj:universal} (done for $n\le5$, hill-climbing $n=6$; evidence against); proof of Observation~\ref{obs:sharp} (done, Propositions~\ref{prop:five-sharp}, \ref{prop:five-hand}); open: which code families attain $c$ & extend \texttt{checks}; no large computation needed \\
+T3 & certification: code capacity with bursts and chip events, any linear structure (circuit level) up to computing $\widetilde W^{\mathcal L}$, MWPM certificate; O1 negative, O2 partial, O3 done (\S\ref{sec:cert}); open: O7 & M3/M4: floor, parameter identification \\
+T4 & information-theoretic bounds (done) and experimental design: two-hypothesis part done under (M) (\S\ref{sec:design-theorems}); open: composite hypotheses & M4: compare $T_{\rm count}/T_{\rm pattern}$ \\
 \bottomrule
 \end{tabular}
 \end{center}

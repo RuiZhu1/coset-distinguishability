@@ -158,7 +158,7 @@ and the large-sample Blackwell order of Conjecture~\ref{conj:universal}, (S3), c
 \end{enumerate}
 The suppression exponent $\alpha$ is a monotone for the $d$-asymptotics of one code family (Corollary~\ref{cor:alpha}); $R_\alpha$ is therefore of type (R-a). In the paper it should be called the \emph{marginal exchange rate}.
 
-The reference rates of \S\ref{sec:info} are also of type (R-a): $R_B$ is the marginal rate of the Bhattacharyya parameter $B$, which is a monotone of the local free order (Proposition~\ref{prop:hellinger}), and $R_{\rm hash}$ is the marginal rate of the hashing rate $Q_{\rm hash}$, whose monotonicity along the local free order is only checked numerically (N7); neither is a statement about the surface code.
+The reference rates of \S\ref{sec:info} are also of type (R-a): $R_B$ is the marginal rate of the Bhattacharyya parameter $B$, which is a monotone of the local free order (Proposition~\ref{prop:hellinger}), and $R_{\rm hash}$ is the marginal rate of the hashing rate $Q_{\rm hash}$, which is a monotone of the local free order by Proposition~\ref{prop:hash} (previously checked only numerically, N7); neither is a statement about the surface code.
 
 \begin{proposition}[Marginal rates of the local free order]\label{prop:marginal}
 Call $M$ a \emph{monotone of the local free order} on $\Nn_{\rm cc}$ if $M(p',e')\ge M(p,e)$ whenever condition (ii) of Theorem~\ref{thm:preorder} holds. Let $x_0=(p_0,e_0)$ with $p_0<\tfrac34$, $e_0<1$, and $c=(\tfrac34-p_0)/(1-e_0)$.
@@ -176,6 +176,17 @@ $\partial_p(1-\mu)=\tfrac43(1-e_0)$ and $\partial_e(1-\mu)=\lambda_0$, so the ra
 \end{proof}
 
 \noindent In words: the free operations leave the marginal rate of any monotone somewhere in $[0,c]$, and where in this interval the surface code sits (the gap problem, Problem~\ref{prob:gap}) is a property of that code's monotone, not of the theory.
+
+\begin{proposition}[Conditional entropy, $Q_{\rm hash}$, and additive monotones for tensor powers]\label{prop:hash}
+(a) $H(L\mid Y)=-\Phi_{\rm sh}(P)$ with $\varphi_{\rm sh}(v)=\sum_\ell v(\ell)\log_2\frac{v(\ell)}{\sum_{\ell'}v(\ell')}$, which belongs to $\Phi_\Lambda$; hence $H(L\mid Y)$ is nondecreasing under every simulable reduction. For the uncoded qubit, $H(L\mid Y)=2e+(1-e)H_4(p)$, so $Q_{\rm hash}=1-2e-(1-e)H_4(p)=1-H(L\mid Y)$ is a monotone of the local free order, and $R_{\rm hash}$ is the marginal rate of a monotone (this was previously only checked numerically, N7).
+(b) For $\alpha\ge1$ let $\varphi_\alpha(v)=\|v\|_\alpha$. Then $\Phi_\alpha(P\otimes Q)=\Phi_\alpha(P)\Phi_\alpha(Q)$ and $H(L\mid Y)$ is additive under $\otimes$. Consequently, if $P^{\otimes n}\rightsquigarrow Q^{\otimes n}$ for some $n$ (the order on tensor powers relevant for (R-c)), then $\Phi_\alpha(Q)\le\Phi_\alpha(P)$ for every $\alpha\in[1,\infty]$ and $H(L\mid Y)_Q\ge H(L\mid Y)_P$. For the uncoded qubit, $\alpha=\infty$ gives $\mu'\le\mu$ and $\alpha\to1$ gives $Q_{\rm hash}'\le Q_{\rm hash}$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+(a) $\varphi_{\rm sh}$ is positively homogeneous of degree one and permutation invariant, and convex: $\varphi_{\rm sh}(v)=-\|v\|_1\,H(v/\|v\|_1)$ is the perspective of the convex function $-H$ on the simplex. $\Phi_{\rm sh}(P)=\sum_yP(y)\sum_\ell P(\ell\mid y)\log_2P(\ell\mid y)=-H(L\mid Y)$. Apply Theorem~\ref{thm:complete} and Proposition~\ref{prop:level-incl}. For the uncoded qubit, $Y=F$, and $L$ given $F=1$ is uniform (2 bits) and given $F=0$ has law $\Dep_p$.
+(b) $\|v\otimes w\|_\alpha=\|v\|_\alpha\|w\|_\alpha$ and the sum over $(y_1,y_2)$ factorizes; conditional entropy of independent pairs adds. Monotonicity under $\rightsquigarrow$ then gives $\Phi_\alpha(Q)^n\le\Phi_\alpha(P)^n$.
+\end{proof}
+
+\noindent\emph{(R-c), what is open.} Proposition~\ref{prop:hash}(b) gives necessary conditions for conversions between tensor powers; whether they are sufficient (for large $n$, or with a catalyst), and in particular whether pairs of the trade region of \S\ref{sec:single-loss} become reachable between tensor powers, is open. The large-sample results of \cite{MPST} concern dichotomies and do not directly cover objects with $|\Lambda|=4$ and relabelling. Rates $m/n$ with $m\ne n$ also need a rule for changing the label alphabet, which these notes do not fix.
 
 \subsection{Audit table and verdict}\label{sec:audit-table}
 
@@ -204,7 +215,7 @@ Level 1 vs.\ Level 2 & Propositions~\ref{prop:level-incl}, \ref{prop:local-level
 \end{longtable}
 }
 
-\paragraph{Verdict.} (1) No statement of \S\ref{sec:framework}--\ref{sec:info} contradicts the axioms (all five sections were read line by line in this audit): every proof there is a proof about simulable reductions, which is a legitimate free-operation class (Propositions~\ref{prop:category}, \ref{prop:free-obj}). In particular the certification results (Theorem~\ref{thm:cc-cert} and the target Theorem~\ref{thm:burst-cert}) use only the direction ``reachable $\Rightarrow$ $\err$ ordered'' (Theorem~\ref{thm:monotone} with the reachability half of Theorem~\ref{thm:preorder}); they do not depend on Conjecture~\ref{conj:universal} or on the completeness of any family of monotones.
+\paragraph{Verdict.} (1) No statement of \S\ref{sec:framework}--\ref{sec:info} contradicts the axioms (all five sections were read line by line in this audit): every proof there is a proof about simulable reductions, which is a legitimate free-operation class (Propositions~\ref{prop:category}, \ref{prop:free-obj}). In particular the certification results (Theorems~\ref{thm:cc-cert}, \ref{thm:burst-cert} and~\ref{thm:st-cert}) use only the direction ``reachable $\Rightarrow$ $\err$ ordered'' (Theorem~\ref{thm:monotone} with the reachability half of Theorem~\ref{thm:preorder}); they do not depend on Conjecture~\ref{conj:universal} or on the completeness of any family of monotones.
 (2) Three structural items were missing and are now supplied: the category and golden-rule properties, the product structure, and a complete family of monotones.
 (3) The statements below are constrained by the audit and must be worded accordingly.
 (4) The audit moves one open point: the all-losses form of Conjecture~\ref{conj:universal} is proved for the uncoded qubit; the single-loss form (decoder failure rates) is the real conjecture (Remark~\ref{rem:conj-reform}).
@@ -213,7 +224,7 @@ Level 1 vs.\ Level 2 & Propositions~\ref{prop:level-incl}, \ref{prop:local-level
 \begin{enumerate}[(1)]
 \item The free operations, preorder, and monotones are stated at Level 1, for arbitrary finite label--observation pairs, with no reference to the surface code (Definition~\ref{def:object}, Lemma~\ref{lem:kernel}).
 \item $\err$ is a faithful monotone, additive after $-\log_2(1-\cdot)$, but not a complete one. The complete family is $\Phi_\Lambda$ (Theorem~\ref{thm:complete}); statements about ``the'' order must say which monotones are meant.
-\item ``Exchange rate'' means the \emph{marginal} rate of a monotone, (R-a). It lies in $[0,c]$ for every monotone of the local free order; the asymptotic rate (R-c) is a different quantity and is not computed here. The reference values $R_B$ and $R_{\rm hash}$ of \S\ref{sec:info} are marginal rates of the monotones $B$ and $Q_{\rm hash}$ (the latter checked only numerically).
+\item ``Exchange rate'' means the \emph{marginal} rate of a monotone, (R-a). It lies in $[0,c]$ for every monotone of the local free order; the asymptotic rate (R-c) is a different quantity; only necessary conditions for it are proved here (Proposition~\ref{prop:hash}(b)). The reference values $R_B$ and $R_{\rm hash}$ of \S\ref{sec:info} are marginal rates of the monotones $B$ and $Q_{\rm hash}$ (Propositions~\ref{prop:hellinger}, \ref{prop:hash}).
 \item ``Necessary and sufficient'' conditions are claimed only for free reachability on $\Nn_{\rm cc}$ (Theorem~\ref{thm:preorder}), which coincides with Level-1 reachability for the uncoded qubit (Proposition~\ref{prop:local-level1}). For a code with syndromes and for the single loss $\err$ the iff is open.
 \item The $d\to\infty$ exponent of one code family and the tensor-power limit are different asymptotics and must not be conflated.
 \item All statements concern the Bayes-optimal decoder; they are not statements about MWPM (Remark~\ref{rem:ml-only}).

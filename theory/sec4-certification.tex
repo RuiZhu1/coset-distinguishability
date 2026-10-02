@@ -4,7 +4,7 @@ Goal: within the model class, give finite-sample upper bounds on $\pL(d)$ at lar
 The proof skeleton has three layers: \emph{(A) the statistical layer} (confidence upper bounds on the parameters from data); \emph{(B) the monotonicity layer} (upper bounds on the parameters give a ``dominating'' model,
 and Theorem~\ref{thm:monotone} gives an upper bound on $\err$); \emph{(C) the computational layer} (an explicit upper bound on $\err_d$ for the dominating model).
 This section proves the code-capacity case completely (Theorem~\ref{thm:cc-cert}), extends it to code capacity with unflagged burst and chip-scale events (Theorem~\ref{thm:burst-cert}),
-and gives a separate certificate for the MWPM decoder (\S\ref{sec:mwpm-cert}).
+gives a separate certificate for the MWPM decoder (\S\ref{sec:mwpm-cert}), states the burst results for any linear decoding structure, i.e.\ at circuit level (\S\ref{sec:spacetime}), and tightens the code-capacity certificate (\S\ref{sec:o7}).
 
 \paragraph{Which decoder.}
 All upper bounds in this section are upper bounds for \emph{maximum-likelihood (Bayes-optimal) decoding}, stated as ``there is a decoder (ML with the noise parameters known)
@@ -226,7 +226,7 @@ Suppose a procedure computes $\bar r$ from $M$ shots and has $\Prob_\theta[r_z\l
 The single-shot law of $\theta_{R,\epsilon}$ is continuous in $\epsilon$ and equals that of $\theta_0$ at $\epsilon=0$, so $\mathrm{TV}(P^{\otimes M}_{\theta_{R,\epsilon}},P^{\otimes M}_{\theta_0})\to0$ as $\epsilon\to0$. Hence $\Prob_{\theta_0}[\bar r\ge R]\ge\Prob_{\theta_{R,\epsilon}}[\bar r\ge R]-\mathrm{TV}\ge1-\delta-o(1)$ for every $R$; let $R\to\infty$.
 \end{proof}
 
-\noindent So O2 is settled for $p$ and $e$ (shots i.i.d.; for multi-round data use windows separated by gaps $\ge T_b$, whose event counts are independent), while an upper limit on the burst rates needs an assumption that makes bursts detectable, such as a floor on the strength that yields the efficiency $\eta$ in (c). What remains open is a certificate that is uniform over weak bursts without such a floor (weak bursts are hard to detect but also nearly harmless; Theorem~\ref{thm:burst-product} does not exploit the second fact), and the circuit-level version.
+\noindent So O2 is settled for $p$ and $e$ (shots i.i.d.; for multi-round data use windows separated by gaps $\ge T_b$, whose event counts are independent), while an upper limit on the burst rates needs an assumption that makes bursts detectable, such as a floor on the strength that yields the efficiency $\eta$ in (c). What remains open is a certificate that is uniform over weak bursts without such a floor (weak bursts are hard to detect but also nearly harmless; Theorem~\ref{thm:burst-product} does not exploit the second fact). The circuit-level version of (b) is Lemma~\ref{lem:st-robust}.
 
 \subsubsection*{The certification theorem with bursts and chip events}
 
@@ -244,7 +244,7 @@ On the confidence event, the model $\bar\theta$ with the same strength and chip 
 Hence $\err(\theta)\le\err(\bar\theta)$ (Proposition~\ref{prop:rate-mono}). Lemma~\ref{lem:floor} gives $\err(\bar\theta)\le\bar q_c+(1-\bar q_c){\err}^{(0)}(\bar\theta)$, and Theorem~\ref{thm:burst-product} bounds ${\err}^{(0)}(\bar\theta)$ (and trivially ${\err}^{(0)}\le1$).
 \end{proof}
 
-\noindent Compared with the earlier target statement: no monotonicity in the shape is needed (Proposition~\ref{prob:O1} shows it fails), and the double configuration sum is replaced by the product bound. The remaining gap to a circuit-level certificate is the space-time version of Theorem~\ref{thm:burst-product} and of Lemma~\ref{lem:robust}(b), which needs a model of measurement faults.
+\noindent Compared with the earlier target statement: no monotonicity in the shape is needed (Proposition~\ref{prob:O1} shows it fails), and the double configuration sum is replaced by the product bound. The space-time (circuit-level) version is Theorem~\ref{thm:st-cert}; what it still lacks for a computed number is the location-weight enumerator of the detector error model.
 
 \paragraph{Division of numerical checks (see \S\ref{sec:map}).}
 The circuit-level stim + MWPM data of P2 can check: (i) the floor $\err\ge q_c(1-2^{-q})$ and its scaling $\propto r_cT_{\rm tot}$
@@ -292,5 +292,80 @@ With $\bar p,\bar e$ from Lemmas~\ref{lem:flags} and~\ref{lem:lambda} (or Lemma~
 $B_M$ is nondecreasing in $p\in[0,\tfrac34]$ (as $q\le\tfrac12$) and in $e$ (as $2\sqrt{q(1-q)}\le1$), and the right side of Theorem~\ref{thm:mwpm-peierls} is increasing in $B_M$ on $3B_M<1$. Apply it on the confidence event.
 \end{proof}
 
-\noindent This answers O5 for code-capacity MWPM. The bound is rigorous but crude: its range of validity $3B_M<1$ is $p<4.29\%$ at $e=0$ and $e<\tfrac13$ at $p=0$, far below the MWPM thresholds. Replacing $3$ by the connective constant of self-avoiding walks on the square lattice ($\approx2.64$) improves the rate, but only asymptotically in $\ell$, and is not done here.
+\noindent This answers O5 for code-capacity MWPM. The bound is rigorous but crude: its range of validity $3B_M<1$ is $p<4.29\%$ at $e=0$ and $e<\tfrac13$ at $p=0$, far below the MWPM thresholds. Replacing $3$ by self-avoiding-walk counts improves the range to about $4.9\%$ (Proposition~\ref{prop:saw}).
 Because it is a bound for a fixed decoder, it does not conflict with the rule that MWPM data cannot falsify ML bounds: it is falsified only by MWPM failure rates above it. A comparison with simulated MWPM failure rates is listed in \S\ref{sec:map}.
+
+\subsection{Space-time version: bursts and parameter limits for any linear decoding structure}\label{sec:spacetime}
+
+The code-capacity results above use only a product structure over fault locations. This subsection states them for an arbitrary linear decoding structure, in particular for the detector error model of a syndrome-extraction circuit (phenomenological or circuit-level noise), which answers the open parts ``space-time version'' of O2 and O3.
+
+\begin{definition}[Local depolarizing noise on a structure]\label{def:local-dep}
+Let $(V,\sigma,L)$ be a linear decoding structure with $V=\bigoplus_{\ell\in\mathcal L}V_\ell$ (fault locations $\ell$; $V_\ell\cong\F^{k_\ell}$, $K_\ell=|V_\ell|\ge2$). The \emph{local depolarizing law} of rate $s\in[0,\tfrac{K-1}K]$ on $V_\ell$ is $\Dep^{(K)}_s=(1-s)\delta_0+\tfrac s{K-1}\mathbf 1_{V_\ell\setminus0}$; $\Dep^{(K)}_{(K-1)/K}$ is uniform.
+The class $\Nn_{\rm st}$: background faults independent across locations, location $\ell$ flagged with probability $e_\ell$ (then uniform) and otherwise $\Dep^{(K_\ell)}_{p_\ell}$; burst regions $z\subseteq\mathcal L$ with independent activations, $\Prob[N_z\ge1]\le\rho_z$; each activation adds, independently at every $\ell\in z$, a fault with law $(1-\theta)\delta_0+\theta\,\mathbf 1_{V_\ell}/K_\ell$, $\theta\in[0,1]$ arbitrary (it may differ between events and be random, independently of everything else); faults add in $\F$; bursts carry no flags.
+Put $V_{\max}=\max_z|z|$, $\bar\rho=\max_\ell\sum_{z\ni\ell}\rho_z$, and $|G|_{\mathcal L}=\#\{\ell:G_\ell\ne0\}$ (location weight).
+\end{definition}
+\noindent Examples: code capacity ($\mathcal L$ = qubits, $K=4$, $\theta=\tfrac43p_b$); single-qubit and two-qubit gate locations ($K=4,16$); and a stim detector error model, whose independent error mechanisms are locations with $K=2$ (a mechanism flips with probability $p_\ell\le\tfrac12$, and a burst raises it within $[p_\ell,\tfrac12]$). A local depolarizing law composed with $(1-\theta)\delta_0+\theta\,\mathrm{unif}$ is again local depolarizing, with rate $(1-\theta)s+\theta\tfrac{K-1}K\in[s,\tfrac{K-1}K]$.
+
+\begin{theorem}[Space-time burst union bound]\label{thm:st-burst}
+For $\Nn_{\rm st}$, every $t\in(0,\tfrac12]$ and every $G\in K=\ker\sigma\setminus\ker L$,
+\[
+\BC(P;G)\le\prod_{\ell:\,G_\ell\ne0}m_\ell(p_\ell)\cdot\exp\Big(\sum_z\rho_z\Big(\prod_{\ell\in z,\,G_\ell\ne0}\kappa_\ell-1\Big)\Big)\le\bar B^{\,|G|_{\mathcal L}},\qquad
+\bar B=\bar m\exp\Big(\bar\rho\,\frac{\bar\kappa^{V_{\max}}-1}{V_{\max}}\Big),
+\]
+where, with $\tau_\ell=t/((K_\ell-1)(1-t))$,
+\[
+m_\ell(s)=e_\ell+(1-e_\ell)\Big[(1-s)\sqrt{\tau_\ell}+\frac{s}{(K_\ell-1)\sqrt{\tau_\ell}}+\frac{s(K_\ell-2)}{K_\ell-1}\Big],\quad\kappa_\ell=\frac{m_\ell(\tfrac{K_\ell-1}{K_\ell})}{m_\ell(p_\ell)}\ge1,
+\]
+$\bar m=\max_\ell m_\ell(p_\ell)$, $\bar\kappa=\max_\ell\kappa_\ell$. Hence $\err\le\tfrac12\widetilde W^{\mathcal L}(\bar B)$ with the location-weight enumerator $\widetilde W^{\mathcal L}(x)=\sum_{G\in K}x^{|G|_{\mathcal L}}$, uniformly over all burst strengths. For $K=4$ and a common rate this is Theorem~\ref{thm:burst-product}; at $t=p_\ell$, $\bar\rho=0$, $m_\ell(p_\ell)$ is the Bhattacharyya coefficient of location $\ell$.\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+The proof of Theorem~\ref{thm:burst-product} goes through location by location. Apply Lemma~\ref{lem:tilted} with $Q=\prod_\ell Q_\ell$, $Q_\ell(a,1)=1$, $Q_\ell(0,0)=1$, $Q_\ell(a,0)=\tau_\ell$ for $a\ne0$. For $G_\ell\ne0$ the factor $\sqrt{Q_\ell(a+G_\ell,f)/Q_\ell(a,f)}$ is $1$ if $f=1$, and for $f=0$ it is $\sqrt{\tau_\ell}$ at $a=0$, $1/\sqrt{\tau_\ell}$ at $a=G_\ell$ and $1$ at the other $K_\ell-2$ points; its expectation under $\Dep^{(K_\ell)}_s$ (with the flag) is $m_\ell(s)$.
+Given the activations, location $\ell$ carries $\Dep^{(K_\ell)}_{s_\ell}$ with $s_\ell=p_\ell$ if no active region covers it and $s_\ell\in[p_\ell,\tfrac{K_\ell-1}{K_\ell}]$ otherwise. With $u=\sqrt{\tau_\ell}$ the slope of $m_\ell$ is $(1-e_\ell)\frac{(1-u)(1+(K_\ell-1)u)}{(K_\ell-1)u}\ge0$, because $u\le1$ for $t\le\tfrac12\le\tfrac{K_\ell-1}{K_\ell}$. The rest (independent regions, $\mathbf 1[\text{covered}]\le\sum_{z\ni\ell}\mathbf 1[N_z\ge1]$, $1+x\le e^x$, convexity of $k\mapsto\bar\kappa^k$) is Steps~3--4 of Theorem~\ref{thm:burst-product} with qubits replaced by locations.
+\end{proof}
+
+\begin{lemma}[Parameter limits from one detector, space-time]\label{lem:st-robust}
+In $\Nn_{\rm st}$ (plus a chip layer independent of everything), let $D\in V^\ast$ be a detector (it fires iff $\langle D,E\rangle=1$) and suppose no location in $\supp D=\{\ell:D_\ell\ne0\}$ is flagged. Then $\Prob[\text{$D$ fires}]=\tfrac12\big(1-\chi\prod_{\ell\in\supp D}\lambda_\ell\big)$ with $\lambda_\ell=1-\tfrac{K_\ell}{K_\ell-1}p_\ell\in[0,1]$ and $\chi\in[-1,1]$ the parity expectation of the event layers. Hence $\Prob[\text{$D$ fires}]\ge\tfrac12(1-\prod_\ell\lambda_\ell)$, and an upper confidence limit $\bar P$ for the firing probability gives $\prod_{\ell\in\supp D}\lambda_\ell\ge1-2\bar P$, which for a one-parameter family $p_\ell=\varphi_\ell(p)$ with nondecreasing $\varphi_\ell$ is an upper limit $\bar p$. Samples must be independent and identically distributed: use one detector per window, with windows whose location sets are disjoint and which are separated in time by more than the event durations $T_b,\tau_c$.\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+$\langle D,E\rangle=\sum_\ell\langle D_\ell,E_{\ell}\rangle$ over independent locations plus the independent event contribution, so $\E(-1)^{\langle D,E\rangle}=\chi\prod_\ell\E(-1)^{\langle D_\ell,E_\ell\rangle}$. For $D_\ell\ne0$, $\sum_{a\ne0}(-1)^{\langle D_\ell,a\rangle}=-1$, so $\E_{\Dep_{p}}(-1)^{\langle D_\ell,a\rangle}=(1-p)-\tfrac p{K-1}=\lambda_\ell$. The rest is Lemma~\ref{lem:robust}(b). Windows with disjoint location sets have independent background faults; Poisson events in time intervals farther apart than their duration are independent (independent increments).
+\end{proof}
+
+\begin{theorem}[Conditional certification with bursts and chip events, any linear decoding structure]\label{thm:st-cert}
+Let the true noise be $\Nn_{\rm st}$ with $p_\ell=\varphi_\ell(p)$ (nondecreasing), flags $e_\ell=e$, Poisson burst activations $\rho_z=r w_z$, arbitrary burst strengths, and a chip layer of rate $r_c$ (Definition~\ref{def:events}). Suppose $\Prob[p\le\bar p,\ e\le\bar e,\ r\le\bar r,\ r_c\le\bar r_c]\ge1-\delta$ (for example from Lemmas~\ref{lem:flags}, \ref{lem:st-robust}, \ref{lem:robust}(c)), and that the region sizes and the coverage $\omega=\max_\ell\sum_{z\ni\ell}w_z$ obey $V_{\max}\le\bar V$, $\omega\le\bar\omega$. Then with probability $\ge1-\delta$
+\[
+\err\;\le\;\bar q_c+(1-\bar q_c)\min\Big\{1,\tfrac12\widetilde W^{\mathcal L}\big(\bar B\big)\Big\},
+\]
+where $\bar B$ is the $\bar B$ of Theorem~\ref{thm:st-burst} at $(\bar p,\bar e,\bar r\bar\omega,\bar V)$ (any $t\in(0,\tfrac12]$).\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+As for Theorem~\ref{thm:burst-cert}. Raising $p_\ell$ is superposing independent local depolarizing noise on unflagged locations (the composition rule above), raising $e$ is superposing flagged erasure, and raising $r,r_c$ is Poisson superposition; all are simulable reductions (Proposition~\ref{prop:rate-mono}, whose proof does not use code capacity). Then Lemma~\ref{lem:floor} and Theorem~\ref{thm:st-burst}; $\bar m$ and $\bar\kappa$ are evaluated at the true $p_\ell\le\varphi_\ell(\bar p)$ after the first step, and $\bar B$ is nondecreasing in $\bar\rho$ and $V_{\max}$.
+\end{proof}
+
+\noindent What is not done: $\widetilde W^{\mathcal L}$ of a circuit-level detector error model is not computed (it counts all undetectable logical fault sets by location weight; for $d\ge5$ this needs a transfer-matrix or path-counting bound, the circuit analogue of Theorem~\ref{thm:mwpm-peierls}); and $\bar B$ is below the radius of convergence of $\widetilde W^{\mathcal L}$ only for small $p$. Lemma~\ref{lem:st-robust} gives a valid but generally loose $\bar p$ (one detector, conservative under contamination).
+
+\subsection{Tightening the code-capacity certificate (O7)}\label{sec:o7}
+
+\begin{proposition}[A closed-form ML certificate for every distance]\label{prop:ml-peierls}
+For the rotated surface code under $\Nn_{\rm cc}(p,e)$, every odd $d\ge3$, and $3B_M<1$,
+\[
+\err_d(p,e)\;\le\;\min\Big\{\tfrac12\widetilde W_d\big(B(p,e)\big),\ \frac{2dB_M(3B_M)^{d-1}}{1-3B_M}\Big\}.
+\]
+Both terms are nondecreasing in $p$ and $e$, so Theorem~\ref{thm:cc-cert} holds with this minimum evaluated at $(\bar p,\bar e)$. The second term needs no weight enumerator and is explicit for every $d$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+$\err_d$ is the failure probability of the optimal decoder, hence at most that of the MWPM decoder of Theorem~\ref{thm:mwpm-peierls}. Monotonicity: Corollaries~\ref{cor:product}, \ref{cor:mwpm-cert}.
+\end{proof}
+
+\begin{proposition}[Self-avoiding-walk refinement of the Peierls bound]\label{prop:saw}
+Let $c_m$ be the number of self-avoiding walks of $m$ steps from the origin of $\mathbb Z^2$, $\mu_K=c_K^{1/K}$ and $\gamma_K=\max_{0\le r<K}c_r\mu_K^{-r}$. If $\mu_KB_M<1$, then for every odd $d\ge3$
+\[
+\pL^{\rm MWPM}(d;p,e)\;\le\;4d\,\gamma_K\,B_M^2\,\frac{(\mu_KB_M)^{d-2}}{1-\mu_KB_M},
+\]
+and the same bound holds for $\err_d$.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+In the proof of Theorem~\ref{thm:mwpm-peierls} replace the count $d\,3^{\ell-1}$ of crossing paths of length $\ell$. The $Z$ checks have corners $(r,c)$ with $r+c$ odd, and two of them share a qubit iff their corners are diagonal neighbours, in which case they share exactly one; in the coordinates $(r+c,r-c)$ the check graph is a subgraph of a square lattice. A crossing path is a top qubit ($d$ choices), which fixes its check $v_1$; a self-avoiding walk of $\ell-2$ steps on the check graph from $v_1$ ($\le c_{\ell-2}$ choices; the qubit between consecutive checks is unique); and a bottom qubit of the last check ($\le2$ choices). So there are at most $2d\,c_{\ell-2}$ paths. Submultiplicativity $c_{m+n}\le c_mc_n$ \cite{MS} gives $c_m\le\gamma_K\mu_K^m$, and $\sum_{\ell\ge d}2d\,\gamma_K\mu_K^{\ell-2}B_M^\ell=2d\gamma_KB_M^2(\mu_KB_M)^{d-2}/(1-\mu_KB_M)$; the factor $2$ for the $Z$ part gives the claim.
+\end{proof}
+
+\noindent With the exact enumerations $c_{10}=44100$ and $c_{20}=897{,}697{,}164$ \cite{MS} one gets $\mu_{10}\approx2.914$, $\mu_{20}\approx2.803$, so at $e=0$ the condition $\mu_KB_M<1$ reads $p<4.56\%$ ($K=10$, $\gamma_{10}\approx1.46$) and $p<4.93\%$ ($K=20$), against $4.29\%$ for the factor $3$; no Peierls bound of this kind can go beyond $p<5.6\%$ (the connective constant $\mu\approx2.638$). These numbers are hand computations from the cited $c_K$ and should be rechecked by a script (not written).
+\emph{Status of O7.} Proposition~\ref{prop:ml-peierls} removes the practical limitation of Theorem~\ref{thm:cc-cert} (weight enumerators only for $d\le5$) and Proposition~\ref{prop:saw} moves the range of validity from $4.29\%$ to about $4.9\%$; the true ML threshold is $18.9\%$. Closing that gap needs a different argument (for example a rigorous renormalization bound, or a rigorous way to extrapolate exact small-$d$ failure rates); O7 stays open in that sense.

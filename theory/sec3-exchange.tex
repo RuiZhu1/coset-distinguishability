@@ -78,7 +78,7 @@ $R^{(d)}=\partial_e\err/\partial_p\err$ and $c=\tfrac34-p$ are \emph{equal} to 8
 Explanation (now proved for $[[5,1,3]]$, Proposition~\ref{prop:five-sharp}; the general criterion is Theorem~\ref{thm:equality}): for this code, flagging a single qubit does not change the ML decision on any syndrome, so $\err$ is linear along the segment ``replace the law of qubit $j$ from
 $\Dep_p$ by $\Dep_{3/4}$'', and the first-order coefficient is exactly $(\tfrac34-p)\partial_{p_j}\err$.
 This shows that the inequality $\partial_e\err_d\le c\,\partial_p\err_d$ cannot be improved uniformly over all codes; the strict gap on the surface code is \emph{code dependent}.
-\hfill\st{NUMERICAL}
+\hfill\st{NUMERICAL}; the equality for $[[5,1,3]]$ is now \st{PROVED} for all $0<p<\tfrac34$ (Propositions~\ref{prop:five-sharp}, \ref{prop:five-hand})
 \end{observation}
 
 \subsection{Complete characterization of the local-free-operation preorder on the code-capacity class}
@@ -341,7 +341,7 @@ These values lie within about one standard error of the Bhattacharyya reference 
 
 \begin{remark}[Reading of the gap]\label{rem:gap-m2}
 The measured rate lies inside the range spanned by other structures: the uncoded qubit has $R=c$, the Pauli repetition structures $\mathrm{Rep}_k$ approach $R_B$ as $k\to\infty$ ($R_B/c\approx0.25$ at $p_0=0.0213$, about $0.31$--$0.35$ at $p_0=0.04$--$0.06$; \S\ref{sec:hardened}, \texttt{checks/universal\_order\_search.py}), and the surface code sits at $R_{\rm surface}/c\approx0.3$, that is, at about the same value as these large structures.
-Since every monotone of the local free order has marginal rate in $[0,c]$ (Proposition~\ref{prop:marginal}), nothing in these data calls for further free operations: the gap $c-R_\alpha$ is where the surface-code monotone sits, a property of the code (case (A) of Problem~\ref{prob:gap}), not evidence of missing free operations. This is a reading of numbers, not a proof of (A).
+Since every monotone of the local free order has marginal rate in $[0,c]$ (Proposition~\ref{prop:marginal}), nothing in these data calls for further free operations: the gap $c-R_\alpha$ is where the surface-code monotone sits, a property of the code (case (A) of Problem~\ref{prob:gap}), not evidence of missing free operations. This is a reading of numbers; the qualitative statement (A) is proved in Proposition~\ref{prop:gap-A}.
 \end{remark}
 
 \subsection{Concavity, the envelope identity, and equality in the exchange-rate bound}\label{sec:equality}
@@ -420,3 +420,68 @@ The finite computation is check K5 of \texttt{checks/completion\_checks.py} (exa
 \end{proof}
 
 \noindent What remains of O6 is the second half: a structural description of the codes satisfying (E1) (perfect codes? transitive codes?). $[[5,1,3]]$ is perfect, but perfection alone does not obviously imply (E1): a weight-$3$ logical through the flagged qubit can tie with the weight-$1$ correction at leading order, so higher orders decide.
+
+\subsection{Which codes attain the bound (O6), and the gap problem}\label{sec:o6-gap}
+
+Throughout, $e_0=0$ and $r=p/(3(1-p))\in(0,1)$ for $p\in(0,\tfrac34)$. For a class $c$ (a coset of $S$ in a syndrome) put $W_c(r)=\sum_{E\in c}r^{\wt(E)}$ and, for a qubit $j$, $W^{(j)}_c(r)=\sum_{E\in c}r^{\wt(E\text{ off }j)}$, where $\wt(E\text{ off }j)$ counts the non-identity positions of $E$ other than $j$.
+
+\begin{proposition}[Criterion (E1) in polynomial form]\label{prop:lex}
+At $e_0=0$, condition (E1) of Theorem~\ref{thm:equality} holds at the rate $p$ iff for every syndrome $s$ and every qubit $j$, $\arg\max_cW_c(r)\cap\arg\max_cW^{(j)}_c(r)\ne\emptyset$ (maxima over the classes of $s$). It holds for all sufficiently small $p$ iff the same is true with ``$\arg\max$'' taken in the lexicographic order of the coefficient sequences $(a_0,a_1,\dots)$ of the polynomials, read from the lowest power up.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+$\Prob[\text{class }c]=(1-p)^nW_c(r)$; with qubit $j$ uniform (erased), $\Prob[\text{class }c]=\tfrac14(1-p)^{n-1}W^{(j)}_c(r)$. The common factors do not affect the maximizers. For polynomials $f\ne g$, $f(r)>g(r)$ for all small $r>0$ iff the coefficient sequence of $f$ is lexicographically larger.
+\end{proof}
+
+\begin{lemma}[Split-logical syndromes]\label{lem:split}
+Let the code have $k\ge1$ and distance $d$, and let $G\in N\setminus S$ have weight $d$. Split $G=E_1E_2$ into Paulis with disjoint supports, $\wt E_1=\lfloor d/2\rfloor$, $\wt E_2=\lceil d/2\rceil$. Then $E_1,E_2$ have the same syndrome, lie in different classes $c_1,c_2$, and the minimum weights of these classes are exactly $\lfloor d/2\rfloor$ and $\lceil d/2\rceil$. Consequently every code has a syndrome at which two classes have minimum weights differing by at most one, and flagging one qubit of $\supp E_2$ makes their flagged minimum weights equal ($d$ odd) or reverses their order ($d$ even).\hfill\st{PROVED}
+\end{lemma}
+\begin{proof}
+$\sigma(E_1)+\sigma(E_2)=\sigma(G)=0$ and $E_1E_2=G\notin S$. For $F_i\in c_i$, $F_1F_2\in GS\subseteq N\setminus S$, so $\wt F_1+\wt F_2\ge d$; with $\min_{c_i}\wt\le\wt E_i$ this forces equality.
+\end{proof}
+
+\noindent So (E1) is never decided by minimum weights alone; it is decided by multiplicities, as in the next corollary, or by higher orders, as for $[[5,1,3]]$ below.
+
+\begin{corollary}[A first-order obstruction]\label{cor:first-order-e1}
+Let $s$ be a syndrome with a unique class $c^\ast$ of minimum weight $w$, let $j$ be a qubit contained in no weight-$w$ element of $c^\ast$, and let $c'\ne c^\ast$ be a class of $s$ of minimum weight $w+1$ with
+\[
+\#\{E\in c':\wt E=w+1,\ j\in\supp E\}\;>\;\#\{E\in c^\ast:\wt E=w\}+\#\{E\in c^\ast:\wt E=w+1,\ j\in\supp E\}.
+\]
+Then (E1) fails for all sufficiently small $p$, and $R^{(d)}<c$ there.\hfill\st{PROVED}
+\end{corollary}
+\begin{proof}
+Unflagged, $c^\ast$ is the unique lexicographic maximum. Flagged at $j$, both $W^{(j)}_{c^\ast}$ and $W^{(j)}_{c'}$ start at $r^w$ (no element of $c^\ast$ has flagged weight below $w$), with the two coefficients displayed; so $c^\ast$ is not a lexicographic maximum after the flag. Apply Proposition~\ref{prop:lex} and Theorem~\ref{thm:equality}.
+\end{proof}
+
+\begin{proposition}[The five-qubit code: a proof by hand]\label{prop:five-hand}
+For $[[5,1,3]]$ the class polynomials are, for every qubit $k$, Pauli $P_k$, nontrivial logical class $c'$ and qubit $j\ne k$:
+\[
+\begin{array}{lll}
+\text{syndrome }0: & W_S=1+15r^4, & W_{c'}=10r^3+6r^5,\\
+& W^{(j)}_S=1+12r^3+3r^4, & W^{(j)}_{c'}=6r^2+4r^3+6r^4,\\
+\text{syndrome }\sigma(P_k): & W_{c^\ast}=r+4r^3+8r^4+3r^5, & W_{c'}=2r^2+4r^3+6r^4+4r^5,\\
+& W^{(k)}_{c^\ast}=1+12r^3+3r^4, & W^{(k)}_{c'}=6r^2+4r^3+6r^4,\\
+& W^{(j)}_{c^\ast}=r+3r^2+7r^3+5r^4, & W^{(j)}_{c'}=r+3r^2+7r^3+5r^4,
+\end{array}
+\]
+with $c^\ast=P_kS$. The differences are $W_S-W_{c'}=(1-r)^3(1+3r+6r^2)$, $W_{c^\ast}-W_{c'}=r(1-r)^3(1+r)$, $W^{(\cdot)}_{S}-W^{(\cdot)}_{c'}=W^{(k)}_{c^\ast}-W^{(k)}_{c'}=(1-r)^3(1+3r)$, and $W^{(j)}_{c^\ast}-W^{(j)}_{c'}\equiv0$.
+Hence for every $p\in(0,\tfrac34)$ the ML class is unique and stays ML-optimal under any single flag, (E1) and (E2) hold, and $R^{(d)}(p,0)=c$. This proves Proposition~\ref{prop:five-sharp} without computer assistance.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+Facts used. (a) $S$ is generated by the cyclic shifts of $XZZXI$; its $15$ nontrivial elements have weight $4$, and the weight distribution of $N\setminus S$ is $30x^3+18x^5$ (MacWilliams, Corollary~\ref{cor:product}). (b) The cyclic shift and the transversal map $X\to Y\to Z\to X$ preserve $S$ (the latter maps $XZZXI$ to $YXXYI$, a cyclic shift of $(ZXIXZ)(ZZXIX)$ up to phase); the shift fixes each logical class and the transversal map permutes the three nontrivial classes, so each class has $10$ elements of weight $3$ and $6$ of weight $5$, and each qubit lies in the support of $3$ stabilizers' complements, i.e.\ $3$ stabilizers miss each qubit. (c) For a qubit $m$, the stabilizers missing $m$ form with $I$ a subgroup of order $4$ whose nontrivial elements have weight $4$, so at every other qubit they take the values $X,Y,Z$ once each. Restriction to qubit $k$ is a homomorphism $S\to\F^2$ with kernel of order $4$, so every value at $k$ (including $I$) occurs $4$ times in $S$, and hence $4$ times in every class $LS$. (d) Two distinct elements of one class differ by a stabilizer, so their product has weight $\ge4$.
+
+Class $c'=P_kLS$ consists of $P_kL'$, $L'\in LS$. By (c), $L'_k=I$ for $4$ elements, which have weight $3$ (weight-$5$ elements have full support). For a value $Q\ne I$ at $k$, two weight-$3$ elements with $L'_k=Q$ have product of weight $\le4$ supported off $k$, so by (d) their other two qubits are complementary pairs of the four qubits $\ne k$; hence at most $2$ per value, and since $10-4=6$ weight-$3$ elements have $L'_k\ne I$, exactly $2$ per value, and then (c) gives exactly $2$ weight-$5$ elements per value. By (d) the four weight-$3$ elements with $L'_k=I$ have distinct supports, i.e.\ all four $3$-subsets of the qubits $\ne k$. Similarly in $c^\ast=P_kS$: $P_k$ itself; for each $m\ne k$ exactly one stabilizer with $s_k=P_k$ missing $m$ (by (c)), giving weight $3$ with support all but $\{k,m\}$; $8$ stabilizers with $s_k\notin\{I,P_k\}$, two missing each $m\ne k$, giving weight $4$; and $3$ stabilizers missing $k$, giving weight $5$.
+Reading off the weights, and the weights off $j$ or off $k$ (a support contains $j$ unless $j$ is the missing qubit or lies in the complementary pair), gives the table; for syndrome $0$ use that $6$ of the $10$ weight-$3$ elements of a class contain a given qubit (cyclic symmetry) and $12$ of the $15$ stabilizers do. The factorizations are checked by expanding. All differences are $\ge0$ on $(0,1)$, strictly for the unflagged ones; apply Proposition~\ref{prop:lex}, which needs the exact criterion at every $p$, and Theorem~\ref{thm:equality}.
+\end{proof}
+
+\noindent\emph{Mechanism.} At a single-error syndrome, flagging any other qubit makes all four classes \emph{exactly} equally likely at every $p$: one erasure plus one unknown error exceed what a distance-$3$ code can resolve, and for this code the posterior of the logical becomes exactly uniform instead of merely ambiguous, so the flag cannot move the decision. The other flags leave the ML class strictly optimal. The exact uniformity looks like a consequence of the fact that the five-qubit code is a perfect tensor (every three of its six legs, five physical and one logical, are maximally mixed). \emph{Open question (rest of O6):} do all codes whose encoding is a perfect tensor satisfy (E1), and are there other families? By Lemma~\ref{lem:split} the answer is never determined by the distance alone. Steane and the $d=3$ surface code violate (E1) (check K5), so being CSS, or being a surface code, does not suffice.
+
+\begin{proposition}[The gap is code dependence]\label{prop:gap-A}
+Let $\succeq_{\rm univ}$ be the code-universal operational order on $\Nn_{\rm cc}$: $(p,e)\succeq_{\rm univ}(p',e')$ iff $\err_{\mathfrak D}(p',e')\ge\err_{\mathfrak D}(p,e)$ for every linear decoding structure $\mathfrak D$ on any number of qubits. Then the set of marginal rates, at $x_0=(p_0,e_0)$, of the monotones of $\succeq_{\rm univ}$ that have right partial derivatives there has supremum exactly $c(p_0,e_0)$, attained by the uncoded qubit's $\err=\tfrac34(1-\mu)$ and, at $e_0=0$, by $[[5,1,3]]$. The same holds for every order that contains the local free order and under which $\err$ of every structure is monotone (any ``code-universally sound'' enlargement of the free operations).
+Hence no enlargement of the free operations that is sound for all codes can lower the bound $c$, whether or not Conjecture~\ref{conj:universal} holds, and a strict gap $c-R_\alpha>0$ for the surface code is a property of the surface code (case (A) of Problem~\ref{prob:gap}). Case (B) can occur only through operations that are sound for the surface code but not for all codes, i.e.\ through code dependence.\hfill\st{PROVED}
+\end{proposition}
+\begin{proof}
+$\succeq_{\rm univ}$ contains the local free order (Theorem~\ref{thm:preorder}), so its monotones are monotones of the local free order and have rates in $[0,c]$ (Proposition~\ref{prop:marginal}(a)). The uncoded qubit's $\err=\tfrac34(1-\mu)$ is a monotone of $\succeq_{\rm univ}$ by definition, with rate $c$ (Proposition~\ref{prop:marginal}(b)); at $e_0=0$ so is $\err$ of $[[5,1,3]]$ (Proposition~\ref{prop:five-hand}). The same argument applies to any order with the two stated properties.
+\end{proof}
+
+\noindent What remains of the gap problem is quantitative: why the surface code sits at $R_\alpha\approx0.3c$ (the hypothesis $H_B$, Conjecture~\ref{conj:HB}).
+\emph{Heuristic support for $H_B$ at small $B$ (not a proof).} At $p\to0$ ($e=0$) and at $e\to0$ ($p=0$) the dominant failures are, respectively, about half of a minimum-weight logical in error and a whole minimum-weight logical erased; both give $\err_d\approx N_d\,B^d$ up to factors $e^{o(d)}$, with $N_d$ the number of minimum-weight logicals, so $\alpha\approx\ln(1/B)-\lim\tfrac1d\ln N_d$ along both axes, a function of $B$ alone to leading order. A proof would need a lower bound on $\err_d$ that captures the entropy $\lim\tfrac1d\ln N_d$; the genie bound of Proposition~\ref{prop:genie} uses a single column and misses it.

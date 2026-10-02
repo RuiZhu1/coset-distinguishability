@@ -257,10 +257,10 @@ The theory-track milestones run **in parallel** with the table above (from week 
 | Stage | Content | Interlock with the numerics / acceptance criterion |
 |---|---|---|
 | T0 | Constitutional audit against the resource-theory axioms (theory §0), monotonicity lemma (three free operations), representation of erasure/leakage/events, exact small-code checks | First draft and `theory/checks` exist (all pass); M1 uses them as the oracle (done) |
-| T1 | Exchange-rate bound R <= (3/4-p0)/(1-e0); preorder theorem for the Pauli+erasure class | M2 reports R <= c and the gap Delta; P1 decides whether the gap comes from code dependence or incompleteness of the free operations |
-| T2 | Counterexample search for "code-universal order = local free order"; proof of Observation 3.5 | Exact computation on a library of random stabilizer codes; no large compute needed |
-| T3 | Conditional certification: code-capacity version (done) -> bursts + chip events (needs O1-O3) | M3/M4: floor scaling, parameter estimation, certificate >= exact/TN-ML failure rate |
-| T4 | Information-theoretic bounds on the exchange rate; experimental-design theorem (Stein/Chernoff exponents) | M4: T_count / T_pattern against the Poisson bound ln(1/delta)/r |
+| T1 | Exchange-rate bound R <= (3/4-p0)/(1-e0); preorder theorem for the Pauli+erasure class | Done. M2 reports R <= c and the gap Delta; the gap is proved to be code dependence (theory Prop 3.37). Open: the value R_alpha ~ 0.3c (hypothesis H_B) |
+| T2 | Counterexample search for "code-universal order = local free order"; proof of Observation 3.5 | Search done (all structures n <= 3, hill-climbing n = 4-6; evidence against the single-loss form). Observation 3.5 proved for [[5,1,3]] at every p (theory Props 3.32, 3.36, by hand). Open: which code families attain c |
+| T3 | Conditional certification: code capacity -> bursts + chip events -> any linear decoding structure (circuit level) | Done in theory: code capacity with bursts and chip events (Thm 4.14), MWPM certificate (Thm 4.15), circuit-level form (Thm 4.20; needs the location-weight enumerator of the DEM, not computed). O1 negative, O2 partial, O3 done; O7 partial (closed-form certificate for every d, range ~4.9%). Numerics M3/M4: floor scaling, parameter estimation, certificate >= exact/TN-ML failure rate |
+| T4 | Information-theoretic bounds on the exchange rate; experimental-design theorem (Stein/Chernoff exponents) | Bounds done (theory §5). Design: two-hypothesis part proved under a marked-Poisson model (theory Thms 5.9-5.11: exact pattern gain, Stein ratio of rounds, adaptivity does not help); composite hypotheses open. Numerics M4: T_count / T_pattern against the Poisson bound ln(1/delta)/r |
 
 ## 7. Theory track and out of scope
 
