@@ -18,7 +18,8 @@ theory/
 ├── checks/universal_order_search.py  counterexample search for the single-loss form of Conjecture 3.11 (about 8 min; `make -C theory search`)
 ├── checks/hardened_structures_search.py  obstruction lemmas on all structures with n <= 3, small-p marginal rates, n = 6 hill-climbing (about 15 min)
 ├── checks/exponent_criterion.py  channel-coding exponent criterion for large structures (seconds)
-└── checks/completion_checks.py   checks K1-K7 of the theory-completion results (genie, burst bound, O1 counterexample, [[5,1,3]] certificate)
+├── checks/completion_checks.py   checks K1-K7 of the theory-completion results (genie, burst bound, O1 counterexample, [[5,1,3]] certificate; about 4 min and 150 MB, `make -C theory completion`)
+└── checks/handproof_checks.py   checks H1-H5 of the pen-and-paper pass ([[5,1,3]] polynomials, self-avoiding walks, bounds vs data, small DEM, pattern gain; seconds)
 ```
 
 ## Build and run
@@ -28,7 +29,7 @@ make -C theory pdf      # needs a TeX distribution; see below
 make -C theory check    # needs numpy; about 35 s; non-zero exit status if an inequality is violated
 ```
 
-`check` runs both scripts; their last lines should read `ALL INEQUALITY CHECKS PASSED` and `ALL STRUCTURAL CHECKS PASSED`.
+`check` runs three scripts; their last lines should read `ALL INEQUALITY CHECKS PASSED`, `ALL STRUCTURAL CHECKS PASSED` and `ALL HANDPROOF CHECKS PASSED`. `make -C theory completion` runs K1-K7 (about 4 min, 150 MB peak).
 
 **TeX packages.** The notes are plain `pdflatex` (no CJK, no XeLaTeX). On Debian/Ubuntu the minimal set is
 
@@ -92,7 +93,7 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Proposition 3.33 | (E1) in polynomial form at $e_0=0$; for small $p$ it is a lexicographic condition on class polynomials | PROVED | -- |
 | Lemma 3.34 | Split-logical syndromes: every code has two classes with minimum weights $\lfloor d/2\rfloor,\lceil d/2\rceil$ in one syndrome, so minimum weights never decide (E1) | PROVED | -- |
 | Corollary 3.35 | First-order obstruction to (E1) by multiplicities at small $p$ | PROVED | check on a code library (to write) |
-| Proposition 3.36 (O6) | $[[5,1,3]]$ by hand: closed-form class polynomials; one flag at a single-error syndrome makes all four classes exactly equally likely; equality $R=c$ for all $p$ | PROVED | K5 (same conclusion) |
+| Proposition 3.36 (O6) | $[[5,1,3]]$ by hand: closed-form class polynomials; one flag at a single-error syndrome makes all four classes exactly equally likely; equality $R=c$ for all $p$ | PROVED | H1 (table), K5 |
 | Proposition 3.37 | Gap problem: no code-universally sound enlargement of the free operations lowers $c$; the gap $c-R_\alpha$ is code dependence | PROVED | -- |
 | Observation 3.26 / Remark 3.27 | P1/M2: ML exchange rate of the surface code, $d=5$--$11$, six work points: $R^{(d)}\le c$ everywhere; $R_\alpha/c\approx0.3$ at $e_0>0$, $R_\alpha\approx R_B$ | NUMERICAL | `results/p1_exchange_rate.json` |
 | Lemma 4.1 / Corollary 4.2 | Union (Bhattacharyya) bound $\varepsilon^\star\le\tfrac12\widetilde W(B)$ | PROVED | C5 |
@@ -104,17 +105,17 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Lemma 4.12, Proposition 4.13 (O2) | Limits for $p,e$ robust to contamination; burst-rate limits need a detection efficiency; impossible without a strength floor | PROVED | K7 |
 | Theorem 4.14 | Conditional certification with bursts + chip events (code capacity), uniform over burst strengths | PROVED | coverage simulation (to do) |
 | Theorem 4.15, Corollary 4.16 (O5) | Peierls bound and finite-sample certificate for MWPM with erasures, $p_L^{\rm MWPM}\le 2dB_M(3B_M)^{d-1}/(1-3B_M)$ | PROVED | MWPM simulation (to do) |
-| Definition 4.17, Theorem 4.18 (O3, space-time) | Burst union bound for any linear decoding structure (circuit level, stim DEMs): $\varepsilon^\star\le\tfrac12\widetilde W^{\mathcal L}(\bar B)$, uniform in burst strength | PROVED | small DEM check (to write) |
-| Lemma 4.19 (O2, space-time) | Parameter limits from one detector: firing probability $\ge\tfrac12(1-\prod\lambda_\ell)$ under contamination | PROVED | to write |
+| Definition 4.17, Theorem 4.18 (O3, space-time) | Burst union bound for any linear decoding structure (circuit level, stim DEMs): $\varepsilon^\star\le\tfrac12\widetilde W^{\mathcal L}(\bar B)$, uniform in burst strength | PROVED | H4 |
+| Lemma 4.19 (O2, space-time) | Parameter limits from one detector: firing probability $\ge\tfrac12(1-\prod\lambda_\ell)$ under contamination | PROVED | H4 |
 | Theorem 4.20 | Conditional certification with bursts + chip events for any linear decoding structure (needs $\widetilde W^{\mathcal L}$ of the DEM, not computed) | PROVED | -- |
-| Proposition 4.21 (O7) | Closed-form ML certificate for every $d$: $\varepsilon^\star_d\le\min\{\tfrac12\widetilde W_d(B),\ $Peierls$\}$ | PROVED | -- |
-| Proposition 4.22 (O7) | Self-avoiding-walk refinement of the Peierls bound: range $4.29\%\to$ about $4.9\%$ at $e=0$ | PROVED (constants from cited $c_K$, hand-computed) | enumerate $c_K$ (to write) |
+| Proposition 4.21 (O7) | Closed-form ML certificate for every $d$: $\varepsilon^\star_d\le\min\{\tfrac12\widetilde W_d(B),\ $Peierls$\}$ | PROVED | H3 |
+| Proposition 4.22 (O7) | Self-avoiding-walk refinement of the Peierls bound: range $4.29\%\to$ about $4.9\%$ at $e=0$ | PROVED ($c_{20}$ cited; $c_m$, $m\le14$, enumerated) | H2, H3 |
 | Proposition 5.1 | Chernoff upper bound $\alpha_+\le\ln(1/B)$, with explicit finite-$d$ form $\varepsilon_{\rm genie}\ge\tfrac12B^de^{-\sqrt{d\sigma^2}/2}$; Step 1 proved for all odd $d$ | PROVED | C6 ($d{=}3$), K1, K2, `checks/genie_large_d.py` |
 | Proposition 5.2 | Union lower bound $\alpha_-\ge-\Phi(B)$ | PROVED | -- |
 | Proposition 5.5 | Poisson bound $T\ge\ln((1-a)/\delta)/r$ (pattern methods cannot beat $1/r$) | PROVED | **P2 (M4)** |
 | Proposition 5.6 | Chain of exponents $D_{\rm count}\le D_{\rm pattern}\le D_{\rm event}$ | PROVED (chain; ratio of rounds under the marking model, Theorem 5.10) | **P2 (M4)** |
 | Open problem 5.7 (O4) | Experimental-design theorem | two-hypothesis part PROVED under (M) (5.8-5.11); composite hypotheses open | -- |
-| Lemma 5.8, Theorem 5.9 | Marked Poisson model: $D_{\rm pattern}=D_{\rm count}+\Lambda_1D(\pi_1\|\pi_0)$; weak-signal gain $1+\chi^2$ | PROVED | **P2 (M4)** |
+| Lemma 5.8, Theorem 5.9 | Marked Poisson model: $D_{\rm pattern}=D_{\rm count}+\Lambda_1D(\pi_1\|\pi_0)$; weak-signal gain $1+\chi^2$ | PROVED | H5 (identity); **P2 (M4)** |
 | Theorem 5.10 | Stein form: $T_{\rm count}/T_{\rm pattern}\to D_{\rm pattern}/D_{\rm count}$ (also Chernoff/Bayes) | PROVED | **P2 (M4)** |
 | Theorem 5.11 | Adaptive designs do not beat the best single experiment (Stein, weak converse); optimal design maximizes $D_i/c_i$ | PROVED | -- |
 

@@ -404,7 +404,7 @@ def k7_contamination() -> None:
     n = 4
     V = all_paulis(n)
     nz = (V[:, :n] | V[:, n:]).astype(int)
-    parity = V[:, n:].sum(axis=1) % 2                    # an X-type check flips on the Z components
+    parity = V[:, n:].astype(int).sum(axis=1) % 2         # an X-type check flips on the Z components (int: 1 - 2*parity must not wrap)
     worst = -np.inf
     for p in (0.0, 0.01, 0.1):
         lam = 1 - 4 * p / 3
