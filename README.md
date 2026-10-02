@@ -241,6 +241,8 @@ Theory does not wait for the numerics to finish; it starts in week one, theory l
 
 Current progress and what is unfinished (which parts have a complete written proof and which only have statements and routes) is in `theory/README.md`.
 
+**Counterexample search for the single-loss form of Conjecture 3.11** (`theory/checks/universal_order_search.py`, notes section 3.6, `results/universal_order_search.json`). The question: is every pair of code-capacity noises that no local free operation connects reversed by the ML failure rate of some linear decoding structure? Proved: the free order is cut out by two scalars (p and mu = (1-e)(1-4p/3)); the uncoded qubit has eps* = (3/4)(1 - mu) and a two-qubit structure ("guess E0 from E0 + E1") has eps* = (3/4)(1 - (1-e^2)(1-4p/3)), so the conjecture holds for every unreachable pair with e' < e and for all pairs with nu' > nu. Exhaustive over **all** linear structures on up to 3 qubits (92,881 of them) plus hill-climbing at 4 and 5 qubits: no structure reverses the six "trade" pairs tested (less Pauli noise, more erasure; smallest failure-rate ratio found at 4 and 5 qubits: 1.28, typically 1.5 to 3.7). This is evidence that the single-loss form is **false**, not a proof (n >= 6 is not searched). It does not affect the all-losses form, which is proved; no new free operation is needed. The same search shows that the smallest marginal exchange rate over all structures is 0 at e0 = 0 and positive at e0 > 0.
+
 ### 7.2 Out of scope (not for the current stage)
 
 - Coherent errors (the framework relies on the twirling approximation; see the limitations part of ABSTRACT).
