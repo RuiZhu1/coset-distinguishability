@@ -44,6 +44,9 @@ $\partial_e\alpha\ge c\,\partial_p\alpha$; since $-\partial_p\alpha>0$, multiply
 $-\partial_e\alpha\le c(-\partial_p\alpha)$, and dividing by $-\partial_p\alpha$ gives the claim.
 \end{proof}
 
+\paragraph{Constitutional reading.}
+$R_{e\to p}$ here is the \emph{marginal rate of a monotone} (\S\ref{sec:rates}); by Proposition~\ref{prop:marginal} every monotone of the local free order has marginal rate in $[0,c]$, and $c$ is attained by the free-order monotone $1-\mu$, so Theorem~\ref{thm:rate} cannot be improved using the free operations alone.
+
 \begin{remark}[Relation to the heuristic ``$R\le3/4$'']\label{rem:34}
 ``Adding $\delta e$ of erasure $\to$ adding $\tfrac34\delta e$ of depolarizing noise'' is the value of $c$ at $(p_0,e_0)=(0,0)$. The exact $c$ has two corrections:
 (i) the numerator $\tfrac34-p_0$: a newly erased qubit already carried depolarizing noise of probability $p_0$, so the net increase of the nontrivial-Pauli probability is $\tfrac34-p_0$;
@@ -121,6 +124,9 @@ If $e'<e$: $s_0\le1$, and $(*)$ gives $(1-e')\lambda'\le(1-e)\lambda$.
 The last sentence follows from Theorem~\ref{thm:monotone}.
 \end{proof}
 
+\paragraph{Level-1 form.}
+For the uncoded qubit, (i) and (ii) are also equivalent to the existence of an arbitrary simulable reduction (label permutations beyond translations) and to $\Phi(P')\le\Phi(P)$ for all $\varphi\in\Phi_4$ (Proposition~\ref{prop:local-level1}); the complete family of monotones is described in Theorem~\ref{thm:complete}.
+
 \begin{remark}[Structure]
 (1) Complete monotones: the local free order is completely determined by two functionals: the total unflagged eigenvalue mass $\mu=(1-e)\lambda$ (nonincreasing under any local free operation)
 and ``the conditional eigenvalue $\lambda$ is nonincreasing when the erasure rate does not decrease''.
@@ -173,6 +179,8 @@ and the $\alpha$-order of the surface code is merely a coarser order; or
 Within $\Nn_{\rm cc}(p,e)$, the \emph{code-universal finite-$n$ operational order} coincides with the local free order of Theorem~\ref{thm:preorder}.
 \hfill\st{CONJECTURE}
 \end{conjecture}
+\noindent\emph{Reformulation (constitutional audit).} The all-losses version of this conjecture (compare $\Phi(P')\le\Phi(P)$ for all $\varphi\in\Phi_\Lambda$, over all structures) is proved by taking the uncoded qubit (Proposition~\ref{prop:local-level1}, Remark~\ref{rem:conj-reform}); what remains open is the single-loss statement for $\err=1-\Phi_{\max}$.
+
 \noindent\emph{Evidence and route.} Observation~\ref{obs:sharp} gives first-order evidence at $e_0=0$: the boundary slope $c$ is attained by some code.
 Route to a proof: (S1) for each $n$ and linear structure $(\sigma,L)$, the comparison of $\err$ is a Blackwell comparison of the ``experiments'' given by $n$ independent copies
 (Blackwell--Sherman--Stein: experiment $A$ is at least as good as $B$ for all priors and losses if and only if $B$ is a randomized processing of $A$ \cite{Blackwell});

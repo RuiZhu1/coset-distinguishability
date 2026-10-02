@@ -191,7 +191,7 @@ pip install quimb         # optional: if implementing the truncated tensor-netwo
 
 Development install and tests: `pip install -e ".[dev]" && pytest` (about 10 seconds).
 
-Theory track: `make -C theory check` needs only numpy; `make -C theory pdf` needs a minimal TeX Live: `sudo apt-get install -y --no-install-recommends texlive-latex-recommended latexmk` (about 120 MB; plain `pdflatex`, no CJK fonts).
+Theory track: `make -C theory check` needs numpy and scipy (both are core dependencies of the package); `make -C theory pdf` needs a minimal TeX Live: `sudo apt-get install -y --no-install-recommends texlive-latex-recommended latexmk` (about 120 MB; plain `pdflatex`, no CJK fonts).
 
 **Cloud sessions.** A Claude Code cloud session runs in an ephemeral container: anything installed with `apt-get` or `pip` disappears when the container is reclaimed. To avoid reinstalling, add the install commands above to the **setup script** of the cloud environment (environment menu in the session title bar, then Edit); it runs when each new session starts. Files committed and pushed to the repository persist.
 
@@ -220,7 +220,7 @@ The theory-track milestones run **in parallel** with the table above (from week 
 
 | Stage | Content | Interlock with the numerics / acceptance criterion |
 |---|---|---|
-| T0 | Monotonicity lemma (three free operations), representation of erasure/leakage/events, exact small-code checks | First draft and `theory/checks` exist (all pass); M1 uses them as the oracle (done) |
+| T0 | Constitutional audit against the resource-theory axioms (theory §0), monotonicity lemma (three free operations), representation of erasure/leakage/events, exact small-code checks | First draft and `theory/checks` exist (all pass); M1 uses them as the oracle (done) |
 | T1 | Exchange-rate bound R <= (3/4-p0)/(1-e0); preorder theorem for the Pauli+erasure class | M2 reports R <= c and the gap Delta; P1 decides whether the gap comes from code dependence or incompleteness of the free operations |
 | T2 | Counterexample search for "code-universal order = local free order"; proof of Observation 3.5 | Exact computation on a library of random stabilizer codes; no large compute needed |
 | T3 | Conditional certification: code-capacity version (done) -> bursts + chip events (needs O1-O3) | M3/M4: floor scaling, parameter estimation, certificate >= exact/TN-ML failure rate |
@@ -230,7 +230,8 @@ The theory-track milestones run **in parallel** with the table above (from week 
 
 ### 7.1 The theory track: advanced in parallel in `theory/`
 
-Theory does not wait for the numerics to finish; it starts in week one, theory leads, and the numerics test the theory (including the monotonicity lemma). The notes are in `theory/` (LaTeX, `make -C theory pdf`); the status board is in [`theory/README.md`](theory/README.md). Contents and order:
+Theory does not wait for the numerics to finish; it starts in week one, theory leads, and the numerics test the theory (including the monotonicity lemma). The notes are in `theory/` (LaTeX, `make -C theory pdf`); the status board is in [`theory/README.md`](theory/README.md). Contents and order. **Section 0 of the notes is a constitutional audit**: it states the resource-theory axioms assumed (free objects, free operations closed under composition and product, golden rule, faithful and complete monotones, rates), checks the framework against them, and fixes what may be claimed (status of every item in `theory/README.md`; the axiom list is the author's assumption and is to be confirmed or replaced by the group's reference formulation).
+
 
 1. **Monotonicity under the three free operations** (rigorous proofs): coarse-graining and discarding side information by the data-processing inequality; superposing independent, classically samplable noise by a simulation argument; how erasure and leakage are represented in the model, under which assumptions the argument still holds and where it fails.
 2. **The preorder theorem in the simplest subclass.**

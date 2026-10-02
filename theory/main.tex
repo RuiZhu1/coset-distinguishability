@@ -56,14 +56,16 @@
 These notes are the working draft of the four classes of theoretical results in \texttt{ABSTRACT.md}. Every statement carries a status tag
 (\st{PROVED}, \st{SKETCH}, \st{NUMERICAL}, \st{CONJECTURE}, \st{PLAN}) and is matched in \S\ref{sec:map}
 with a numerical check in the repository: \textbf{theory leads, numerics test the theory}.
+Section~0 audits the framework against the axioms of a resource theory (free objects, composition, golden rule, a complete family of monotones, three distinct notions of ``rate'').
 Results with a complete written proof: (i) monotonicity under the three free operations; (ii) the representation of erasure, leakage, and burst events in the model, and the boundary of validity;
-(iii) the exact upper bound on the local exchange rate
-$R_{e\to p}\le (3/4-p_0)/(1-e_0)$; (iv) a complete characterization of the preorder of local free operations on the code-capacity Pauli-plus-erasure class;
+(iii) the exact upper bound on the marginal exchange rate
+$R_{e\to p}\le (3/4-p_0)/(1-e_0)$, which is the sharp bound on the marginal rate of every monotone of the free order (Proposition~\ref{prop:marginal}); (iv) a complete characterization of the preorder of local free operations on the code-capacity Pauli-plus-erasure class;
 (v) a finite-sample certificate that can be computed in closed form (code capacity). The remaining items are statements with proof routes.
 \end{abstract}
 
 \tableofcontents
 
+\input{sec0-constitution}
 \input{sec1-framework}
 \input{sec2-representation}
 \input{sec3-exchange}

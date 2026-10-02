@@ -5,13 +5,15 @@ Theory and numerics advance **in parallel**, with theory leading and the numeric
 ```
 theory/
 ├── main.tex                   main file (plain pdflatex); `make pdf` builds main.pdf
+├── sec0-constitution.tex      constitutional audit: resource-theory axioms, complete family of monotones, three notions of rate (numbered section 0)
 ├── sec1-framework.tex         linear decoding structures, simulable reductions, monotonicity under the three free operations
 ├── sec2-representation.tex    erasure / leakage / burst / chip-scale events in the model; where the argument is valid
 ├── sec3-exchange.tex          exchange-rate bound, preorder on the Pauli+erasure class, the gap problem, envelope argument
 ├── sec4-certification.tex     conditional certification: union bound, parameter confidence sets, floor; open lemmas for bursts
 ├── sec5-information.tex       Chernoff/union sandwich, reference rates, Poisson bound, detection exponents
 ├── sec6-map.tex               theory <-> numerics map, open problems, schedule in parallel with M0-M5
-└── checks/exact_small_codes.py  exact ML checks (no sampling, no approximation) on three codes with n <= 9
+├── checks/exact_small_codes.py  exact ML checks (no sampling, no approximation) on three codes with n <= 9
+└── checks/constitution.py       structural checks of section 0 (LP over simulable reductions; about 4 s)
 ```
 
 ## Build and run
@@ -21,7 +23,7 @@ make -C theory pdf      # needs a TeX distribution; see below
 make -C theory check    # needs numpy; about 35 s; non-zero exit status if an inequality is violated
 ```
 
-The last line of `check` should read `ALL INEQUALITY CHECKS PASSED`.
+`check` runs both scripts; their last lines should read `ALL INEQUALITY CHECKS PASSED` and `ALL STRUCTURAL CHECKS PASSED`.
 
 **TeX packages.** The notes are plain `pdflatex` (no CJK, no XeLaTeX). On Debian/Ubuntu the minimal set is
 
@@ -47,6 +49,14 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 
 | Number | Content | Status | Numerical check |
 |---|---|---|---|
+| Lemma 0.2, Proposition 0.3 | Kernel form of simulable reductions; they form a category (identity, composition) | PROVED | N1-N3 |
+| Proposition 0.4 | Free objects (uniform label independent of the observation), no resource generation, golden rule, faithfulness of $\varepsilon^\star$ | PROVED | N6 |
+| Proposition 0.5 | Parallel composition; $-\log_2(1-\varepsilon^\star)$ is additive | PROVED | N4 |
+| Theorem 0.6 | Complete family of monotones $\Phi_\Lambda$ (Blackwell--Sherman--Stein with relabeling); an adaptation of the standard separation argument | PROVED | N2, N3 |
+| Corollary 0.7 | $\varepsilon^\star$ alone is not complete; the free operations are maximal | PROVED | N5 |
+| Propositions 0.8, 0.9 | Level 2 $\subseteq$ Level 1; for the uncoded qubit, local free reachability = arbitrary simulable reduction = $\Phi$-order for all $\varphi$ | PROVED | N1 |
+| Remark 0.10 | Reformulation of Conjecture 3.11: all-losses form proved (uncoded qubit); single-loss form for $\varepsilon^\star$ open | -- | counterexample search (to do) |
+| Proposition 0.11 | Marginal rates of monotones of the local free order fill exactly $[0,c]$; $c$ is attained by the free-order monotone $1-\mu$; $R_B$ and $R_{\rm hash}$ are marginal rates of monotones ($Q_{\rm hash}$: numerical) | PROVED | C7, N1, N7 |
 | Theorem 1.7 | Monotonicity of $\varepsilon^\star$ under simulable reductions (coarse-graining / discarding flags: data processing; superposition: simulation argument) | PROVED | C1, C2 |
 | Proposition 1.9 | (F1), (F2), (F2') are simulable reductions; superposing independent noise never decreases $\varepsilon^\star$ | PROVED | C1, C2 |
 | Proposition 2.1 | Erasure = flagged completely depolarizing noise (Pauli twirl); the maximally mixed model is conservative for real noise | PROVED | -- |
@@ -71,7 +81,7 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Proposition 5.5 | Poisson bound $T\ge\ln((1-a)/\delta)/r$ (pattern methods cannot beat $1/r$) | PROVED | **P2 (M4)** |
 | Proposition 5.6 | Chain of exponents $D_{\rm count}\le D_{\rm pattern}\le D_{\rm event}$ | PROVED (chain of inequalities) | **P2 (M4)** |
 
-Numbers refer to the numbering in `main.pdf` (checked against the `.aux` file whenever this table is updated).
+Section 0 is the constitutional audit; the axiom list it uses is an assumption of the author of these notes and must be confirmed or replaced (see its first subsection). Numbers refer to the numbering in `main.pdf` (checked against the `.aux` file whenever this table is updated).
 
 ## Two hard conventions with the numerics track
 

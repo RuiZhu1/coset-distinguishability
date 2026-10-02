@@ -15,6 +15,12 @@ Theoretical statement & Numerical check & Location / milestone & Status \\
 Theoretical statement & Numerical check & Location / milestone & Status \\
 \midrule
 \endhead
+Section~\ref{sec:constitution}\ (resource-theory axioms: category, free objects, golden rule, product, complete family $\Phi_\Lambda$) &
+LP reachability against condition (ii) of Theorem~\ref{thm:preorder} (N1); LP duality for Theorem~\ref{thm:complete} (N2, N3); $\err$ not complete (N5); free objects (N6); product (N4) &
+\texttt{theory/checks/constitution.py} & passes \\
+Proposition~\ref{prop:marginal}\ (marginal rates of monotones fill $[0,c]$) &
+$R^{(d)}\in[0,c]$ for exact ML (C7, C1); the monotones $p$, $1-\mu$, $B$ (and numerically $Q_{\rm hash}$) ordered on reachable pairs (N1, N7) &
+\texttt{theory/checks} & passes \\
 Theorem~\ref{thm:monotone}, Proposition~\ref{prop:free-ops}\ (monotonicity) &
 $\err(p,e)$ nondecreasing in $p,e$; superposing independent layers does not decrease it (C1, C2) &
 \texttt{theory/checks}\ (exact ML, 3 codes) & passes \\
@@ -75,6 +81,9 @@ Lower bounds (the floor, the Poisson lower bound, the genie lower bound) hold fo
 \begin{enumerate}
 \item \textbf{The gap problem} (Problem~\ref{prob:gap}): does $c-R_\alpha$ come from code dependence or from incompleteness of the free operations?
   \emph{Prerequisite numerics}: the $R_\alpha$ of P1; \emph{theoretical route}: the Blackwell/R\'enyi route of Conjecture~\ref{conj:universal}.
+\item \textbf{Single-loss form of Conjecture~\ref{conj:universal}} (Remark~\ref{rem:conj-reform}): does the code-universal order of $\err=1-\Phi_{\max}$ alone coincide with the local free order? The all-losses form is proved (Proposition~\ref{prop:local-level1}). 
+  \emph{Prerequisite numerics}: counterexample search over a library of stabilizer codes; for orders of the surface code, the nesting $\succeq_{\rm local}\subseteq\succeq_{\mathrm{L1}}\subseteq\succeq_{\err}$.
+\item \textbf{Asymptotic rates in the tensor-power sense} (R-c of \S\ref{sec:rates}): not computed; needs the large-sample Blackwell order.
 \item \textbf{O1} (Problem~\ref{prob:O1}): monotonicity of $\err$ in the shape parameters $p_b,R,T_b$ for unflagged bursts.
 \item \textbf{O2} (Problem~\ref{prob:O2}): confidence upper limits for the parameters under contamination by burst/chip events.
 \item \textbf{O3} (Problem~\ref{prob:O3}): explicit estimates for the union bound for burst mixtures (cluster expansion).
@@ -87,11 +96,11 @@ Lower bounds (the floor, the Poisson lower bound, the genie lower bound) hold fo
 \subsection{Near-term order of work (in parallel with M0--M5)}
 
 \begin{center}
-\begin{tabular}{lll}
+\begin{tabular}{p{1.3cm}p{6.8cm}p{6.2cm}}
 \toprule
 Theory track & Content & Interlock with the numerics track \\
 \midrule
-T0 & framework, monotonicity, representation (this document, \S\ref{sec:framework}--\ref{sec:repr}) + exact small-code checks & oracle and sanity checks for M0/M1 \\
+T0 & constitutional audit (\S\ref{sec:constitution}), framework, monotonicity, representation (this document, \S\ref{sec:framework}--\ref{sec:repr}) + exact small-code checks & oracle and sanity checks for M0/M1 \\
 T1 & exchange-rate bound, preorder theorem (\S\ref{sec:exchange}) & M2: report $R\le c$ and the gap $\Delta$ \\
 T2 & counterexample search for Conjecture~\ref{conj:universal}; proof of Observation~\ref{obs:sharp} & extend \texttt{checks}; no large computation needed \\
 T3 & code-capacity certification + O1--O3 (\S\ref{sec:cert}) & M3/M4: floor, parameter identification \\

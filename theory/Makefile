@@ -4,6 +4,7 @@ pdf:
 
 check:
 	python3 checks/exact_small_codes.py
+	python3 checks/constitution.py
 
 clean:
 	latexmk -C
