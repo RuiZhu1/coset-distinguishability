@@ -60,6 +60,7 @@ DATA = REPO / "data"
 WILLOW = DATA / "willow" / "google_105Q_surface_code_d3_d5_d7"
 SYC_RE = re.compile(r"(surface_code|repetition_code)_b([XZ])_d(\d+)_r(\d+)_center_(\d+)_(\d+)$")
 S_MAX, RTOL, LAM = 4.0, 1e-3, 0.5
+MAX_DETECTORS_REFINED = 1000      # Theorems 4.32/4.34 use dense arc matrices; the d = 25 repetition code (1224) is skipped
 
 
 # ------------------------------------------------------------------ statistics
@@ -115,7 +116,10 @@ def model_row(path: Path, geodesic: bool = True) -> dict:
                    bound_s1_lam_half=bound_at_scale(dem, 1.0, LAM))
         m = certifiability_margin(dem, s_max=S_MAX, rtol=RTOL, lam=LAM)
         row.update(margin=m, s_star=m["s_star"], s_star_label=">4" if m["capped"] else f"{m['s_star']:.4g}")
-        if geodesic:
+        if geodesic and dem.num_detectors > MAX_DETECTORS_REFINED:
+            row.update(s_star_4_32=None, s_star_4_34=None,
+                       refusal_4_32=f"skipped: {dem.num_detectors} detectors > {MAX_DETECTORS_REFINED} (dense arc matrices)")
+        elif geodesic:
             try:
                 g = certifiability_margin(dem, s_max=S_MAX, rtol=1e-2, method="4.32")
                 row.update(margin_4_32=g, s_star_4_32=g["s_star"])
