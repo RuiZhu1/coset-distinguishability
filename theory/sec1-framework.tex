@@ -8,6 +8,7 @@ To let one set of proofs cover both code-capacity noise and circuit-level noise 
 A linear decoding structure is a triple $\mathfrak D=(V,\sigma,L)$: $V$ is a finite-dimensional $\F$-vector space (the \emph{fault space}),
 $\sigma:V\to\F^{r}$ is the \emph{detector map} (syndrome), and $L:V\to\F^{q}$ is the \emph{observable map}; both are linear.
 \end{definition}
+\noindent A closely related formalism is that of Pryadko~\cite{Pryadko}, who describes the error probability distribution of a Clifford measurement circuit exactly in terms of the circuit error-equivalence group (equivalently, the circuit subsystem code of Bacon, Flammia, Harrow and Shi), which gives a prescription for maximum-likelihood decoding with a given measurement circuit, and studies the marginal distributions of subsets of circuit errors. Definition~\ref{def:structure} uses only the linear detector and observable maps of a circuit.
 
 \begin{definition}[Structure of a stabilizer code]\label{def:code-structure}
 Let $S$ be the stabilizer group of an $n$-qubit stabilizer code ($n-k$ independent generators $g_i$). Write Paulis modulo phase as $V=\F^{2n}$ with

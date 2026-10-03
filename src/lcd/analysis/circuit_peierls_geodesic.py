@@ -120,9 +120,12 @@ class _Geo:
             raise RuntimeError("geodesic DAG did not terminate")
         return total
 
-    def kernels(self, lam: float, q: np.ndarray, what: np.ndarray):
+    def kernels(self, lam: float, q: np.ndarray, what: np.ndarray, q_lower: np.ndarray | None = None):
+        """With ``q_lower``, x_e uses q (an upper limit) and c_e uses 1 - q_lower (Theorem 4.32 proof, step (b):
+        prod_S q_e prod_rest (1 - q_e) <= prod_S q_hi prod_rest (1 - q_lo))."""
+        ql = q if q_lower is None else q_lower
         x = q * np.exp(lam * what)
-        c = (1 - q) * np.exp(-lam * what)
+        c = (1 - ql) * np.exp(-lam * what)
         V = self.V
         # X-runs: non-backtracking walks of length >= 1 between interior vertices
         n = len(self.arc_tail)
@@ -151,16 +154,31 @@ class _Geo:
         return KX, KC, sX, sC, eX, eC, s1
 
 
-def geodesic_bound(dem, lams=None, G: DemGraph | None = None) -> dict:
-    """Upper bound on the per-shot failure probability of pymatching (hence of ML) with the geodesic refinement."""
+def geodesic_bound(dem, lams=None, G: DemGraph | None = None, q_upper: np.ndarray | None = None,
+                   q_lower: np.ndarray | None = None) -> dict:
+    """Upper bound on the per-shot failure probability of pymatching (hence of ML) with the geodesic refinement.
+
+    The decoder's weights always come from ``dem`` (pymatching's integer weights). The edge probabilities default to
+    G.q; with ``q_upper`` / ``q_lower`` (arrays on G.edges, q_lower <= q <= q_upper for the true q) the bound holds for
+    every independent-edge model with q in the box: x_e uses q_upper and c_e uses q_lower (not monotone in q otherwise).
+    """
     G = G if G is not None else dem_graph(dem)
+    if q_upper is None and q_lower is not None:
+        raise ValueError("q_lower needs q_upper")
+    qu = G.q if q_upper is None else np.asarray(q_upper, float)
+    # q_upper alone: q_lower = 0 is the conservative choice
+    ql = G.q if q_upper is None else (np.zeros_like(qu) if q_lower is None else np.asarray(q_lower, float))
+    if qu.shape != G.q.shape or ql.shape != G.q.shape:
+        raise ValueError("q_upper / q_lower must be arrays on G.edges")
+    if np.any(ql > qu) or np.any(ql < 0) or np.any(qu > 0.5):
+        raise ValueError("need 0 <= q_lower <= q_upper <= 1/2")
     wt, kappa = pymatching_integer_weights(dem, G)
     geo = _Geo(G, wt)
     what = wt / (2 * kappa)
     V = geo.V
 
     def f(lam):
-        k = geo.kernels(lam, G.q, what)
+        k = geo.kernels(lam, qu, what, ql)
         if k is None:
             return np.inf, np.nan
         KX, KC, sX, sC, eX, eC, s1 = k
