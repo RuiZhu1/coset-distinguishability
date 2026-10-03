@@ -1,4 +1,4 @@
-"""Geodesic refinement of the circuit-level Peierls bound (draft; theory note in preparation).
+"""Geodesic and gap refinements of the circuit-level Peierls bound (theory Theorems 4.32, 4.34).
 
 Setting of Theorem 4.28 with every mechanism exclusive (no split mechanisms), which holds for stim's rotated memory
 circuits after re-decomposition and for Google's published hardware DEMs. On failure there is an odd simple cycle
@@ -202,14 +202,178 @@ def geodesic_bound(dem, lams=None, G: DemGraph | None = None, q_upper: np.ndarra
 
 
 def best_bound(dem, G: DemGraph | None = None) -> dict:
-    """The smaller of Theorem 4.28 and Theorem 4.32 (both are upper bounds); ``method`` says which one."""
+    """The smallest of Theorems 4.28, 4.32 and 4.34 (all are upper bounds); ``method`` says which one."""
     from lcd.analysis.circuit_peierls import peierls_bound
     G = G if G is not None else dem_graph(dem)
     r = dict(peierls_bound(dem, G=G), method="4.28")
-    try:
-        g = geodesic_bound(dem, G=G)
-    except NotImplementedError:
-        return r
-    if g["bound"] < r["bound"]:
-        r.update(bound=g["bound"], lam=g["lam"], rho_upper=g["rho_upper"], method="4.32")
+    for name, fn in (("4.32", geodesic_bound), ("4.34", gap_bound_nb)):
+        try:
+            g = fn(dem, G=G)
+        except NotImplementedError:
+            return r
+        if g["bound"] < r["bound"]:
+            r.update(bound=g["bound"], lam=g["lam"], rho_upper=g["rho_upper"], method=name)
     return r
+
+
+def gap_bound(dem, lams=None, G: DemGraph | None = None, q_upper=None, q_lower=None) -> dict:
+    """Gap refinement with vertex-level junctions (Theorem 4.34 without its non-backtracking junctions; kept for the checks): the Chernoff factor is charged to the distances across the error gaps.
+
+    On a failure cycle with correction runs sigma_1..sigma_k (cyclic order) and error runs pi_j between them, with end
+    points z_j (end of sigma_j) and y_{j+1} (start of sigma_{j+1}), replacing every sigma_i by geodesics z_j -> y_{j+1}
+    keeps the syndrome, so minimality gives sum_i w~(sigma_i) <= sum_j d~(z_j, y_{j+1}) (<= sum_j w~(pi_j)). The Chernoff
+    factor exp(lam (sum_j d^(z_j, y_{j+1}) - sum_i w^(sigma_i))) is therefore attached to the gaps, and an error run
+    pi from z to y costs prod_{e in pi} q_e * exp(lam d^(z, y)); a cycle without correction runs costs prod q_e. Through
+    the boundary vertex, d(z, y) <= d(z, b) + d(b, y) is used. C-runs are geodesics with factor (1 - q_e) exp(-lam w^_e)
+    as in Theorem 4.32.
+    """
+    G = G if G is not None else dem_graph(dem)
+    wt, kappa = pymatching_integer_weights(dem, G)
+    geo = _Geo(G, wt)
+    what = wt / (2 * kappa)
+    qu = G.q if q_upper is None else np.asarray(q_upper)
+    ql = G.q if q_lower is None else np.asarray(q_lower)
+    V, b = geo.V, geo.b
+    Dh = geo.D / (2 * kappa)                                          # distances in w^ units
+    n = len(geo.arc_tail)
+    Bq = sp.csc_matrix((qu[geo.arc_edge[geo.nb_cols]], (geo.nb_rows, geo.nb_cols)), shape=(n, n))
+    lu = spla.splu((sp.identity(n, format="csc") - Bq).tocsc())
+    if not np.all(lu.solve(np.ones(n)) > 0):
+        return dict(bound=np.inf, lam=None, rho_upper=np.nan, kappa=kappa, stats=G.stats)
+    Out = sp.csc_matrix((np.ones(n), (np.arange(n), geo.arc_head)), shape=(n, V)).toarray()
+    In = sp.csr_matrix((qu[geo.arc_edge], (geo.arc_tail, np.arange(n))), shape=(V, n))
+    W = In @ lu.solve(Out)                                              # sum of prod q over NB walks, length >= 1
+    I = np.eye(V)
+    s0 = np.zeros(V); s1 = np.zeros(V)
+    for u, e in geo.bedge.items():
+        if geo.side[u] == 0:
+            s0[u] = qu[e]
+        elif geo.side[u] == 1:
+            s1[u] = qu[e]
+    WX0 = s0 @ (I + W)                                                  # error run b -> y (prod q only)
+    WX1 = (I + W) @ s1                                                  # error run z -> b
+    pure = float(WX0 @ s1)                                              # cycles with no correction run
+
+    def f(lam):
+        c = (1 - ql) * np.exp(-lam * what)
+        KX = np.exp(lam * Dh[:V, :V]) * W
+        np.fill_diagonal(KX, 0.0)                                       # z == y: gap of a closed walk; see below
+        KX += np.diag(np.diag(W))                                       # d(z, z) = 0: factor 1
+        KC = geo.geodesic_sums(c, np.arange(V)) - I
+        sX = WX0 * np.exp(lam * Dh[b, :V])
+        eX = WX1 * np.exp(lam * Dh[:V, b])
+        side0 = {u: c[e] for u, e in geo.bedge.items() if geo.side[u] == 0}
+        side1 = {u: c[e] for u, e in geo.bedge.items() if geo.side[u] == 1}
+        sC = geo.geodesic_sums(c, np.array([b]), side0)[0]
+        eC = geo.geodesic_sums(c, np.array([b]), side1)[0]
+        M = np.zeros((2 * V, 2 * V))
+        M[:V, V:] = KC
+        M[V:, :V] = KX
+        luM = sla.lu_factor(np.eye(2 * V) - M)
+        zz = sla.lu_solve(luM, np.ones(2 * V))
+        if not np.all(zz > 0):
+            return np.inf, np.nan
+        return pure + float(np.r_[sX, sC] @ sla.lu_solve(luM, np.r_[eC, eX])), 1 - 1 / zz.max()
+
+    grid = list(lams) if lams is not None else [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+    vals = [f(l) for l in grid]
+    k = int(np.argmin([v[0] for v in vals]))
+    return dict(bound=vals[k][0], lam=float(grid[k]), rho_upper=vals[k][1], kappa=kappa, stats=G.stats)
+
+
+def gap_bound_nb(dem, lams=None, G: DemGraph | None = None, q_upper=None, q_lower=None) -> dict:
+    """Theorem 4.34: gap refinement with non-backtracking junctions.
+
+    Same terms as ``gap_bound``, but the alternating sequence is tracked on arcs (directed edges of G_o - b): a run is
+    entered by its first arc and left by its last arc, and at a junction the next run may not start with the reverse of
+    the previous run's last arc (a simple cycle never does). Runs consisting of a boundary edge only are handled as vertex
+    states. Arc kernels: KXa[f, l] = q_f P[f, l] exp(lam d^(tail f, head l)) with P = (I - B_q)^{-1};
+    KCa[f, l] = c_f c_l F[head f, tail l] if w~_f + d~(head f, tail l) + w~_l = d~(tail f, head l) (f != l), c_f if f = l
+    is a geodesic edge, with F the interior geodesic sums.
+    """
+    G = G if G is not None else dem_graph(dem)
+    wt, kappa = pymatching_integer_weights(dem, G)
+    geo = _Geo(G, wt)
+    what = wt / (2 * kappa)
+    qu = G.q if q_upper is None else np.asarray(q_upper)
+    ql = G.q if q_lower is None else np.asarray(q_lower)
+    V, b = geo.V, geo.b
+    D = geo.D
+    Dh = D / (2 * kappa)
+    tail, head, ae = geo.arc_tail, geo.arc_head, geo.arc_edge
+    na = len(tail)
+    Bq = sp.csc_matrix((qu[ae[geo.nb_cols]], (geo.nb_rows, geo.nb_cols)), shape=(na, na))
+    lu = spla.splu((sp.identity(na, format="csc") - Bq).tocsc())
+    if not np.all(lu.solve(np.ones(na)) > 0):
+        return dict(bound=np.inf, lam=None, rho_upper=np.nan, kappa=kappa, stats=G.stats)
+    P = lu.solve(np.eye(na))                                            # NB walk sums between arcs (P[f, f] includes 1)
+    qa = qu[ae]
+    # vertex-level walk sums for the pure-error cycles
+    Out = np.zeros((na, V)); Out[np.arange(na), head] = 1.0
+    In = np.zeros((V, na)); In[tail, np.arange(na)] = qa
+    W = In @ P @ Out
+    I = np.eye(V)
+    s0 = np.zeros(V); s1 = np.zeros(V); c0 = {}; c1 = {}
+    for u, e in geo.bedge.items():
+        if geo.side[u] == 0:
+            s0[u] = qu[e]
+        elif geo.side[u] == 1:
+            s1[u] = qu[e]
+    pure = float(s0 @ (I + W) @ s1)
+    J = (head[:, None] == tail[None, :]) & (head[None, :] != tail[:, None])   # junction l -> f, no reversal
+    by_tail = np.zeros((V, na)); by_tail[tail, np.arange(na)] = 1.0
+    bw = np.full(V, np.nan)
+    for u, e in geo.bedge.items():
+        bw[u] = wt[e]
+    geo_b = np.abs(D[b, :V] - bw) < 0.5                                   # boundary edge b-u is a geodesic
+    side = geo.side
+
+    def f(lam):
+        c = (1 - ql) * np.exp(-lam * what)
+        ca = c[ae]
+        E = np.exp(lam * Dh[np.ix_(tail, head)])
+        KXa = (qa[:, None] * P) * E
+        F = geo.geodesic_sums(c, np.arange(V))
+        cond = np.abs(wt[ae][:, None] + D[np.ix_(head, tail)] + wt[ae][None, :] - D[np.ix_(tail, head)]) < 0.5
+        KCa = (ca[:, None] * ca[None, :]) * F[np.ix_(head, tail)] * cond
+        single = np.abs(wt[ae] - D[tail, head]) < 0.5
+        KCa[np.arange(na), np.arange(na)] = np.where(single, ca, 0.0)
+        Jf = J.astype(float)
+        # boundary pieces
+        cb = np.zeros(V)
+        for u, e in geo.bedge.items():
+            cb[u] = c[e]
+        vX = np.where(side == 0, s0 * np.exp(lam * Dh[b, :V]), 0.0)          # X-run = boundary edge only, ends at u
+        vC = np.where((side == 0) & geo_b, cb, 0.0)                        # C-run = boundary edge only
+        Fb0 = geo.geodesic_sums(c, np.array([b]), {u: cb[u] for u in range(V) if side[u] == 0})[0]
+        Fb1 = geo.geodesic_sums(c, np.array([b]), {u: cb[u] for u in range(V) if side[u] == 1})[0]
+        # starts into arc states
+        firstX = s0 @ by_tail                                              # q_{b,tail f} for arcs leaving side-0 vertices
+        sXa = (firstX * qa) @ P * np.exp(lam * Dh[b, head])                # X-run from b with >= 1 interior arc, last arc l
+        sCa = Fb0[tail] * ca * (np.abs(D[b, tail] + wt[ae] - D[b, head]) < 0.5)   # C-run from b, last arc l
+        sCa = sCa + (vX @ by_tail) @ KCa                                   # X boundary edge, then a C-run from u
+        sXa = sXa + (vC @ by_tail) @ KXa                                   # C boundary edge, then an X-run from u
+        # ends from arc states (state = last arc of the previous run)
+        lastX = (P * (side[head] == 1)[None, :]) @ s1[head]                 # sum over walks from f to a side-1 vertex v
+        eXa = qa * lastX * np.exp(lam * Dh[tail, b])                         # X-run starting with f, into b
+        eCa = Fb1[head] * ca * (np.abs(D[b, head] + wt[ae] - D[b, tail]) < 0.5)   # C-run starting with f, into b
+        evX = np.where(side[head] == 1, s1[head] * np.exp(lam * Dh[head, b]), 0.0)   # X boundary edge only
+        evC = np.where((side[head] == 1) & geo_b[head], cb[head], 0.0)               # C boundary edge only
+        endX = Jf @ eCa + evC                                              # after an X-run: a C-run into b
+        endC = Jf @ eXa + evX                                              # after a C-run: an X-run into b
+        # direct start -> end with vertex-only starts
+        direct = float(vX @ (by_tail @ eCa)) + float(vC @ (by_tail @ eXa))
+        M = np.zeros((2 * na, 2 * na))
+        M[:na, na:] = Jf @ KCa                                             # X-ended -> C-ended
+        M[na:, :na] = Jf @ KXa                                             # C-ended -> X-ended
+        luM = sla.lu_factor(np.eye(2 * na) - M)
+        zz = sla.lu_solve(luM, np.ones(2 * na))
+        if not np.all(zz > 0):
+            return np.inf, np.nan
+        tot = pure + direct + float(np.r_[sXa, sCa] @ sla.lu_solve(luM, np.r_[endX, endC]))
+        return tot, 1 - 1 / zz.max()
+
+    grid = list(lams) if lams is not None else [0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+    vals = [f(l) for l in grid]
+    k = int(np.argmin([v[0] for v in vals]))
+    return dict(bound=vals[k][0], lam=float(grid[k]), rho_upper=vals[k][1], kappa=kappa, stats=G.stats)

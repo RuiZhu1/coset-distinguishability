@@ -1,4 +1,4 @@
-"""Geodesic refinement of the circuit-level Peierls bound (theory Theorem 4.32) against Theorem 4.28.
+"""Geodesic and gap refinements of the circuit-level Peierls bound (theory Theorems 4.32, 4.34) against Theorem 4.28.
 
 For stim's rotated surface-code memory circuit (d rounds, uniform circuit noise of strength p, as in Proposition 4.29):
   * both bounds for d = 3, 5, 7, 9 and p in {5e-4, 1e-3, 2e-3, 3e-3, 5e-3};
@@ -27,7 +27,7 @@ import stim
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 from lcd.analysis.circuit_peierls import peierls_bound  # noqa: E402
-from lcd.analysis.circuit_peierls_geodesic import geodesic_bound  # noqa: E402
+from lcd.analysis.circuit_peierls_geodesic import gap_bound_nb, geodesic_bound  # noqa: E402
 
 LAMS = [0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
 WILLOW = REPO / "data" / "willow" / "google_105Q_surface_code_d3_d5_d7" / "d7_at_q6_7" / "Z" / "r10" / "decoding_results"
@@ -46,6 +46,10 @@ def old_bound(dem) -> float:
 
 def new_bound(dem) -> float:
     return geodesic_bound(dem, lams=LAMS)["bound"]
+
+
+def gap_nb(dem) -> float:
+    return gap_bound_nb(dem, lams=[0.2, 0.3, 0.4, 0.5, 0.6, 0.7])["bound"]
 
 
 def largest_finite(f, lo: float, hi: float, iters: int = 12) -> float:
@@ -80,16 +84,18 @@ def main() -> int:
     for d in (3, 5, 7, 9):
         for p in (5e-4, 1e-3, 2e-3, 3e-3, 5e-3):
             dem = surface(d, p)
-            o, n = old_bound(dem), new_bound(dem)
-            rows.append(dict(d=d, p=p, theorem_4_28=o, theorem_4_32=n, ratio=o / n if np.isfinite(n) and n > 0 else None))
-            print(f"d={d} p={p:.0e}: Theorem 4.28 {o:.3e}   Theorem 4.32 {n:.3e}", flush=True)
+            o, n, g = old_bound(dem), new_bound(dem), gap_nb(dem)
+            rows.append(dict(d=d, p=p, theorem_4_28=o, theorem_4_32=n, theorem_4_34=g,
+                             ratio=o / n if np.isfinite(n) and n > 0 else None))
+            print(f"d={d} p={p:.0e}: Theorem 4.28 {o:.3e}   Theorem 4.32 {n:.3e}   Theorem 4.34 {g:.3e}", flush=True)
     out["bounds"] = rows
     pmax = []
     for d in (5, 7, 9):
         po = largest_finite(lambda p: peierls_bound(surface(d, p), lams=[0.5])["bound"], 1e-4, 1e-2)
         pn = largest_finite(lambda p: new_bound(surface(d, p)), 1e-4, 1e-2)
-        pmax.append(dict(d=d, theorem_4_28=po, theorem_4_32=pn))
-        print(f"d={d}: largest p with a finite bound: Theorem 4.28 {po:.3e}, Theorem 4.32 {pn:.3e}", flush=True)
+        pg = largest_finite(lambda p: gap_nb(surface(d, p)), 1e-4, 1e-2)
+        pmax.append(dict(d=d, theorem_4_28=po, theorem_4_32=pn, theorem_4_34=pg))
+        print(f"d={d}: largest p with a finite bound: Theorem 4.28 {po:.3e}, 4.32 {pn:.3e}, 4.34 {pg:.3e}", flush=True)
     out["largest_finite_p"] = pmax
     if WILLOW.exists():
         hw = []
@@ -97,9 +103,11 @@ def main() -> int:
             dem = stim.DetectorErrorModel.from_file(WILLOW / f"correlated_matching_decoder_with_{prior}" / "error_model.dem").flattened()
             so = largest_finite(lambda s: peierls_bound(scaled(dem, s), lams=[0.5])["bound"], 0.05, 4.0)
             sn = largest_finite(lambda s: new_bound(scaled(dem, s)), 0.05, 4.0)
+            sg = largest_finite(lambda s: gap_nb(scaled(dem, s)), 0.05, 4.0)
             hw.append(dict(experiment="Willow 105Q d7_at_q6_7 Z r10", prior=prior, bound_4_28=old_bound(dem),
-                           bound_4_32=new_bound(dem), margin_4_28=so, margin_4_32=sn))
-            print(f"Willow d7 {prior}: margin s* Theorem 4.28 {so:.3f}, Theorem 4.32 {sn:.3f}", flush=True)
+                           bound_4_32=new_bound(dem), bound_4_34=gap_nb(dem), margin_4_28=so, margin_4_32=sn,
+                           margin_4_34=sg))
+            print(f"Willow d7 {prior}: margin s* Theorem 4.28 {so:.3f}, 4.32 {sn:.3f}, 4.34 {sg:.3f}", flush=True)
         out["willow"] = hw
     out["meta"]["seconds"] = round(time.time() - t0, 1)
     Path(a.out).write_text(json.dumps(out, indent=1, default=float) + "\n")

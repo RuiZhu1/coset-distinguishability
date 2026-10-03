@@ -1,11 +1,11 @@
-"""Command line: ``lcd-peierls`` computes the circuit-level Peierls bounds (theory, Theorems 4.28 and 4.32).
+"""Command line: ``lcd-peierls`` computes the circuit-level Peierls bounds (theory, Theorems 4.28, 4.32, 4.34).
 
     lcd-peierls circuit.stim                    # a stim circuit (its DEM is built as sinter builds it)
     lcd-peierls model.dem                       # a decomposed detector error model
     lcd-peierls --generated surface_code:rotated_memory_z -d 5 -p 1e-3
     lcd-peierls a.stim b.stim --json            # one JSON object per line
 
-The number printed (by default the smaller of Theorems 4.28 and 4.32) is a rigorous upper bound, per shot, on the
+The number printed (by default the smallest of Theorems 4.28, 4.32, 4.34) is a rigorous upper bound, per shot, on the
 logical failure probability of pymatching (no correlated decoding) on that model, hence of the maximum-likelihood decoder. ``inf`` means the walk sum diverges.
 """
 from __future__ import annotations
@@ -17,7 +17,7 @@ import sys
 import stim
 
 from lcd.analysis.circuit_peierls import peierls_bound
-from lcd.analysis.circuit_peierls_geodesic import best_bound, geodesic_bound
+from lcd.analysis.circuit_peierls_geodesic import best_bound, gap_bound_nb, geodesic_bound
 
 
 def _dem_from_path(path: str) -> stim.DetectorErrorModel:
@@ -42,8 +42,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("-r", "--rounds", type=int, help="rounds for --generated (default: d)")
     ap.add_argument("-p", type=float, help="uniform circuit noise strength for --generated")
     ap.add_argument("--lam", type=float, help="evaluate at this lambda instead of minimizing over it")
-    ap.add_argument("--method", choices=("best", "4.28", "4.32"), default="best",
-                    help="Theorem 4.28, its geodesic refinement 4.32 (exclusive mechanisms only), or the smaller (default)")
+    ap.add_argument("--method", choices=("best", "4.28", "4.32", "4.34"), default="best",
+                    help="Theorem 4.28, its geodesic (4.32) or gap (4.34) refinement (exclusive mechanisms only), "
+                         "or the smallest (default)")
     ap.add_argument("--json", action="store_true", help="print one JSON object per model")
     a = ap.parse_args(argv)
 
@@ -63,6 +64,8 @@ def main(argv: list[str] | None = None) -> int:
                 r = dict(peierls_bound(dem, lams=lams), method="4.28")
             elif a.method == "4.32":
                 r = dict(geodesic_bound(dem, lams=lams), method="4.32", delta=0.0)
+            elif a.method == "4.34":
+                r = dict(gap_bound_nb(dem, lams=lams), method="4.34", delta=0.0)
             else:
                 r = best_bound(dem) if lams is None else dict(peierls_bound(dem, lams=lams), method="4.28")
         except (ValueError, NotImplementedError) as ex:

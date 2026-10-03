@@ -1,4 +1,4 @@
-"""Checks of the geodesic refinement of the circuit-level Peierls bound (theory sec 4.9, Theorem 4.32).
+"""Checks of the geodesic refinement of the circuit-level Peierls bound (theory sec 4.9, Theorems 4.32 and 4.34).
 Light: a few minutes, < 1 GB.
 
   G1  Lemma (deterministic): on sampled faults, every maximal run of the correction inside X + C is a geodesic of the
@@ -7,6 +7,12 @@ Light: a few minutes, < 1 GB.
   G2  Relaxation (exact enumeration): on small detector error models, the computable alternating-run sum is >= the
       exact sum over odd simple cycles and subsets S whose complement runs are geodesic (wrap-around run through the
       boundary vertex required to be geodesic as a whole), which is <= the sum of Theorem 4.28(a).
+  G4  Gap lemma (deterministic): on sampled faults, every cycle of a decomposition of X + C satisfies
+      sum over its correction runs of w~ <= sum over its error gaps of d~(gap end points) (cyclic pairing).
+  G5  Theorem 4.34 relaxation (exact enumeration, four small models incl. one circuit-level): exact sum over odd simple
+      cycles and subsets with geodesic correction runs and the gap Chernoff factor <= the non-backtracking computable
+      sum (Thm 4.34) <= the vertex-level relaxation.
+  G6  Theorem 4.34 against simulation (sinter), as G3.
   G3  Against simulation: the bound is >= the 99% upper... more precisely, >= the lower likelihood limit of the sampled
       pymatching failure rate (sinter), for stim's rotated memory circuit, d = 3, 5, 7, several p.
 
@@ -26,7 +32,7 @@ import stim
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 from lcd.analysis.circuit_peierls import _parse, dem_graph, peierls_bound  # noqa: E402
-from lcd.analysis.circuit_peierls_geodesic import _Geo, geodesic_bound, pymatching_integer_weights  # noqa: E402
+from lcd.analysis.circuit_peierls_geodesic import _Geo, gap_bound, gap_bound_nb, geodesic_bound, pymatching_integer_weights  # noqa: E402
 
 failures: list[str] = []
 OUT: dict = {}
@@ -237,8 +243,213 @@ def g3() -> None:
     OUT["G3"] = rows
 
 
+# ------------------------------------------------------------------ G4
+def _cycles_of(edge_ids, vtx):
+    """Decompose an even edge set into edge-disjoint closed walks split at repeated vertices (simple cycles)."""
+    adj = collections.defaultdict(list)
+    for i in edge_ids:
+        a, b = vtx(i)
+        adj[a].append((b, i))
+        adj[b].append((a, i))
+    used, cycles = set(), []
+    for start in list(adj):
+        while any(i not in used for _, i in adj[start]):
+            verts, es, x = [start], [], start
+            while True:
+                y, i = next((y, i) for y, i in adj[x] if i not in used)
+                used.add(i)
+                es.append(i)
+                if y in verts:
+                    j = verts.index(y)
+                    cycles.append((verts[j:] + [y], es[j:]))
+                    verts, es = verts[:j + 1], es[:j]
+                    x = y
+                    if not any(i2 not in used for _, i2 in adj[x]) and x == start and not es:
+                        break
+                    if not es and not any(i2 not in used for _, i2 in adj[x]):
+                        break
+                    continue
+                verts.append(y)
+                x = y
+    return cycles
+
+
+def gap_holds(verts, es, inC, wt, D) -> tuple[bool, float]:
+    """Cyclic runs of a cycle; check sum w~(C-runs) <= sum d~(gaps between consecutive C-runs)."""
+    L = len(es)
+    if all(inC[i] for i in es) or not any(inC[i] for i in es):
+        return (not all(inC[i] for i in es)), 0.0
+    k0 = next(k for k in range(L) if inC[es[k]] and not inC[es[k - 1]])   # start of a C-run
+    runs, k, cur = [], k0, None
+    for t in range(L):
+        k = (k0 + t) % L
+        typ = inC[es[k]]
+        if cur is None or cur[0] != typ:
+            cur = [typ, verts[k], verts[k + 1], 0.0]
+            runs.append(cur)
+        cur[2] = verts[k + 1]
+        cur[3] += wt[es[k]]
+    wc = sum(r[3] for r in runs if r[0])
+    gaps = sum(D[r[1], r[2]] for r in runs if not r[0])
+    return wc <= gaps + 0.5, wc - gaps
+
+
+def g4() -> None:
+    print("G4  gap lemma on sampled faults: sum w(C-runs) <= sum d(gaps) on every cycle of X + C")
+    rng = np.random.default_rng(13)
+    rows = []
+    for d, p, shots in ((3, 6e-3, 3000), (5, 6e-3, 2000), (5, 1e-2, 1000)):
+        dem = surface(d, p)
+        G = dem_graph(dem)
+        wt, _ = pymatching_integer_weights(dem, G)
+        geo = _Geo(G, wt)
+        eid = G.index
+        m = pymatching.Matching.from_detector_error_model(dem)
+        obs_dets = {x for e in G.edges for x in e}
+        table = []
+        for pm, comps in _parse(dem):
+            S, L = set(), 0
+            for e, o in comps:
+                S ^= set(e)
+                L ^= o
+            Sz = tuple(sorted(x for x in S if x in obs_dets))
+            table.append((pm, sorted(S), eid.get(Sz) if Sz else None))
+        probs = np.array([t[0] for t in table])
+
+        def vtx(i):
+            e = G.edges[i]
+            return (geo.vid[e[0]], geo.b) if len(e) == 1 else (geo.vid[e[0]], geo.vid[e[1]])
+
+        ncyc = bad = 0
+        worst = -np.inf
+        for _ in range(shots):
+            f = np.flatnonzero(rng.random(len(probs)) < probs)
+            syn = np.zeros(dem.num_detectors, np.uint8)
+            X = np.zeros(len(G.edges), np.uint8)
+            for k in f:
+                _, S, edge = table[k]
+                syn[S] ^= 1
+                if edge is not None:
+                    X[edge] ^= 1
+            C = np.zeros(len(G.edges), np.uint8)
+            for u, v in m.decode_to_edges_array(syn):
+                key = (int(u),) if v < 0 else ((int(v),) if u < 0 else tuple(sorted((int(u), int(v)))))
+                if key in eid:
+                    C[eid[key]] ^= 1
+            Y = np.flatnonzero(X ^ C)
+            if Y.size == 0:
+                continue
+            for verts, es in _cycles_of(Y, vtx):
+                ok, excess = gap_holds(verts, es, C, wt, geo.D)
+                ncyc += 1
+                bad += not ok
+                worst = max(worst, excess)
+        rows.append(dict(d=d, p=p, shots=shots, cycles=ncyc, violations=bad, worst_excess=worst))
+        check(f"G4 d={d} p={p:g}: gap inequality on every cycle", bad == 0 and ncyc > 0,
+              f"({ncyc} cycles; max of sum w(C) - sum d(gaps) = {worst:.0f} in pymatching integer units)")
+    OUT["G4"] = rows
+
+
+# ------------------------------------------------------------------ G5
+def exact_gap(dem, lam: float) -> tuple[float, float, int]:
+    """(relaxed gap bound, exact restricted gap sum, cycles) by enumeration on a small model."""
+    G = dem_graph(dem)
+    wt, kappa = pymatching_integer_weights(dem, G)
+    geo = _Geo(G, wt)
+    what = wt / (2 * kappa)
+    Dh = geo.D / (2 * kappa)
+    q = G.q
+    nbr = collections.defaultdict(list)
+    for k in range(len(geo.E)):
+        u, v, e = geo.U[k], geo.W[k], geo.E[k]
+        nbr[u].append((v, e))
+        nbr[v].append((u, e))
+    b = geo.b
+    cycles = []
+
+    def dfs(pv, pe):
+        u = pv[-1]
+        for v, e in nbr[u]:
+            if v == b and len(pv) >= 2 and geo.side[u] == 1:
+                cycles.append((pv + [b], pe + [e]))
+            elif v != b and v not in pv:
+                dfs(pv + [v], pe + [e])
+
+    for u, e in nbr[b]:
+        if geo.side[u] == 0:
+            dfs([b, u], [e])
+    exact = 0.0
+    for verts, es in cycles:
+        L = len(es)
+        for mask in range(1, 1 << L):
+            inS = [(mask >> i) & 1 for i in range(L)]
+            prob = np.prod([q[es[t]] if inS[t] else 1 - q[es[t]] for t in range(L)])
+            if all(inS):
+                exact += prob
+                continue
+            inC = {es[t]: not inS[t] for t in range(L)}
+            # every C-run geodesic (cyclic, through b allowed)
+            k0 = next(k for k in range(L) if inC[es[k]] and not inC[es[k - 1]])
+            runs, cur = [], None
+            for t in range(L):
+                k = (k0 + t) % L
+                typ = inC[es[k]]
+                if cur is None or cur[0] != typ:
+                    cur = [typ, verts[k], verts[k + 1], 0.0]
+                    runs.append(cur)
+                cur[2] = verts[k + 1]
+                cur[3] += wt[es[k]]
+            if any(r[0] and abs(r[3] - geo.D[r[1], r[2]]) > 0.5 for r in runs):
+                continue
+            expo = sum(Dh[r[1], r[2]] for r in runs if not r[0]) - sum(r[3] for r in runs if r[0]) / (2 * kappa)
+            exact += prob * np.exp(lam * expo)
+    relaxed = gap_bound(dem, lams=[lam])["bound"]
+    return relaxed, exact, len(cycles)
+
+
+def g5() -> None:
+    print("G5  gap relaxation >= exact restricted gap sum (exact enumeration)")
+    rows = []
+    cases = [("repetition d=3 r=2", stim.Circuit.generated("repetition_code:memory", distance=3, rounds=2,
+                                                             before_round_data_depolarization=0.05,
+                                                             before_measure_flip_probability=0.05)),
+             ("repetition d=5 r=1", stim.Circuit.generated("repetition_code:memory", distance=5, rounds=1,
+                                                             before_round_data_depolarization=0.04,
+                                                             before_measure_flip_probability=0.08)),
+             ("surface d=3 r=1", stim.Circuit.generated("surface_code:rotated_memory_z", distance=3, rounds=1,
+                                                         before_round_data_depolarization=0.03,
+                                                         before_measure_flip_probability=0.03)),
+             ("surface circuit d=3 r=1", stim.Circuit.generated("surface_code:rotated_memory_z", distance=3, rounds=1,
+                                                                 after_clifford_depolarization=5e-3,
+                                                                 before_measure_flip_probability=5e-3,
+                                                                 after_reset_flip_probability=5e-3,
+                                                                 before_round_data_depolarization=5e-3))]
+    for name, circ in cases:
+        dem = circ.detector_error_model(decompose_errors=True)
+        for lam in (0.2, 0.4, 0.7):
+            relaxed, exact, n = exact_gap(dem, lam)
+            nb = gap_bound_nb(dem, lams=[lam])["bound"]
+            rows.append(dict(case=name, lam=lam, cycles=n, relaxed_vertex=relaxed, relaxed_nb=nb, exact=exact))
+            check(f"G5 {name} lam={lam}: exact <= Thm 4.34 (nb) <= vertex-level relaxation",
+                  exact <= nb * (1 + 1e-12) and nb <= relaxed * (1 + 1e-9),
+                  f"({n} cycles; exact {exact:.4e}, 4.34 {nb:.4e}, vertex-level {relaxed:.4e})")
+    OUT["G5"] = rows
+
+
+# ------------------------------------------------------------------ G6
+def g6() -> None:
+    print("G6  Thm 4.34 bound >= sampled pymatching failure rate (from G3's samples)")
+    rows = []
+    for r in OUT.get("G3", []):
+        bnd = gap_bound_nb(surface(r["d"], r["p"]))["bound"]
+        rows.append(dict(d=r["d"], p=r["p"], rate=r["rate"], low=r["low"], gap=bnd, geodesic=r["geodesic"]))
+        check(f"G6 d={r['d']} p={r['p']:g}: gap bound >= sampled rate", bnd >= r["low"],
+              f"(rate {r['rate']:.2e}, gap bound {bnd:.2e} = {bnd / max(r['rate'], 1e-300):.0f}x; Thm 4.32 {r['geodesic']:.2e})")
+    OUT["G6"] = rows
+
+
 def main() -> int:
-    for f in (g1, g2, g3):
+    for f in (g1, g2, g3, g4, g5, g6):
         f()
     OUT["failures"] = failures
     (REPO / "results" / "geodesic_checks.json").write_text(json.dumps(OUT, indent=1, default=float) + "\n")

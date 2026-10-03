@@ -665,3 +665,34 @@ Here $B_{\rm P}(q^+)$ is Theorem~\ref{thm:circuit-peierls}(b) evaluated at $q^+$
 \end{itemize}
 \emph{The assumptions are testable in part, and they fail in part.} Under (G), detectors of $G_{\rm o}$ that no edge joins are uncorrelated. Paired covariances above the Bonferroni threshold (level $10^{-3}$, normal approximation) occur in $8$ of the $18$ Willow $d=3$ one-round experiments and $6$ of the $8$ at $d=5$. Most are marginal ($|z|\le6$). One pair of final-round detectors recurs with $|z|=15$--$19$ in the $d=5$ and $d=7$ patches, and the $d=7$, $10$-round $Z$ run shows long-range time correlations at one plaquette, typical of leakage. Identical distribution fails as well. In some Sycamore runs, single-detector rates change by factors $2$--$5$ between blocks of $5{,}000$--$10{,}000$ consecutive shots, and the drift statistic over chunks of $1{,}000$ shots exceeds its threshold in $4$ of $8$ Sycamore and $4$ of $18$ Willow one-round $d=3$ runs. The experiments that pass both tests are $7$ Willow $d=3$ runs, with certified $0.065$--$0.11$ against observed $0.0034$--$0.017$, and $4$ Sycamore $d=3$ runs, with $0.27$--$0.31$ against $0.016$--$0.017$.
 So the certificate is non-vacuous only at $d\le5$ with one round, and it is conditional on (G). It is $6$--$190$ times the observed rate. At $d=3$ the bound at the point estimate is already $2.7$--$8.5$ times the observed rate, and the confidence limits add a factor $2.2$--$3$. At $d=5$ these factors are $10$--$28$ and $7$--$8$. The limits are widest at the boundary edges, where $q_b$ is determined only by a marginal $a_i$ and inherits the limits of the neighbouring edges. Joint rather than coordinatewise limits for $(a_i,T_{ij})$, a boundary statistic that cancels the neighbouring edges to first order, and a version of (G) with the hyperedges seen in the data would be the next steps.
+
+\paragraph*{Gap refinement.} Theorem~\ref{thm:geodesic} uses minimality of the correction run by run. Using it for all runs of the cycle at once moves the Chernoff factor from the error runs to the distances they bridge, and the computable form can then forbid reversals at the junctions of runs.
+
+\begin{theorem}[Gap refinement]\label{thm:gap}
+In the setting of Theorem~\ref{thm:geodesic}, write a failure cycle $\gamma$ of part~(a) cyclically as alternating runs: correction runs $\sigma_1,\dots,\sigma_k$ ($k\ge0$) and error runs $\pi_1,\dots,\pi_k$, where $\pi_j$ goes from the end $z_j$ of $\sigma_j$ to the start $y_{j+1}$ of $\sigma_{j+1}$ (indices mod $k$). Let $\tilde d$ be the distance of $\tilde w$ in $G_{\rm o}$ and $\hat d=\tilde d/s$.
+\begin{enumerate}[(a)]
+\item (Gap lemma.) $\sum_i\tilde w(\sigma_i)\le\sum_j\tilde d(z_j,y_{j+1})$, and every $\sigma_i$ is a $\tilde w$-geodesic.
+\item For $\lambda\ge0$,
+\[
+\pL^{\rm MWPM}\le\sum_{\gamma\in\mathcal C}\ \sum_{S}\ \prod_{e\in S}q_e\prod_{e\in\gamma\setminus S}(1-q_e)\ \exp\Big(\lambda\Big[\sum_j\hat d(z_j,y_{j+1})-\sum_i\hat w(\sigma_i)\Big]\Big),
+\]
+the inner sum over the nonempty $S\subseteq\gamma$ whose complement has only geodesic runs (for $S=\gamma$ the exponential is $1$).
+\item (Computable form.) Let $\mathcal A$ be the arcs (directed edges) of $G_{\rm o}-b$, $P=(I-B_q)^{-1}$ with $B_q$ the non-backtracking matrix of $\mathcal A$ with entries $q_{e(a')}$, and, for arcs $f,l$,
+\[
+K_X(f,l)=q_{e(f)}P_{fl}\,e^{\lambda\hat d(\mathrm{tail}f,\mathrm{head}l)},\qquad
+K_C(f,l)=c_{e(f)}c_{e(l)}F(\mathrm{head}f,\mathrm{tail}l)\,\mathbf 1\big[\tilde w_{e(f)}+\tilde d(\mathrm{head}f,\mathrm{tail}l)+\tilde w_{e(l)}=\tilde d(\mathrm{tail}f,\mathrm{head}l)\big]
+\]
+($K_C(f,f)=c_{e(f)}$ if $e(f)$ is a geodesic), with $c_e=(1-q_e)e^{-\lambda\hat w_e}$ and $F(u,w)$ the sum of $\prod c_e$ over the paths from $u$ to $w$ in $G_{\rm o}-b$ that are geodesics of $G_{\rm o}$ ($F(u,u)=1$). Let $J(l,f)=1$ if $\mathrm{head}\,l=\mathrm{tail}\,f$ and $\mathrm{head}\,f\ne\mathrm{tail}\,l$ (no reversal at a junction). If the spectral radius of $M=\begin{pmatrix}0&JK_C\\JK_X&0\end{pmatrix}$ is $<1$ and the walk sums converge, the sum of (b) is at most
+\[
+T_0+T_1+(s_X,s_C)(I-M)^{-1}\begin{pmatrix}e_X\\e_C\end{pmatrix},
+\]
+where $T_0$ is the sum of $\prod q_e$ over closed non-backtracking walks $b\to u\to\dots\to v\to b$ with $\sigma(u)=0$, $\sigma(v)=1$ (cycles with $S=\gamma$), and $s_X,s_C,e_X,e_C,T_1$ collect the first and last runs at $b$ as in Theorem~\ref{thm:geodesic}(c) (a first or last run may consist of its boundary edge only; then no junction constraint applies, and the gap through $b$ is bounded by $\hat d(z,b)+\hat d(b,y)$).
+\item $\err\le\pL^{\rm MWPM}$, so (b) and (c) bound $\err$ as well.
+\end{enumerate}
+\hfill\st{PROVED} (draft; checks G4--G6)
+\end{theorem}
+\begin{proof}
+(a) Let $\tau_j$ be a $\tilde w$-geodesic from $z_j$ to $y_{j+1}$. The edge set $\Sigma=\bigoplus_i\sigma_i$ has odd degree exactly at the end points $\{y_i,z_i\}$ (counted with multiplicity mod 2), and so has $T=\bigoplus_j\tau_j$, because the pairs $(z_j,y_{j+1})$ use every end point once. Hence $\Sigma\oplus T$ has even degree everywhere and $C'=C_{\rm o}\oplus\Sigma\oplus T$ has the syndrome of $C_{\rm o}$. As the $\sigma_i\subseteq C_{\rm o}$ are disjoint, $\tilde w(C')\le\tilde w(C_{\rm o})-\sum_i\tilde w(\sigma_i)+\sum_j\tilde w(\tau_j)$, and minimality gives the inequality. The geodesic property is Theorem~\ref{thm:geodesic}(a).
+(b) As in Theorem~\ref{thm:geodesic}(b), with the indicator of (a) bounded by $\exp(\lambda[\sum_j\hat d(z_j,y_{j+1})-\sum_i\hat w(\sigma_i)])$; if $k=0$ the cycle lies in $X$ and no condition is used.
+(c) Cut $\gamma$ at $b$ and orient it from its end on side $0$. An error run $\pi$ from $z$ to $y$ contributes $\prod_{e\in\pi}q_e\,e^{\lambda\hat d(z,y)}$ and a correction run $\prod c_e$; a gap through $b$ is split at $b$, using $\hat d(z,y)\le\hat d(z,b)+\hat d(b,y)$. An interior error run is a non-backtracking walk, counted in $K_X$ by its first and last arcs; an interior correction run is a geodesic with first arc $f$ and last arc $l$, which is the case iff the three pieces add up to the distance between its end points, counted in $K_C$. Consecutive runs of a simple cycle meet at a vertex and the second does not start with the reverse of the last arc of the first, which is the constraint $J$. Distinct pairs $(\gamma,S)$ give distinct sequences, all terms are nonnegative, and the sum over all sequences is the Neumann series of $M$; convergence is certified as before.
+\end{proof}

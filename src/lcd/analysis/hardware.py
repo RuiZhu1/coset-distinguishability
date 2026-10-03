@@ -20,7 +20,7 @@ import numpy as np
 import stim
 
 from lcd.analysis.circuit_peierls import peierls_bound
-from lcd.analysis.circuit_peierls_geodesic import geodesic_bound
+from lcd.analysis.circuit_peierls_geodesic import gap_bound_nb, geodesic_bound
 
 #: lam grid for Theorem 4.32 (its optimum moves away from 1/2)
 GEODESIC_LAMS = (0.25, 0.3, 0.35, 0.4, 0.45, 0.5)
@@ -41,9 +41,12 @@ def scale_dem(dem: stim.DetectorErrorModel, s: float) -> stim.DetectorErrorModel
 
 def bound_at_scale(dem: stim.DetectorErrorModel, s: float, lam: float = 0.5, method: str = "4.28") -> float:
     """The bound for the model scaled by s (pymatching weights of the scaled model): Theorem 4.28 at one lam, or
-    Theorem 4.32 (geodesic refinement) minimized over GEODESIC_LAMS (``lam`` is then ignored)."""
+    Theorem 4.32 (geodesic refinement) minimized over GEODESIC_LAMS, or Theorem 4.34 (gap refinement) on a lam grid
+    (``lam`` is then ignored)."""
     if method == "4.32":
         return float(geodesic_bound(scale_dem(dem, s), lams=GEODESIC_LAMS)["bound"])
+    if method == "4.34":
+        return float(gap_bound_nb(scale_dem(dem, s), lams=(0.2, 0.3, 0.4, 0.5))["bound"])
     return float(peierls_bound(scale_dem(dem, s), lams=[lam])["bound"])
 
 

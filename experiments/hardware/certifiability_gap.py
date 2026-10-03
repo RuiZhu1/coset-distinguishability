@@ -119,8 +119,10 @@ def model_row(path: Path, geodesic: bool = True) -> dict:
             try:
                 g = certifiability_margin(dem, s_max=S_MAX, rtol=1e-2, method="4.32")
                 row.update(margin_4_32=g, s_star_4_32=g["s_star"])
+                h = certifiability_margin(dem, s_max=S_MAX, rtol=1e-2, method="4.34")
+                row.update(margin_4_34=h, s_star_4_34=h["s_star"])
             except NotImplementedError as e:
-                row.update(s_star_4_32=None, refusal_4_32=f"{type(e).__name__}: {e}")
+                row.update(s_star_4_32=None, s_star_4_34=None, refusal_4_32=f"{type(e).__name__}: {e}")
     except (ValueError, NotImplementedError) as e:
         row.update(accepted=False, refusal=f"{type(e).__name__}: {e}")
     return row
@@ -152,10 +154,13 @@ def run_sycamore(path: str) -> dict:
                      "pij_odd_for_even": model_row(d / "pij_from_odd_for_even.dem")}
     s2 = [out["models"][k].get("s_star") for k in ("pij_even_for_odd", "pij_odd_for_even")]
     g2 = [out["models"][k].get("s_star_4_32") for k in ("pij_even_for_odd", "pij_odd_for_even")]
+    h2 = [out["models"][k].get("s_star_4_34") for k in ("pij_even_for_odd", "pij_odd_for_even")]
     out["s_star"] = dict(circuit=out["models"]["circuit"].get("s_star"),
                          pij=float(np.mean(s2)) if all(x is not None for x in s2) else None, pij_both=s2,
                          circuit_4_32=out["models"]["circuit"].get("s_star_4_32"),
-                         pij_4_32=float(np.mean(g2)) if all(x is not None for x in g2) else None)
+                         pij_4_32=float(np.mean(g2)) if all(x is not None for x in g2) else None,
+                         circuit_4_34=out["models"]["circuit"].get("s_star_4_34"),
+                         pij_4_34=float(np.mean(h2)) if all(x is not None for x in h2) else None)
     actual = read_01(d / "obs_flips_actual.01")
     assert actual.size == shots
     out["decoders"] = {}
@@ -178,6 +183,7 @@ def run_willow(path: str) -> dict:
         out["models"][prior] = model_row(f, geodesic=rounds <= 25)   # Theorem 4.32 is costly on long experiments
     out["s_star"] = {k: v.get("s_star") for k, v in out["models"].items()}
     out["s_star"].update({f"{k}_4_32": v.get("s_star_4_32") for k, v in out["models"].items()})
+    out["s_star"].update({f"{k}_4_34": v.get("s_star_4_34") for k, v in out["models"].items()})
     actual = read_b8_one_bit(d / "obs_flips_actual.b8", shots)
     out["decoders"] = {}
     for f in sorted(d.glob("decoding_results/*/obs_flips_predicted.b8")):
