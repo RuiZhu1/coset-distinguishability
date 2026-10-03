@@ -9,8 +9,10 @@ from lcd.cli import main
 def test_cli_generated_and_dem_file(tmp_path, capsys):
     assert main(["--generated", "surface_code:rotated_memory_z", "-d", "3", "-p", "1e-3", "--json"]) == 0
     r = json.loads(capsys.readouterr().out)
-    assert r["bound"] == pytest.approx(2.9e-2, rel=0.05)  # Table of Proposition 4.29
-    assert 0 < r["delta"] < 1e-6
+    assert r["method"] == "4.32" and r["bound"] == pytest.approx(1.1e-2, rel=0.05)  # Theorem 4.32 numbers
+    assert main(["--generated", "surface_code:rotated_memory_z", "-d", "3", "-p", "1e-3", "--json", "--method", "4.28"]) == 0
+    r = json.loads(capsys.readouterr().out)
+    assert r["bound"] == pytest.approx(2.9e-2, rel=0.05) and 0 < r["delta"] < 1e-6  # Table of Proposition 4.29
     f = tmp_path / "rep.dem"
     f.write_text("error(0.1) D0 L0\nerror(0.1) D0 D1\nerror(0.1) D1\n")
     assert main([str(f), "--lam", "0.5"]) == 0

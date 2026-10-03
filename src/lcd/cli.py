@@ -1,12 +1,12 @@
-"""Command line: ``lcd-peierls`` computes the circuit-level Peierls bound (theory, Theorem 4.28).
+"""Command line: ``lcd-peierls`` computes the circuit-level Peierls bounds (theory, Theorems 4.28 and 4.32).
 
     lcd-peierls circuit.stim                    # a stim circuit (its DEM is built as sinter builds it)
     lcd-peierls model.dem                       # a decomposed detector error model
     lcd-peierls --generated surface_code:rotated_memory_z -d 5 -p 1e-3
     lcd-peierls a.stim b.stim --json            # one JSON object per line
 
-The number printed is a rigorous upper bound, per shot, on the logical failure probability of pymatching
-(no correlated decoding) on that model, hence of the maximum-likelihood decoder. ``inf`` means the walk sum diverges.
+The number printed (by default the smaller of Theorems 4.28 and 4.32) is a rigorous upper bound, per shot, on the
+logical failure probability of pymatching (no correlated decoding) on that model, hence of the maximum-likelihood decoder. ``inf`` means the walk sum diverges.
 """
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ import sys
 import stim
 
 from lcd.analysis.circuit_peierls import peierls_bound
+from lcd.analysis.circuit_peierls_geodesic import best_bound, geodesic_bound
 
 
 def _dem_from_path(path: str) -> stim.DetectorErrorModel:
@@ -41,6 +42,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("-r", "--rounds", type=int, help="rounds for --generated (default: d)")
     ap.add_argument("-p", type=float, help="uniform circuit noise strength for --generated")
     ap.add_argument("--lam", type=float, help="evaluate at this lambda instead of minimizing over it")
+    ap.add_argument("--method", choices=("best", "4.28", "4.32"), default="best",
+                    help="Theorem 4.28, its geodesic refinement 4.32 (exclusive mechanisms only), or the smaller (default)")
     ap.add_argument("--json", action="store_true", help="print one JSON object per model")
     a = ap.parse_args(argv)
 
@@ -55,17 +58,23 @@ def main(argv: list[str] | None = None) -> int:
     status = 0
     for name, dem in models:
         try:
-            r = peierls_bound(dem, lams=None if a.lam is None else [a.lam])
+            lams = None if a.lam is None else [a.lam]
+            if a.method == "4.28":
+                r = dict(peierls_bound(dem, lams=lams), method="4.28")
+            elif a.method == "4.32":
+                r = dict(geodesic_bound(dem, lams=lams), method="4.32", delta=0.0)
+            else:
+                r = best_bound(dem) if lams is None else dict(peierls_bound(dem, lams=lams), method="4.28")
         except (ValueError, NotImplementedError) as ex:
-            print(f"{name}: not covered by Theorem 4.28: {ex}", file=sys.stderr)
+            print(f"{name}: not covered: {ex}", file=sys.stderr)
             status = 1
             continue
         if a.json:
-            print(json.dumps(dict(model=name, **{k: r[k] for k in ("bound", "lam", "rho_upper", "delta")},
+            print(json.dumps(dict(model=name, **{k: r.get(k) for k in ("bound", "method", "lam", "rho_upper", "delta")},
                                   stats=r["stats"]), default=float))
         else:
-            print(f"{name}: p_L(MWPM) <= {r['bound']:.3e}  (lam = {r['lam']:.3f}, rho(B) <= {r['rho_upper']:.4f}, "
-                  f"rounding delta = {r['delta']:.1e})")
+            print(f"{name}: p_L(MWPM) <= {r['bound']:.3e}  (Theorem {r['method']}, lam = {r['lam']:.3f}, "
+                  f"rho <= {r['rho_upper']:.4f})")
     return status
 
 

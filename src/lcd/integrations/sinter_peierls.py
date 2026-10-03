@@ -21,7 +21,7 @@ from typing import Iterable
 
 import stim
 
-from lcd.analysis.circuit_peierls import peierls_bound
+from lcd.analysis.circuit_peierls_geodesic import best_bound
 
 #: sinter decoders that minimize pymatching's weights exactly (up to the rounding of Theorem 4.28(e)).
 COVERED_DECODERS = frozenset({"pymatching"})
@@ -35,9 +35,9 @@ def task_dem(task) -> stim.DetectorErrorModel:
     return circuit.detector_error_model(decompose_errors=True, approximate_disjoint_errors=True)
 
 
-def bound_for_task(task, **kwargs) -> dict:
-    """``peierls_bound`` on the task's detector error model; ``kwargs`` are passed through."""
-    return peierls_bound(task_dem(task), **kwargs)
+def bound_for_task(task) -> dict:
+    """The smaller of Theorems 4.28 and 4.32 on the task's detector error model."""
+    return best_bound(task_dem(task))
 
 
 def compare(tasks: Iterable, stats: Iterable, *, max_likelihood_factor: float = 1e3) -> list[dict]:
@@ -73,7 +73,7 @@ def compare(tasks: Iterable, stats: Iterable, *, max_likelihood_factor: float = 
         rate = s.errors / kept if kept else float("nan")
         rows.append(dict(json_metadata=s.json_metadata, decoder=s.decoder, shots=kept, errors=s.errors,
                          rate=rate, rate_low=fit.low, rate_high=fit.high, bound=b["bound"], lam=b["lam"],
-                         rho_upper=b["rho_upper"], delta=b["delta"],
+                         rho_upper=b["rho_upper"], method=b["method"],
                          ratio=b["bound"] / rate if rate > 0 else float("inf"),
                          consistent=bool(fit.low <= b["bound"])))
     return rows

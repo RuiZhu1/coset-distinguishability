@@ -23,6 +23,7 @@ theory/
 ├── checks/handproof_checks.py   checks H1-H5 of the pen-and-paper pass ([[5,1,3]] polynomials, self-avoiding walks, bounds vs data, small DEM, pattern gain; seconds)
 ├── checks/second_pass_checks.py checks L1-L4 (E1 on a code library, Stein exponents, MWPM simulation vs Peierls, coverage of Thm 4.14 at d = 3; about 1 min; writes results/second_pass_checks.json)
 ├── checks/third_pass_checks.py  checks M1-M8 (pure-erasure exponent, degeneracy of the union bound, tensor-power conversions, weak bursts, Peierls with bursts, O1 counterexamples in exact arithmetic, AME codes; about 1.5 min; writes results/third_pass_checks.json)
+├── checks/geodesic_checks.py     checks G1-G3 of Theorem 4.32 (geodesic lemma on sampled failures, exact enumeration, sinter; about 3 min)
 └── LITERATURE.md              novelty check claim by claim, closest prior work, public datasets (2026-10-03)
 ```
 
@@ -125,6 +126,7 @@ disappear with the container; to avoid reinstalling, put the command in the envi
 | Proposition 4.29 | Stim's rotated memory circuit, $d\le15$: one edge per mechanism after re-decomposition; bounds (e.g. $p=10^{-3}$: $2.9\times10^{-2}$ at $d=3$, $4.6\times10^{-5}$ at $d=15$), $24$-$1700$ times the simulated MWPM rate; also phenomenological noise | PROVED (computer-assisted, floating point) | N1, N4, `results/circuit_peierls.json` |
 | Proposition 4.30 | Closed form for every $d$ via the tilted non-backtracking matrix of a $d$-independent envelope: certified exponent $\theta^\ast(10^{-3})=0.671$ ($\Lambda\ge3.83$); valid for $p<1.405\times10^{-3}$ (phenomenological: $p<1.01\times10^{-2}$) | PROVED for $d\le15$; for $d>15$ conditional on (H1)-(H2) | N5 |
 | Corollary 4.31 (O3, O2 at circuit level) | Bursts at circuit level: no floor; the weak-burst certificate of Theorem 4.24 carries over | PROVED under (H1)-(H2) | N3 (burst factor) |
+| Theorem 4.32 | Geodesic refinement: on failure every run of the correction on the odd cycle is a geodesic of the decoder's integer weights, so the Peierls sum runs only over subsets whose complement is geodesic; computable by alternating walk/geodesic kernels. $p=10^{-3}$: $2.7$--$5.4\times$ below Thm 4.28 for $d=3$--$9$; largest certifiable $p$ $1.25$--$1.4\times$ larger; Willow $d=7$ (fitted prior) needs noise $1.8\times$ lower (was $2.6\times$) | PROVED (draft) | G1--G3 (`checks/geodesic_checks.py`) |
 | Proposition 5.1 | Chernoff upper bound $\alpha_+\le\ln(1/B)$, with explicit finite-$d$ form $\varepsilon_{\rm genie}\ge\tfrac12B^de^{-\sqrt{d\sigma^2}/2}$; Step 1 proved for all odd $d$ | PROVED | C6 ($d{=}3$), K1, K2, `checks/genie_large_d.py` |
 | Proposition 5.2, Corollary 5.3 | (a) union lower bound $\alpha_-\ge-\Phi(B)$ is vacuous for the surface code: (b) degeneracy makes $\widetilde W_d$ grow without bound ($\Phi\equiv\infty$); (c) Peierls lower bound $\alpha_-\ge\ln(1/(\mu B_M))$; sandwich $\ln(1/(\mu B_M))\le\alpha\le\ln(1/B)$ (an earlier version had $-\Phi(B)$ and claimed both sides depend on $B$ only) | PROVED (corrected) | M2 |
 | Proposition 5.5 | Poisson bound $T\ge\ln((1-a)/\delta)/r$ (pattern methods cannot beat $1/r$) | PROVED | **P2 (M4)** |
