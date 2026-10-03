@@ -701,3 +701,31 @@ where $T_0$ is the sum of $\prod q_e$ over closed non-backtracking walks $b\to u
 Hardware models (margin $s^\ast$: the largest factor on all mechanism probabilities with a finite bound; median and range over patches and bases, $10$ rounds for Willow and $\ge15$ rounds for Sycamore, data-fitted models):
 Willow $d=3$: $3.9$ $[2.7,4]$; $d=5$: $1.11$ $[1.04,1.19]$; $d=7$: $0.79$ $[0.79,0.80]$ (Theorem~\ref{thm:circuit-peierls}: $1.29$, $0.49$, $0.38$; Theorem~\ref{thm:geodesic}: $2.30$, $0.74$, $0.55$). Sycamore $d=3$: $1.63$ $[1.12,2.35]$; $d=5$: $0.43$ $[0.42,0.45]$.
 So for all eight Willow $d=5$ patches the bound is finite at the fitted noise, but its value there is above $1$ (between $2$ and $11$): finiteness, not yet a useful number. Checks: G4 (the gap lemma holds on $1{,}115$ cycles of $X\oplus C$ from sampled faults), G5 (exact enumeration of odd simple cycles and admissible subsets on four small models, one at circuit level with $581$ cycles: exact sum $\le$ part (c) $\le$ the same sum without the junction constraint), G6 (part (c) above the sampled pymatching rate at $d=3,5,7$).
+
+\begin{proposition}[Gap refinement for every $d$]\label{prop:gap-lattice}
+In the circuit-level setting of Proposition~\ref{prop:circuit-lattice} (stim's rotated memory circuit, uniform noise of strength $p$, decoder pymatching), assume (H1)--(H2) and, in reduced coordinates $(x/2,y/2,t)$ with the twelve offsets $v$:
+\begin{enumerate}[(A1)]
+\item every interior edge with offset $v$ has $q_e\le\hat q(v)$ and $\hat w^-(v)\le\hat w_e\le\hat w^+(v)$, and every boundary edge has $q_e\le\hat q_b$, $\hat w_b^-\le\hat w_e\le\hat w_b^+$, with envelopes that do not depend on $d$;
+\item $\hat d(z,y)\le D^+(y-z)$ for all detectors $z,y$, where $\hat d$ is the distance of $\hat w$ in $G_{\rm o}$ and $D^+$ the distance of the weights $\hat w^+$ on the infinite lattice.
+\end{enumerate}
+For $\lambda,\mu,\theta\ge0$ and $L\ge1$ let $K_X,K_C$ be the $12\times12$ matrices (first offset, last offset) of the lattice sums
+\[
+\sum_{\text{NB walks}}\prod_{\rm steps}\hat q(v)e^{-\theta\Delta y(v)}\cdot e^{\lambda D^+(\mathrm{end})},\qquad
+\sum_{\text{NB walks}}\prod_{\rm steps}e^{-(\lambda+\mu)\hat w^-(v)-\theta\Delta y(v)}\cdot e^{\mu D^+(\mathrm{end})},
+\]
+evaluated exactly up to length $L$ and beyond it by blocks of length $L$ (row-sum norm $<1$ required). Let $J$ forbid reversals at junctions and $M=\begin{pmatrix}0&JK_C\\JK_X&0\end{pmatrix}$. If $\rho(M)<1$, then for every odd $d\ge5$
+\[
+\err_d\le\pL^{\rm MWPM}(d)\le\frac{(d+1)^2}{2}\,(x_b+c_b)^2\,F\,e^{-\theta(d-2)},\qquad x_b=\hat q_be^{\lambda\hat w_b^+},\ c_b=e^{-\lambda\hat w_b^-},\ F=1+v_0(I-M)^{-1}\mathbf 1,
+\]
+with $v_0=(\mathbf 1^{\mathsf T}K_X,\mathbf 1^{\mathsf T}K_C)$. Hence $\liminf_d-\tfrac1d\ln\pL^{\rm MWPM}(d)\ge\theta^\ast=\sup\{\theta:\rho(M)<1\}$.
+\hfill\st{PROVED} (draft) for $5\le d\le15$, where (A1), (A2), (H1), (H2) are checked; for $d>15$ conditional on them (computer-assisted, floating point)
+\end{proposition}
+\begin{proof}
+Start from Theorem~\ref{thm:gap}(b) and the run decomposition of its proof (c), oriented from the row $y=2d-2$ to the row $y=2$ as in Proposition~\ref{prop:circuit-lattice}. Map every interior run to its sequence of lattice offsets; non-backtracking walks map to non-backtracking lattice walks and consecutive runs do not reverse at their junction.
+An error run $\pi$ from $z$ to $y$ costs $\prod q_e\,e^{\lambda\hat d(z,y)}\le\prod\hat q(v)\,e^{\lambda D^+(y-z)}$ by (A1)--(A2).
+A correction run $\sigma$ from $u$ to $v$ is a geodesic of $G_{\rm o}$, so $\sum\hat w^-\le\hat w(\sigma)=\hat d(u,v)\le D^+(v-u)$; its factor $\prod(1-q_e)e^{-\lambda\hat w_e}$ is at most $\prod e^{-\lambda\hat w^-(v)}\cdot\mathbf 1[\sum\hat w^-\le D^+]\le\prod e^{-(\lambda+\mu)\hat w^-(v)}e^{\mu D^+(v-u)}$.
+Walks longer than $L$: $D^+$ is a distance, hence subadditive, so $e^{\lambda D^+}$ (and $e^{\mu D^+}$) of a walk is at most the product over its blocks of length $L$ and a remainder; summing over blocks without the junction constraint between them gives the blocked sums. The steps' $\Delta y$ add up to $-(2d-4)$, so the tilt contributes exactly $e^{\theta(d-2)}$, which is compensated by the factor $e^{-\theta(d-2)}$.
+The first and last runs contain a boundary edge: an error run starting at $b$ through $u$ costs $q_b\,e^{\lambda\hat d(b,y)}\le\hat q_be^{\lambda\hat w_b^+}e^{\lambda D^+(y-u)}$ (triangle inequality), a correction run $c_b$ times a geodesic continuation; this gives the factors $(x_b+c_b)$ at both ends. Summing the alternating sequences of interior runs (possibly none) with either first type gives at most $F$; there are $(d+1)^2/2$ start detectors by (H2).
+\end{proof}
+
+\noindent\emph{Numbers and assessment} (\texttt{experiments/certification/lattice\_gap.py}, \texttt{results/lattice\_gap.json}). The envelopes of (A1) are identical for $d=5,\dots,13$ and (A2) holds with no excess for every pair of detectors at $d=5,\dots,15$. With $L=16$: $\theta^\ast\ge0.690$ ($\Lambda^\ast\ge3.97$) at $p=10^{-3}$ (Proposition~\ref{prop:circuit-lattice}: $0.671$, $3.83$); $\theta^\ast\ge1.195$ at $p=5\times10^{-4}$, slightly below Proposition~\ref{prop:circuit-lattice} ($1.24$); and $\theta^\ast>0$ for $p<1.556\times10^{-3}$ (Proposition~\ref{prop:circuit-lattice}: $p<1.405\times10^{-3}$), e.g.\ $\theta^\ast\ge0.188$ at $1.5\times10^{-3}$. Both propositions hold, so the better one applies at each $p$. The gain is small compared with the finite-$d$ evaluation of Theorem~\ref{thm:gap}, whose bound falls by a factor of about $5.4$ per distance step at $d=7\to9\to11$ ($p=10^{-3}$). Two losses explain the difference: the per-offset weights vary by up to $0.8$ (about $13\%$) between the bulk and the boundary rows, so the Chernoff form of the geodesic constraint admits many non-geodesic paths; and junction constraints are dropped between blocks. A bulk/boundary split of the envelopes is the natural next step.
