@@ -21,7 +21,8 @@ theory/
 ├── checks/completion_checks.py   checks K1-K7 of the theory-completion results (genie, burst bound, O1 counterexample, [[5,1,3]] certificate; about 4 min and 150 MB, `make -C theory completion`)
 ├── checks/handproof_checks.py   checks H1-H5 of the pen-and-paper pass ([[5,1,3]] polynomials, self-avoiding walks, bounds vs data, small DEM, pattern gain; seconds)
 ├── checks/second_pass_checks.py checks L1-L4 (E1 on a code library, Stein exponents, MWPM simulation vs Peierls, coverage of Thm 4.14 at d = 3; about 1 min; writes results/second_pass_checks.json)
-└── checks/third_pass_checks.py  checks M1-M8 (pure-erasure exponent, degeneracy of the union bound, tensor-power conversions, weak bursts, Peierls with bursts, O1 counterexamples in exact arithmetic, AME codes; about 1.5 min; writes results/third_pass_checks.json)
+├── checks/third_pass_checks.py  checks M1-M8 (pure-erasure exponent, degeneracy of the union bound, tensor-power conversions, weak bursts, Peierls with bursts, O1 counterexamples in exact arithmetic, AME codes; about 1.5 min; writes results/third_pass_checks.json)
+└── LITERATURE.md              novelty check claim by claim, closest prior work, public datasets (2026-10-03)
 ```
 
 ## Build and run
