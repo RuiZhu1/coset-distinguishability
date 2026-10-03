@@ -1,0 +1,59 @@
+\section{Related work and what is new}\label{sec:related}
+
+This section positions the results against the literature found in the novelty check of \texttt{theory/LITERATURE.md} (2026-10-03). The check is based on abstracts, metadata and, for a few references, the relevant passages of the full text; the closest references must be read in full before any novelty claim enters a paper. ``New'' below means ``we did not find it'', not more.
+
+\paragraph{Resource theory and the comparison of experiments.}
+The Level-1 order of \S\ref{sec:constitution} is conditional majorization~\cite{GGHKLN}, and the complete family of monotones (Theorem~\ref{thm:complete}) is the Blackwell--Sherman--Stein theorem~\cite{Blackwell,Torgersen} with label relabeling; quantum versions are in~\cite{Buscemi12,Matsumoto,Chefles,Jencova}. Orders of resource theories that reduce to majorization are familiar from entanglement~\cite{Nielsen} and thermodynamics~\cite{GMNSH}; see~\cite{ChitambarGour}. The large-sample and catalytic results for the uncoded qubit (Theorems~\ref{thm:exact-tensor}, \ref{thm:approx-tensor}) are expected to be special cases of~\cite{MPST,FFHT,RHT}. For channels with arbitrary encodings, ``better for every code'' is characterized by processing orders~\cite{Shannon58,Buscemi16,Buscemi18}; the code-universal order here (Conjecture~\ref{conj:universal}) differs by restricting to linear decoding structures, the single loss $\err$ and local free operations. The resource theory of coding of~\cite{WLWL} orders codes (as superchannels), not noise models.
+
+\paragraph{Erasure versus Pauli noise.}
+The advantage of erasures is documented by thresholds, effective distances and logical error rates from simulations~\cite{SBD,WKPT,Sahay,KubicaErasure,Chang,GRK,GVRK}. Classical analogues of the two-scalar order are the extremality results for the binary erasure and symmetric channels~\cite{HircheShaya} and contraction-based orders of quantum channels~\cite{HRSF}; flagged depolarizing channels appear in~\cite{FKG}. We found no analytic exchange-rate bound such as Theorem~\ref{thm:rate}, no equality criterion such as Theorem~\ref{thm:equality}, and no characterization of the free order such as Theorem~\ref{thm:preorder}.
+
+\paragraph{Peierls arguments and rigorous bounds.}
+The Peierls argument for matching is that of Dennis, Kitaev, Landahl and Preskill~\cite{DKLP}; Kovalev and Pryadko~\cite{KovalevPryadko} prove thresholds for low-density parity-check codes whose distance grows as a power of the length, and Dumer, Kovalev and Pryadko~\cite{DKP} give analytic threshold bounds combining erasures, depolarizing errors and syndrome errors, with the same single-qubit Bhattacharyya parameters $B$ and $B_M$ as \S\ref{sec:info}. At circuit level, Fowler~\cite{Fowler} proved a finite threshold for matching for one fixed circuit: the surface code on a two-dimensional nearest-neighbour lattice in which every elementary operation (two-qubit gates, single-qubit gates, initialization and measurement) has error rate $p$, with the condition $p<7.4\times10^{-4}$. Theorem~\ref{thm:circuit-peierls} is a bound of the same kind that applies to any detector error model passing two checks (flag consistency and balance); for stim's rotated memory circuit, Proposition~\ref{prop:circuit-lattice} is valid for every $d$ up to $p\approx1.4\times10^{-3}$ (see \S\ref{sec:circuit-peierls} for the precise statement and its status). A rigorous threshold for the union-find decoder under circuit-level local stochastic noise is proved in~\cite{YLY}; for general (non-Pauli) noise, the extension of existing proof techniques gives no nontrivial threshold~\cite{ChaiNg}.
+
+\paragraph{Certification and extrapolation.}
+Experimental suppression factors are reported as fits with statistical error bars~\cite{Google22,Google24}. Rare-event sampling reaches small failure probabilities at fixed parameters~\cite{BV,Mayer}; closed-form approximations by counting failing configurations are given in~\cite{Regev}; detector error models can be estimated from syndrome data~\cite{Takou}. We found no finite-sample upper bound on $\pL$ that holds for all $d$ (Theorems~\ref{thm:cc-cert}, \ref{thm:burst-cert}, \ref{thm:st-cert}, Corollary~\ref{cor:mwpm-cert}).
+
+\paragraph{Bursts and their detection.}
+Chip-scale events and the floor they set are established experimentally~\cite{McEwen,Google22,Google24} and motivate distributed codes~\cite{XuChip}; the resilience of the surface code to single-cycle bursts is studied by simulation in~\cite{TPMP}; threshold theorems for correlated noise are in~\cite{TerhalBurkard,AKP}. Lemma~\ref{lem:floor} is therefore known as a qualitative statement. Burst detectors from syndrome data exist~\cite{Q3DE,Vallero}. Optimal design of experiments and the absence of an adaptive gain for two simple hypotheses go back to~\cite{Chernoff59,Hayashi09} (see also~\cite{NAV}).
+
+\paragraph{Exponents and statistical mechanics.}
+The domain-wall reading of the exponent is due to~\cite{DKLP} and is general~\cite{CF}; path entropy at low error rate is analysed in~\cite{WatsonBarrett,BBKM}, and an effective tension model below threshold is proposed in~\cite{English}. Erasure thresholds are in~\cite{SBD,Colmenarez}. Approximate ML decoding is benchmarked against matching in~\cite{BSV}. The degeneracy of union bounds (Proposition~\ref{prop:lower}(b)) is probably folklore; weight-enumerator bounds are studied in~\cite{FVC} and degenerate threshold bounds in~\cite{KPDP,DKP}.
+
+\paragraph{Status of the claims.}
+The list below is consistent with \S1 of \texttt{theory/LITERATURE.md}. ``Known'' means the statement or its substance is in the literature; ``reformulation'' means a known fact restated in this language; ``new to our knowledge'' means we did not find it.
+
+{\footnotesize
+\begin{longtable}{p{5.6cm} p{3.0cm} p{5.6cm}}
+\toprule
+Claim & Status & Closest prior work \\
+\midrule
+\endfirsthead
+\toprule
+Claim & Status & Closest prior work \\
+\midrule
+\endhead
+ML failure $=$ Bayes error (Lemma~\ref{lem:decoding}); monotonicity (Theorem~\ref{thm:monotone}) & reformulation & \cite{DKLP,IyerPoulin,BSV}; data processing \\
+Level-1 order, complete monotones (Lemma~\ref{lem:kernel}, Theorem~\ref{thm:complete}) & known & \cite{GGHKLN,Blackwell,Torgersen,Buscemi12} \\
+Tensor-power and catalytic orders of the uncoded qubit (Theorems~\ref{thm:exact-tensor}, \ref{thm:approx-tensor}) & likely special case & \cite{MPST,FFHT,RHT} \\
+Noise models as resources ordered by coset distinguishability & new to our knowledge & \cite{WLWL} (codes as resources) \\
+Free order on Pauli plus erasure by two scalars (Theorem~\ref{thm:preorder}, Proposition~\ref{prop:two-scalars}) & new to our knowledge & \cite{HircheShaya,HRSF,FKG} (analogues) \\
+Code-universal order (Conjecture~\ref{conj:universal}, Propositions~\ref{prop:local-level1}, \ref{prop:two-structures}) & partly known (all encodings) & \cite{Shannon58,Buscemi18,Buscemi16} \\
+Exchange-rate bound, equality criterion, $[[5,1,3]]$, gap is code dependence (Theorems~\ref{thm:rate}, \ref{thm:rate-right}, \ref{thm:equality}, Propositions~\ref{prop:five-sharp}, \ref{prop:five-hand}, \ref{prop:gap-A}) & new to our knowledge & numerical: \cite{SBD,WKPT,Sahay,KubicaErasure,Chang,GRK,GVRK} \\
+Envelope and Danskin derivatives (Remark~\ref{rem:envelope}, Lemmas~\ref{lem:concave}, \ref{lem:danskin}) & new to our knowledge & \cite{Google22,Google24} (error budgets) \\
+Bhattacharyya sandwich (Proposition~\ref{prop:genie}, Corollary~\ref{cor:sandwich}); $H_B$ & parameter known; $H_B$ new to our knowledge & \cite{DKP} \\
+Domain-wall reading, path entropy (\S\ref{sec:hb}) & known framing & \cite{DKLP,CF,WatsonBarrett,BBKM,English} \\
+Pure-erasure exponent (Theorem~\ref{thm:erasure-exponent}) & new to our knowledge & \cite{SBD,Colmenarez} \\
+Peierls bound for MWPM with erasures (Theorem~\ref{thm:mwpm-peierls}) & known argument; erasures and constants added & \cite{DKLP,KovalevPryadko} \\
+Circuit-level Peierls bound on any balanced DEM (Theorem~\ref{thm:circuit-peierls}, Propositions~\ref{prop:circuit-numbers}, \ref{prop:circuit-lattice}) & new to our knowledge & \cite{Fowler,YLY,ChaiNg,KovalevPryadko} \\
+Finite-sample certificates for all $d$ (Theorems~\ref{thm:cc-cert}, \ref{thm:burst-cert}, \ref{thm:st-cert}, Corollary~\ref{cor:mwpm-cert}) & new to our knowledge & \cite{Google22,Google24,BV,Mayer,Takou,Regev} \\
+Chip events give a floor (Lemma~\ref{lem:floor}) & known qualitatively & \cite{McEwen,Google22,Google24,XuChip,TPMP} \\
+Burst bounds without a floor; certificate without a strength floor (Theorems~\ref{thm:peierls-bursts}, \ref{thm:weak-bursts}, Corollary~\ref{cor:circuit-bursts}) & new to our knowledge (quantitative forms) & \cite{TPMP,AKP,TerhalBurkard} \\
+$\err$ not monotone in burst shape (Proposition~\ref{prob:O1}, Observations~\ref{obs:O1-region}, \ref{obs:O1-duration}) & new to our knowledge & -- \\
+Union bound vacuous as $d\to\infty$ (Proposition~\ref{prop:lower}(b)) & probably folklore & \cite{FVC,KPDP} \\
+Pattern versus counting detection; adaptive designs (Theorems~\ref{thm:pattern-gain}--\ref{thm:adaptive-strong}) & general results known; QEC framing new to our knowledge & \cite{Chernoff59,Hayashi09,NAV}; baselines \cite{Q3DE,Vallero} \\
+\bottomrule
+\end{longtable}
+}
+
+\noindent\emph{Data.} The public data of~\cite{Google22} (including a repetition-code run with a documented high-energy event) and of~\cite{Google24} contain detection events and detector error models; they are the natural first test of the certificates and of burst detection on real data (\texttt{theory/LITERATURE.md}, \S2).

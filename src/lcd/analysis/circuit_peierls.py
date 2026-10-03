@@ -15,6 +15,7 @@ The bound (Theorem 4.28):
         beta_e(lam) = exp(-lam w_e) (1 - q_e + q_e exp(2 lam w_e)) * prod_{split m on e} (1 + p_m^(1/k_m)(exp(2 lam w_e) - 1)),
     q_e the flip probability of edge e from the mechanisms that have no other edge on any odd cycle with e, and the
     remaining (split) mechanisms m with k_m edges shared out by the splitting lemma;
+  * pymatching minimizes rounded weights; every beta_e is multiplied by exp(lam delta), delta the rounding slack (4.28(e));
   * summing over non-backtracking walks from one side to the other gives start^T (I - B)^{-1} end, finite when the
     spectral radius of the weighted non-backtracking matrix B is < 1.
 
@@ -180,10 +181,26 @@ def pymatching_weights(dem, G: DemGraph) -> np.ndarray:
     return w
 
 
-def edge_factors(G: DemGraph, w: np.ndarray, lam: float) -> np.ndarray:
-    """beta_e(lam) of Theorem 4.28."""
+# pymatching 2.x (sparse_blossom/driver/user_graph.h, user_graph.cc) minimizes the integer weights
+# 2 round(kappa w), kappa = (NUM_DISTINCT_WEIGHTS - 1) / max|w| over all edges (kappa = 1 if every weight is an integer).
+PYMATCHING_NUM_DISTINCT_WEIGHTS = 1 << 24
+
+
+def pymatching_rounding_slack(dem) -> float:
+    """delta of Theorem 4.28(e): pymatching minimizes weights within delta per edge of its float weights (up to scale)."""
+    import pymatching
+    if int(pymatching.__version__.split(".")[0]) != 2:
+        raise RuntimeError(f"weight discretization checked for pymatching 2.x only, found {pymatching.__version__}")
+    ws = np.array([attr["weight"] for _, _, attr in pymatching.Matching.from_detector_error_model(dem).edges()])
+    if ws.size == 0 or np.all(np.round(ws) == ws):
+        return 0.0
+    return float(np.abs(ws).max()) / (2 * (PYMATCHING_NUM_DISTINCT_WEIGHTS - 1))
+
+
+def edge_factors(G: DemGraph, w: np.ndarray, lam: float, delta: float = 0.0) -> np.ndarray:
+    """beta_e(lam) of Theorem 4.28, times exp(lam delta) for a decoder that minimizes weights within delta of w (4.28(e))."""
     a = np.exp(2 * lam * w)
-    beta = np.exp(-lam * w) * (1 - G.q + G.q * a)
+    beta = np.exp(lam * (delta - w)) * (1 - G.q + G.q * a)
     for i, shares in enumerate(G.split):
         for s in shares:
             beta[i] *= 1 + s * (a[i] - 1)
@@ -241,14 +258,23 @@ def walk_sum(G: DemGraph, beta: np.ndarray, arcs: _Arcs | None = None) -> tuple[
     return float(start @ lu.solve(end)), float(rho_upper)
 
 
-def peierls_bound(dem, weights: np.ndarray | None = None, lams=None, G: DemGraph | None = None) -> dict:
-    """Minimize the bound of Theorem 4.28 over lam (the bound is log-convex in lam: coarse grid, then golden section)."""
+def peierls_bound(dem, weights: np.ndarray | None = None, lams=None, G: DemGraph | None = None,
+                  delta: float | None = None) -> dict:
+    """Minimize the bound of Theorem 4.28 over lam (the bound is log-convex in lam: coarse grid, then golden section).
+
+    Default: pymatching's weights and its rounding slack delta (Theorem 4.28(e)). With explicit ``weights`` the decoder is
+    assumed to minimize exactly those weights (delta = 0) unless ``delta`` is given.
+    """
     G = G if G is not None else dem_graph(dem)
-    w = weights if weights is not None else pymatching_weights(dem, G)
+    if weights is None:
+        w = pymatching_weights(dem, G)
+        delta = pymatching_rounding_slack(dem) if delta is None else delta
+    else:
+        w, delta = weights, (0.0 if delta is None else delta)
     A = _arcs(G)
 
     def f(lam):
-        return walk_sum(G, edge_factors(G, w, lam), A)
+        return walk_sum(G, edge_factors(G, w, lam, delta), A)
 
     grid = list(lams) if lams is not None else [0.1 * k for k in range(1, 10)]
     vals = [f(l)[0] for l in grid]
@@ -271,4 +297,4 @@ def peierls_bound(dem, weights: np.ndarray | None = None, lams=None, G: DemGraph
     else:
         lam = grid[k]
     val, rho = f(lam)
-    return dict(bound=val, lam=float(lam), rho_upper=rho, stats=G.stats)
+    return dict(bound=val, lam=float(lam), rho_upper=rho, delta=delta, stats=G.stats)

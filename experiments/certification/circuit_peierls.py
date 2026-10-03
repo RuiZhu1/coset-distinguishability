@@ -37,7 +37,8 @@ from scipy.stats import beta as beta_dist
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
-from lcd.analysis.circuit_peierls import dem_graph, edge_factors, peierls_bound, pymatching_weights  # noqa: E402
+from lcd.analysis.circuit_peierls import (dem_graph, edge_factors, peierls_bound, pymatching_rounding_slack,  # noqa: E402
+                                          pymatching_weights)
 
 MODELS = {
     "circuit": lambda p: dict(after_clifford_depolarization=p, after_reset_flip_probability=p,
@@ -70,7 +71,7 @@ def finite_data(model: str, d: int, p: float, lam: float = 0.5) -> dict:
     dem = c.detector_error_model(decompose_errors=True)
     co = c.get_detector_coordinates()
     G = dem_graph(dem)
-    b = edge_factors(G, pymatching_weights(dem, G), lam)
+    b = edge_factors(G, pymatching_weights(dem, G), lam, pymatching_rounding_slack(dem))
     env: dict = collections.defaultdict(float)
     for i, e in enumerate(G.edges):
         if len(e) == 2:

@@ -41,6 +41,7 @@ $\sigma(R)=s$ and $L(R)=\ell$. Hence the minimal recovery failure probability is
 $\sigma(E+R)=0$, so $E+R$ lies in the normalizer, and $E+R\in S\iff L(E+R)=0\iff L(R)=L(E)$
 (because the joint kernel of $(\sigma,L)$ is $S$). Surjectivity of $(\sigma,L)$ gives the second sentence.
 \end{proof}
+\noindent\emph{Status.} Lemma~\ref{lem:decoding}, and the fact that maximum-likelihood (coset) decoding is the Bayes-optimal guess of the logical class, are standard~\cite{DKLP,IyerPoulin,BSV}; Iyer and Poulin~\cite{IyerPoulin} study the complexity of exactly this degenerate optimal-decoding problem. Calling $\err$ the Bayes error of a coset-discrimination problem is a reformulation, not a new result.
 
 \begin{remark}[The choice of label does not matter]
 Replacing $L$ by $L'(E)=\pi_{\sigma(E)}(L(E))$, where $\pi_s$ is a syndrome-dependent label permutation (for example from a different choice of
@@ -86,6 +87,7 @@ $1-\err(L\mid Y)=2^{-H_{\min}(L\mid Y)}$, where $H_{\min}$ is the conditional mi
 (only the observation is processed), Theorem~\ref{thm:monotone} says $H_{\min}(L\mid Y)\le H_{\min}(L\mid g(Y,\xi))$,
 which is the data-processing inequality for the conditional min-entropy (the Sibson--R\'enyi mutual information of order $\infty$). Other R\'enyi/Hellinger-type functionals are
 monotone as well; see Proposition~\ref{prop:hellinger}.
+Theorem~\ref{thm:monotone} is thus a data-processing inequality (the easy direction of Blackwell's theorem~\cite{Blackwell}, with relabeling allowed); it is stated and proved here for later use, not claimed as new.
 \end{remark}
 
 \subsection{The three free operations}

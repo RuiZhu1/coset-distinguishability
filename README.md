@@ -229,6 +229,25 @@ Development install and tests: `pip install -e ".[dev]" && pytest` (about 10 sec
 
 Theory track: `make -C theory check` needs numpy and scipy (both are core dependencies of the package); `make -C theory pdf` needs a minimal TeX Live: `sudo apt-get install -y --no-install-recommends texlive-latex-recommended latexmk` (about 120 MB; plain `pdflatex`, no CJK fonts).
 
+**Rigorous logical-error bounds for your own circuits.** `pip install -e ".[sinter]"` installs the command `lcd-peierls`, which computes the circuit-level Peierls bound of theory Theorem 4.28. The bound is a rigorous upper bound, per shot, on the logical failure probability of pymatching (no correlated decoding) on a detector error model, and therefore also of the maximum-likelihood decoder:
+
+```bash
+lcd-peierls --generated surface_code:rotated_memory_z -d 5 -p 1e-3
+# surface_code:rotated_memory_z d=5 r=5 p=0.001: p_L(MWPM) <= 1.162e-02  (lam = 0.503, rho(B) <= 0.6868, rounding delta = 2.5e-07)
+lcd-peierls my_circuit.stim other.dem --json
+```
+
+Next to a sinter run:
+
+```python
+from lcd.integrations.sinter_peierls import compare
+stats = sinter.collect(num_workers=4, tasks=tasks, decoders=["pymatching"], max_shots=10**6)
+for row in compare(tasks, stats):   # sampled rate, its interval, the bound, bound / rate, and a consistency flag
+    print(row["json_metadata"], row["rate"], row["bound"], row["ratio"], row["consistent"])
+```
+
+Scope: one logical observable; the matching graph must be balanced, which the tool checks and refuses otherwise. It covers stim's surface-code memory circuits under uniform and phenomenological noise. At $p=10^{-3}$ the bound is $40$–$240$ times the simulated rate at $d\le7$. The theorem and its limits are in theory §4.9.
+
 **GitHub Actions.** `.github/workflows/ci.yml` runs on every push to `main` and on pull requests: `pytest`, `make -C theory check`, `make -C theory completion`, and the PDF of the notes (artifact `theory-notes-pdf`). Heavy runs go to GitHub-hosted runners by hand: Actions tab, **Compute: P1 ML tables**, Run workflow. Each (distance, work point) table is split over `runners` machines (default 4) with 4 shards per machine, one per core; every shard adds its share of the missing decodes with its own random stream (`p1_exchange_rate.py run --shard/--nshards`) and stops at the time cap (default 330 min) with its progress kept; the last job adds the shards back onto the tables (`experiments/p1_erasure_pauli/merge_shards.py`), runs `analyze` and pushes the result to a branch `compute/p1-ml-<run id>` (never to `main`). A hosted Linux runner has 4 cores and 16 GB; a job may run at most 6 hours. The repository is public, so runs, logs and results are public.
 
 **Cloud sessions.** A Claude Code cloud session runs in an ephemeral container: anything installed with `apt-get` or `pip` disappears when the container is reclaimed. To avoid reinstalling, add the install commands above to the **setup script** of the cloud environment (environment menu in the session title bar, then Edit); it runs when each new session starts. Files committed and pushed to the repository persist.
@@ -301,4 +320,4 @@ Current progress and what is unfinished (which parts have a complete written pro
 
 ## 9. License
 
-To be decided.
+Apache License 2.0; see [`LICENSE`](LICENSE).

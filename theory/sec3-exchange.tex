@@ -3,6 +3,7 @@
 The main line of this section: \emph{discarding an erasure flag is a free operation} (Corollary~\ref{cor:discard}), which gives a rigorous upper bound on the exchange rate (Theorem~\ref{thm:rate}),
 and in the simplest subclass $\Nn_{\rm cc}(p,e)$ we completely characterize the preorder induced by local free operations (Theorem~\ref{thm:preorder}).
 The gap between the true exchange rate and the bound is one of the core research questions of the project (\S\ref{sec:gap}).
+The objects ordered here are noise models on a fixed (or quantified-over) linear decoding structure, compared by how well the logical coset can be distinguished. This differs from the resource theory of coding of Wang, Liu, Wang and Luo~\cite{WLWL}, in which the codes themselves, treated as superchannels, are the objects and a hierarchy of coding models is established.
 
 \subsection{Partial flag discarding and the exchange-rate bound}
 
@@ -46,6 +47,12 @@ $-\partial_e\alpha\le c(-\partial_p\alpha)$, and dividing by $-\partial_p\alpha>
 
 \paragraph{Constitutional reading.}
 $R_{e\to p}$ here is the \emph{marginal rate of a monotone} (\S\ref{sec:rates}); by Proposition~\ref{prop:marginal} every monotone of the local free order has marginal rate in $[0,c]$, and $c$ is attained by the free-order monotone $1-\mu$, so Theorem~\ref{thm:rate} cannot be improved using the free operations alone.
+
+\paragraph{Relation to numerical studies of erasure.}
+That erasures cost less than Pauli errors at equal rate is well established numerically. Stace, Barrett and Doherty~\cite{SBD} showed that topological codes tolerate a loss rate up to $50\%$ (the bond-percolation threshold) with a graceful trade-off between computational and loss errors.
+Converting the dominant errors into erasures raises circuit-level surface-code thresholds substantially: from $0.937\%$ to $4.15\%$ for $98\%$ erasure conversion in the proposal of Wu, Kolkowitz, Puri and Thompson~\cite{WKPT}; further for biased erasures (Sahay et al.~\cite{Sahay}); and erasure qubits have been proposed for superconducting circuits (Kubica et al.~\cite{KubicaErasure}). The costs of imperfect erasure checks and of check schedules were studied by Chang et al.~\cite{Chang}, Gu, Retzker and Kubica~\cite{GRK}, and Gu, Vaknin, Retzker and Kubica~\cite{GVRK}.
+Combinatorially, a code of distance $d$ corrects $w$ errors together with $k$ erasures whenever $2w+k\le d-1$, the origin of the rule of thumb that an erasure costs half an error.
+These works compare thresholds, effective distances and logical error rates obtained from simulations; we did not find an analytic bound on the marginal exchange rate between erasure and Pauli noise such as Theorem~\ref{thm:rate}, nor an equality criterion such as Theorem~\ref{thm:equality}.
 
 \begin{remark}[Relation to the heuristic ``$R\le3/4$'']\label{rem:34}
 ``Adding $\delta e$ of erasure $\to$ adding $\tfrac34\delta e$ of depolarizing noise'' is the value of $c$ at $(p_0,e_0)=(0,0)$. The exact $c$ has two corrections:
@@ -127,6 +134,11 @@ The last sentence follows from Theorem~\ref{thm:monotone}.
 \paragraph{Level-1 form.}
 For the uncoded qubit, (i) and (ii) are also equivalent to the existence of an arbitrary simulable reduction (label permutations beyond translations) and to $\Phi(P')\le\Phi(P)$ for all $\varphi\in\Phi_4$ (Proposition~\ref{prop:local-level1}); the complete family of monotones is described in Theorem~\ref{thm:complete}.
 
+\paragraph{Classical and quantum analogues.}
+For binary-input symmetric-output channels, Hirche and Shaya~\cite{HircheShaya} show that the binary erasure and binary symmetric channels are extremal in the degradability order among channels with the same Dobrushin coefficient, and in the less-noisy order among channels with the same KL contraction coefficient (the analogous statement for the more-capable order at equal capacity being due to Geng et al.); partial orders and contraction coefficients of quantum channels are studied by Hirche, Rouz\'e and Stilck Fran\c{c}a~\cite{HRSF}.
+Flagged depolarizing channels, which interpolate between the depolarizing and the erasure channel through the overlap of the flag states, were used by Fanizza, Kianvash and Giovannetti~\cite{FKG} to bound quantum capacities.
+Theorem~\ref{thm:preorder} (with Proposition~\ref{prop:two-scalars}) is the corresponding statement for the Pauli-plus-erasure class under local free operations; we did not find it in the literature. Its second scalar $\mu=(1-e)\lambda(p)$ is the Bloch shrinking factor of the single-qubit channel with the flag discarded, so the result may be regarded as natural; the content is that $p$ and $\mu$ suffice.
+
 \begin{remark}[Structure]
 (1) Complete monotones: the local free order is completely determined by two functionals: the total unflagged eigenvalue mass $\mu=(1-e)\lambda$ (nonincreasing under any local free operation)
 and ``the conditional eigenvalue $\lambda$ is nonincreasing when the erasure rate does not decrease''.
@@ -188,6 +200,8 @@ Route to a proof: (S1) for each $n$ and linear structure $(\sigma,L)$, the compa
 (S3) the asymptotic version is characterized, via the large-sample Blackwell order, by the family of all R\'enyi divergences \cite{MPST}, which corresponds exactly to $\{b_s\}_{s\in(0,1)}$ and its higher-order generalizations.
 If the conjecture holds, the gap is case (A) and $c-R_\alpha$ measures information specific to the surface code rather than a deficiency of the free operations;
 if it is refuted by a counterexample from some code (for example one other than $[[5,1,3]]$), new free operations are needed (case (B)).
+
+\noindent\emph{Relation to the comparison of channels.} When all encodings are allowed, the analogue of this conjecture is classical: Shannon's inclusion order~\cite{Shannon58} (one channel includes another if the latter is a mixture of pre- and post-processings of the former) implies that the including channel is at least as good for every code, and Buscemi~\cite{Buscemi18,Buscemi16} relates such orderings of classical and quantum channels (degradability, less noisy, and orders defined by decision problems) by equivalence theorems. Proposition~\ref{prop:local-level1} is an instance of this pattern. The new content of Conjecture~\ref{conj:universal}, Proposition~\ref{prop:two-structures} and \S\ref{sec:single-loss} is the restriction to \emph{linear} decoding structures (stabilizer codes and detector maps), to the single loss $\err$, and to the smaller class of local free operations; to our knowledge this restriction has not been studied.
 
 \begin{conjecture}[Completeness of $B$: hypothesis $H_B$]\label{conj:HB}
 In some neighborhood within $\Nn_{\rm cc}$, the $\alpha(p,e)$ of the surface code is a function of $B(p,e)$, so that $R_\alpha=R_B$.

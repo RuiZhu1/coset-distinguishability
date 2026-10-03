@@ -75,7 +75,7 @@ The numerics are organized in layers: under code-capacity and phenomenological n
 > - Phenomenological noise; circuit-level MCMC or approximate tensor networks: **NOT STARTED**.
 > - stim simulations with planted leakage/burst, erasure and biased noise (P2): **NOT STARTED**.
 > - Public superconducting data: **NOT STARTED**.
-> - Open-source toolkit: the Python package `lcd` (codes, noise, decoders, stratified estimator, exchange-rate analysis) exists; a first stim integration exists (`lcd.analysis.circuit_peierls`: the circuit-level Peierls bound for any stim detector error model with one observable); the sinter integration is **NOT STARTED**.
+> - Open-source toolkit: the Python package `lcd` (codes, noise, decoders, stratified estimator, exchange-rate analysis) exists; a stim/sinter integration exists: `lcd.analysis.circuit_peierls` (the circuit-level Peierls bound for any balanced stim detector error model with one observable, with pymatching's weight rounding accounted for, Theorem 4.28(e)), the command `lcd-peierls`, and `lcd.integrations.sinter_peierls.compare` (bound next to sinter's sampled rates). Licensed Apache-2.0. Not on PyPI yet.
 
 ---
 
@@ -107,7 +107,7 @@ The numerics are organized in layers: under code-capacity and phenomenological n
 | Tensor-power rates (R-c), uncoded qubit | PROVED (draft): exact/catalytic = one-shot order; approximate = conditional entropy, rate N(P)/N(Q), marginal rate R_hash | theory 0.13–0.15 |
 | Experimental design (O4) | PARTIAL: two-hypothesis part and composite alternatives (detection orientation) PROVED (draft) under a marked-Poisson model, strong converse included; false-alarm orientation and adaptive Chernoff OPEN | theory 5.7–5.14 |
 | Code-capacity ML tensor-network decoding | DONE, validated | README |
-| Circuit-level and stim numerics; public data; stim/sinter toolkit | STARTED: rigorous circuit-level MWPM bounds and the stim tool that computes them; planted-noise numerics, public data and sinter integration NOT STARTED | theory 4.28–4.30 |
+| Circuit-level and stim numerics; public data; stim/sinter toolkit | STARTED: rigorous circuit-level MWPM bounds, the command-line tool and the sinter integration that compute them (Apache-2.0); planted-noise numerics and public data NOT STARTED | theory 4.28–4.30 |
 
 ---
 

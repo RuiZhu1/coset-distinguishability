@@ -32,7 +32,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "experiments" / "certification"))
 from lcd.analysis.circuit_peierls import (_arcs, _parse, dem_graph, edge_factors, peierls_bound,  # noqa: E402
-                                          pymatching_weights, walk_sum)
+                                          pymatching_rounding_slack, pymatching_weights, walk_sum)
 import circuit_peierls as cpx  # noqa: E402
 
 failures: list[str] = []
@@ -76,6 +76,7 @@ def n2() -> None:
         dem = dem_of("circuit", d, p)
         G = dem_graph(dem)
         w = pymatching_weights(dem, G)
+        delta = pymatching_rounding_slack(dem)
         eid = G.index
         m = pymatching.Matching.from_detector_error_model(dem)
         mechs = _parse(dem)
@@ -153,7 +154,7 @@ def n2() -> None:
                         wc = sum(w[i] for i in cyc if C[i])
                         wx = sum(w[i] for i in cyc if X[i])
                         worst = max(worst, (wc - wx) / sum(w[i] for i in cyc))
-                        ok &= wc <= wx + 2e-3 * len(cyc)
+                        ok &= wc <= wx + (delta + 1e-12) * len(cyc)  # Theorem 4.28(e)
                         if not path:
                             break
                         x = y
@@ -162,11 +163,11 @@ def n2() -> None:
                     verts.append(y)
                     x = y
             heavy_ok += ok
-        res.append(dict(d=d, p=p, shots=shots, fails=fails, not_one_edge=bad_repr))
+        res.append(dict(d=d, p=p, shots=shots, fails=fails, not_one_edge=bad_repr, delta=delta))
         check(f"N2 d={d} p={p:.0e}: every mechanism is one observable-graph edge", bad_repr == 0)
         check(f"N2 d={d} p={p:.0e}: X has the sampled syndrome and observable", synd_ok == shots, f"({synd_ok}/{shots})")
         check(f"N2 d={d} p={p:.0e}: failure iff odd X + C, and every cycle of X + C is heavy", heavy_ok == shots,
-              f"({fails} failures in {shots} shots; largest (w(C)-w(X))/w(cycle) = {worst:.1e})")
+              f"({fails} failures in {shots} shots; largest (w(C)-w(X))/w(cycle) = {worst:.1e}; delta = {delta:.1e})")
     OUT["N2"] = res
 
 

@@ -12,6 +12,7 @@ theory/
 ├── sec4-certification.tex     conditional certification: union bound, parameter confidence sets, floor; open lemmas for bursts
 ├── sec5-information.tex       Chernoff/union sandwich, reference rates, Poisson bound, detection exponents
 ├── sec6-map.tex               theory <-> numerics map, open problems, schedule in parallel with M0-M5
+├── sec7-related.tex         related work and what is new, claim by claim (64 verified references in main.tex)
 ├── checks/exact_small_codes.py  exact ML checks (no sampling, no approximation) on three codes with n <= 9
 ├── checks/constitution.py       structural checks of section 0 (LP over simulable reductions; about 4 s)
 ├── checks/structures.py         exact eps*(p, e) of any linear decoding structure (nested subspaces S < N of F_2^{2n}), enumeration of all structures

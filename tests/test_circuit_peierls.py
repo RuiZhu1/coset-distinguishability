@@ -16,8 +16,14 @@ def test_repetition_code_by_hand():
     # path b -D0- D1 - b with one odd edge: the only odd cycle has three edges, beta = 2 sqrt(q(1-q)) at lam = 1/2
     dem = stim.DetectorErrorModel("error(0.1) D0 L0\nerror(0.1) D0 D1\nerror(0.1) D1")
     r = peierls_bound(dem)
-    assert r["bound"] == pytest.approx(0.6 ** 3, rel=1e-9)
+    # pymatching minimizes rounded weights: every factor carries exp(lam delta), delta = ln 9 / (2 (2^24 - 1)) (4.28(e))
+    delta = np.log(9) / (2 * (2 ** 24 - 1))
+    assert r["delta"] == pytest.approx(delta, rel=1e-12)
+    assert r["bound"] == pytest.approx(0.6 ** 3 * np.exp(3 * 0.5 * delta), rel=1e-9)
     assert r["lam"] == pytest.approx(0.5, abs=1e-4)
+    # a decoder that minimizes the float weights exactly: no slack
+    w = np.full(3, np.log(9))
+    assert peierls_bound(dem, weights=w, lams=[0.5])["bound"] == pytest.approx(0.6 ** 3, rel=1e-12)
 
 
 def test_inconsistent_flags_and_unbalanced_graphs_are_refused():
