@@ -67,3 +67,4 @@ Do not say whose project it is: models score their user's work higher.
 | Date | Commit | Model | I (industry) | A (academic) | Top weakness named |
 |---|---|---|---|---|---|
 | 2026-10-03 | 02d1c4b | Claude Opus 5.5 (fresh-context subagent, one run, no web) | 4.3 | 5.9 | No real data or hardware regime; resource-theory core is conditional majorization (Gour et al. 2018) and uncited; hard questions open, bounds loose |
+| 2026-10-03 | 0008094 | Claude Opus 5.5 (fresh-context subagents, two runs, no web): I 5.4 / 5.5, A 5.9 / 6.3 | **5.5** | **6.1** | Bounds still 9-240x loose and Willow d >= 5 not certifiable; no certificate from the data's own statistics; core order known, more QRT prior work uncited (Wang-Wilde, Takagi-Regula, Gour superchannels); notes not paper-shaped; surface code only |
