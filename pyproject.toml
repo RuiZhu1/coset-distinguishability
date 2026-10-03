@@ -7,7 +7,7 @@ name = "lcd"
 version = "0.0.1"
 description = "Logical Coset Distinguishability: numerics for the resource theory of surface-code noise"
 requires-python = ">=3.10"
-dependencies = ["numpy", "scipy", "pymatching>=2.0"]
+dependencies = ["numpy", "scipy", "pymatching>=2.1", "stim>=1.12"]
 
 [project.optional-dependencies]
 dev = ["pytest"]

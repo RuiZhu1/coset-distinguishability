@@ -11,6 +11,7 @@ completion:
 	python3 checks/completion_checks.py
 	python3 checks/second_pass_checks.py
 	python3 checks/third_pass_checks.py
+	python3 checks/circuit_peierls_checks.py
 
 search:
 	python3 checks/universal_order_search.py --budget 60 --jobs 4

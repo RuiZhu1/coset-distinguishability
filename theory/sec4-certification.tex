@@ -387,7 +387,7 @@ If $3B_{M,\rm b}<1$, then for every odd $d\ge3$
 and the counts of Proposition~\ref{prop:saw} and Lemma~\ref{lem:row-count} may replace $d\,3^{\ell-1}$. At $\bar\rho=0$ and $\varsigma=\sqrt{(1-q)/q}$, $B_{M,\rm b}=B_M$. In particular bursts in regions of bounded size lower the exponent to at least $\ln\frac1{3B_{M,\rm b}}>0$ and produce no $d$-independent floor; this proves the O3 statement at code capacity.\hfill\st{PROVED}
 \end{theorem}
 \begin{proof}
-Lemma~\ref{lem:crossing} is deterministic: a failure of the $X$ part gives a crossing path $\gamma$, $|\gamma|\ge d$, on which the unflagged qubits with an $X$-type error are at least half of the unflagged qubits. For a fixed $\gamma$, $\mathbf 1[\mathcal B_\gamma]\le\prod_{j\in\gamma}\phi_j$ with $\phi_j=1$ on flagged qubits and $\phi_j=\varsigma^{2x_j-1}$ otherwise. Given the burst activations the qubits are independent; an unflagged qubit at depolarizing rate $s_j$ has $x_j\sim{\rm Bernoulli}(\tfrac23s_j)$ with $\tfrac23s_j\in[0,\tfrac12]$, so $\E[\phi_j\mid\text{activations}]=m(\tfrac23s_j)$, and $m$ is nondecreasing because $\varsigma\ge1/\varsigma$. Hence the factor is at most $m(q)$ on qubits not hit by an active region and at most $m(\tfrac12)$ on hit ones, and Steps~3--4 of the proof of Theorem~\ref{thm:burst-product} give $\Prob[\mathcal B_\gamma]\le B_{M,\rm b}^{|\gamma|}$. Sum over crossing paths as in Theorem~\ref{thm:mwpm-peierls}; ML is at most MWPM.
+The first step of the proof of Theorem~\ref{thm:mwpm-peierls} is deterministic: a failure of the $X$ part gives a crossing path $\gamma$, $|\gamma|\ge d$, on which the unflagged qubits with an $X$-type error are at least half of the unflagged qubits. For a fixed $\gamma$, $\mathbf 1[\mathcal B_\gamma]\le\prod_{j\in\gamma}\phi_j$ with $\phi_j=1$ on flagged qubits and $\phi_j=\varsigma^{2x_j-1}$ otherwise. Given the burst activations the qubits are independent; an unflagged qubit at depolarizing rate $s_j$ has $x_j\sim{\rm Bernoulli}(\tfrac23s_j)$ with $\tfrac23s_j\in[0,\tfrac12]$, so $\E[\phi_j\mid\text{activations}]=m(\tfrac23s_j)$, and $m$ is nondecreasing because $\varsigma\ge1/\varsigma$. Hence the factor is at most $m(q)$ on qubits not hit by an active region and at most $m(\tfrac12)$ on hit ones, and Steps~3--4 of the proof of Theorem~\ref{thm:burst-product} give $\Prob[\mathcal B_\gamma]\le B_{M,\rm b}^{|\gamma|}$. Sum over crossing paths as in Theorem~\ref{thm:mwpm-peierls}; ML is at most MWPM.
 \end{proof}
 
 \noindent The bound is crude: the optimal $\varsigma$ is much smaller than $\sqrt{(1-q)/q}$ once $\bar\rho>0$, because $\kappa^V$ grows like $\varsigma^V$. For example, at $p=0.01$, $e=0$, $V=4$ the condition $3B_{M,\rm b}<1$ needs $\bar\rho$ of order $10^{-5}$ or less. The statement is qualitative: an exponent that stays positive, no floor.
@@ -429,3 +429,151 @@ For the bit-flip repetition code of distance $3$ over $3$ rounds with perfect me
 \end{observation}
 
 \noindent So O1 has a negative answer in all three shape directions. A plausible reading (not a proof): a stronger, larger or longer burst makes the hit qubits closer to uniform, and a uniform qubit carries no misleading evidence, whereas a partially noisy one biases the decision. Theorems~\ref{thm:burst-product}, \ref{thm:peierls-bursts} and~\ref{thm:weak-bursts} are uniform in the strength and monotone in $(V,\bar\rho)$, so they need no shape monotonicity.
+
+\subsection{A Peierls bound for matching at circuit level (O5, O3, O2)}\label{sec:circuit-peierls}
+
+The Peierls bounds of \S\ref{sec:mwpm-cert} and \S\ref{sec:peierls-bursts} use three facts: a decoder failure leaves a heavy crossing path; the errors on different edges are independent; and the crossing paths can be counted. In a circuit-level detector error model the second fact fails as stated, because one fault flips several detectors and stim splits it over several edges of the matching graph. The third fact needs the actual space-time graph.
+This subsection restores the second fact exactly for the standard surface-code memory circuits, by re-decomposing the faults. It replaces the count by a sum over non-backtracking walks, which is computed on the graph. The bound is rigorous and computable for any detector error model that passes two checks (flag consistency and balance). For stim's rotated memory circuit it is non-vacuous at $p=10^{-3}$, about $40$--$240$ times the simulated MWPM failure rate at $d\le7$, and it gives a certified suppression factor for every $d$.
+Fowler~\cite{Fowler} proved that matching has a positive threshold under circuit-level noise by a related path-counting argument. What is added here is a bound that is evaluated on a given detector error model and has explicit constants.
+
+\begin{definition}[Observable graph and graph decompositions]\label{def:obs-graph}
+A detector error model has independent mechanisms $m$ with probabilities $p_m\in[0,\tfrac12]$, detector sets $D_m$ and observable flips $L_m\in\F$ (one observable).
+A \emph{decoding graph} $G$ has as vertices the detectors and one boundary vertex $b$. Every edge $e$ joins two detectors, or a detector and $b$, and carries a flag $o_e\in\F$ and a weight $w_e\ge0$. For an edge set $F$, $\partial F$ is the set of detectors of odd degree in $F$ and $o(F)=\sum_{e\in F}o_e$.
+The \emph{observable graph} $G_{\rm o}$ consists of the connected components of $G-b$ that contain an edge with $o_e=1$, together with their edges to $b$. A \emph{graph decomposition} assigns to every mechanism an edge set $\Gamma(m)$ of $G_{\rm o}$ with $\partial\Gamma(m)=D_m\cap V(G_{\rm o})$ and $o(\Gamma(m))=L_m$.
+Stim's \texttt{decompose\_errors=True} gives one, with $G$ the graph of its components, provided that no two components with the same detectors carry different flags. Any other decomposition may be used. In particular, a mechanism whose detectors in $G_{\rm o}$ are those of one edge $e$ of $G_{\rm o}$ with $o_e=L_m$ may be given $\Gamma(m)=\{e\}$; we call this \emph{re-decomposition}.
+$G_{\rm o}$ is \emph{balanced} if every cycle of $G_{\rm o}-b$ has $o=0$. Then there is a function $\phi$ on the detectors of $G_{\rm o}$ with $o_{xy}=\phi(x)+\phi(y)$ on every edge (one $\phi$ per component), and the detectors $u$ with an edge to $b$ fall into two \emph{sides} $\sigma(u)=o_{ub}+\phi(u)\in\F$.
+A mechanism is \emph{exclusive} if no simple cycle $\gamma$ with $o(\gamma)=1$ contains two edges of $\Gamma(m)$. Examples: $|\Gamma(m)|=1$, or all edges of $\Gamma(m)$ go to $b$ from one side.
+\end{definition}
+
+\begin{theorem}[Circuit-level Peierls bound for matching]\label{thm:circuit-peierls}
+In the setting of Definition~\ref{def:obs-graph}, let $G_{\rm o}$ be balanced and let $\Gamma$ be a graph decomposition. The decoder outputs, for the syndrome $s$, an edge set $C$ of $G$ of minimum weight with $\partial C=s$ (ties broken arbitrarily) and predicts $o(C)$.
+For an edge $e$ of $G_{\rm o}$ let $q_e=\tfrac12\big(1-\prod_{m}(1-2p_m)\big)$, the product over the exclusive $m$ with $e\in\Gamma(m)$. For the other mechanisms $m\ni e$ let $k_m=|\Gamma(m)|$. For $\lambda\ge0$ put $a_e=e^{2\lambda w_e}$ and
+\[
+\beta_e(\lambda)=e^{-\lambda w_e}\,(1-q_e+q_ea_e)\prod_{m\ \text{not exclusive},\ e\in\Gamma(m)}\big(1+p_m^{1/k_m}(a_e-1)\big).
+\]
+Let $\mathcal C$ be the set of simple cycles of $G_{\rm o}$ through $b$ whose two edges at $b$ end on different sides.
+\begin{enumerate}[(a)]
+\item For every $\lambda\ge0$, $\ \pL^{\rm MWPM}\le\sum_{\gamma\in\mathcal C}\prod_{e\in\gamma}\beta_e(\lambda)$.
+\item Let $B$ be the non-backtracking matrix of $G_{\rm o}-b$ on directed edges, with entries $B_{(x\to y),(y\to z)}=\beta_{yz}$ for $z\ne x$ and $0$ otherwise. Put $\mathrm{start}_{(u\to y)}=\beta_{ub}\beta_{uy}$ if $\sigma(u)=0$ and $\mathrm{end}_{(x\to v)}=\beta_{vb}$ if $\sigma(v)=1$, both $0$ otherwise. If the spectral radius satisfies $\rho(B)<1$, the sum in (a) is at most $\mathrm{start}^{\mathsf T}(I-B)^{-1}\mathrm{end}$.
+\item $\err\le\pL^{\rm MWPM}$. For fixed weights, both bounds are nondecreasing in every $p_m\in[0,\tfrac12]$, so they hold with each $p_m$ replaced by an upper limit $\bar p_m\le\tfrac12$.
+\item (Bursts.) Let the mechanisms be the locations of Definition~\ref{def:local-dep} with $K=2$ and no flags, and let all of them be exclusive. Burst regions $z$ are sets of mechanisms with independent activations, $\Prob[N_z\ge1]\le\rho_z$. An activation raises the probability of each mechanism of $z$ to an arbitrary value in $[p_m,\tfrac12]$, independently across mechanisms given the activations.
+Let $E(z)$ be the edges $e$ with $e\in\Gamma(m)$ for some $m\in z$, and put $V_E=\max_z|E(z)|$, $\bar\rho_E=\max_e\sum_{z:\,E(z)\ni e}\rho_z$, $\kappa_e=\tfrac12e^{-\lambda w_e}(1+a_e)/\beta_e(\lambda)\ge1$ and $\bar\kappa=\max_e\kappa_e$.
+Then (a) and (b) hold, uniformly in the burst strengths, with every $\beta_e$ replaced by $\beta_e\,\Xi$, where $\Xi=\exp\big(\bar\rho_E(\bar\kappa^{V_E}-1)/V_E\big)$.
+\end{enumerate}
+\hfill\st{PROVED}
+\end{theorem}
+\begin{proof}
+\emph{Failure leaves a heavy odd cycle.}
+Let $f_m$ indicate that $m$ fires, and let $X=\bigoplus_{f_m=1}\Gamma(m)$ (symmetric difference). Then $\partial X=s\cap V(G_{\rm o})$, and $o(X)=\sum_mf_mL_m$ is the actual flip of the observable.
+The boundary vertex imposes no constraint, so the minimization splits over the components of $G-b$. Hence $C_{\rm o}=C\cap E(G_{\rm o})$ is a minimum-weight edge set of $G_{\rm o}$ with $\partial C_{\rm o}=s\cap V(G_{\rm o})$, and the other edges of $C$ have $o=0$. So the decoder fails iff $o(X\oplus C_{\rm o})=1$.
+$Y=X\oplus C_{\rm o}$ has even degree at every detector, hence also at $b$, so it is an edge-disjoint union of simple cycles; on failure one of them, $\gamma$, has $o(\gamma)=1$.
+$C_{\rm o}\oplus\gamma$ has the same boundary as $C_{\rm o}$, so minimality gives $w(\gamma\cap C_{\rm o})\le w(\gamma\setminus C_{\rm o})$. Every edge of $\gamma\subseteq Y$ lies in exactly one of $X$ and $C_{\rm o}$, so $\gamma\setminus C_{\rm o}=\gamma\cap X$ and $w(\gamma\cap X)\ge\tfrac12w(\gamma)$.
+By balance $\gamma$ passes through $b$. If its edges at $b$ are $ub$ and $vb$, then $o(\gamma)=o_{ub}+\phi(u)+\phi(v)+o_{vb}=\sigma(u)+\sigma(v)$. So $\gamma\in\mathcal C$.
+
+\emph{One cycle.}
+Fix $\gamma\in\mathcal C$ and let $x_e=\mathbf 1[e\in X]$. Then $\mathbf 1[w(\gamma\cap X)\ge\tfrac12w(\gamma)]\le\prod_{e\in\gamma}e^{-\lambda w_e}a_e^{x_e}$.
+Let $y_e$ be the parity of the firing exclusive mechanisms with $e\in\Gamma(m)$. Then $x_e\le y_e+\sum f_m$, the sum over the non-exclusive $m$ with $e\in\Gamma(m)$, and $a_e\ge1$.
+An exclusive mechanism has at most one edge on $\gamma$, so the $y_e$, $e\in\gamma$, are functions of disjoint sets of mechanisms. They are therefore independent of each other and of the non-exclusive mechanisms, with $\Prob[y_e=1]=q_e$. Hence
+\[
+\Prob\big[w(\gamma\cap X)\ge\tfrac12w(\gamma)\big]\le\prod_{e\in\gamma}e^{-\lambda w_e}(1-q_e+q_ea_e)\prod_{m\ \text{not excl.}}\Big(1-p_m+p_m\prod_{e\in\gamma\cap\Gamma(m)}a_e\Big).
+\]
+\emph{Splitting.} If $t_i\ge0$, $r_i\in[0,1]$ and $\prod_ir_i\ge p$, then $1+p\big(\prod_i(1+t_i)-1\big)\le\prod_i(1+r_it_i)$. Expanding both sides, the coefficient of $\prod_{i\in S}t_i$ is $p$ on the left and $\prod_{i\in S}r_i\ge\prod_ir_i\ge p$ on the right.
+With $r_e=p_m^{1/k_m}$ for $e\in\gamma\cap\Gamma(m)$ we have $\prod r_e=p_m^{|\gamma\cap\Gamma(m)|/k_m}\ge p_m$. So the last product is at most $\prod_{e\in\gamma}\prod_{m\ni e}(1+p_m^{1/k_m}(a_e-1))$, and the probability is at most $\prod_{e\in\gamma}\beta_e(\lambda)$. A union bound over $\mathcal C$ gives (a).
+
+\emph{Walks.}
+Orient $\gamma\in\mathcal C$ from its end $u$ on side $0$. Then $\gamma$ is $b,u=x_0,x_1,\dots,x_n=v,b$ with $n\ge1$, and the path $x_0\dots x_n$ is simple, hence a non-backtracking walk in $G_{\rm o}-b$. Its weight $\prod_{e\in\gamma}\beta_e$ is $\mathrm{start}_{(x_0\to x_1)}\prod_{i=1}^{n-1}B_{(x_{i-1}\to x_i),(x_i\to x_{i+1})}\,\mathrm{end}_{(x_{n-1}\to x_n)}$, and different cycles give different walks. All terms are nonnegative, so the sum in (a) is at most $\sum_{n\ge0}\mathrm{start}^{\mathsf T}B^n\mathrm{end}=\mathrm{start}^{\mathsf T}(I-B)^{-1}\mathrm{end}$ when $\rho(B)<1$. This proves (b).
+
+(c) $\err$ is the Bayes error (Lemma~\ref{lem:decoding}), so no decoder beats ML. $1-q+qa_e$ is nondecreasing in $q$, and $q_e$ is nondecreasing in each $p_m\le\tfrac12$. The factors $1+p^{1/k}(a_e-1)$ are nondecreasing in $p$. The Neumann series, and $\rho(B)$, are nondecreasing in every entry. The weights are the decoder's and do not change.
+
+(d) Given the activations the mechanisms are independent. Edges not hit by an active region keep $q_e$; hit edges have a parity probability in $[q_e,\tfrac12]$, and $\tfrac12$ gives the factor $\tfrac12e^{-\lambda w_e}(1+a_e)=\kappa_e\beta_e$. So the probability for $\gamma$ given the activations is at most $\prod_{e\in\gamma}\beta_e\prod_z\prod_{e\in\gamma\cap E(z)}\kappa_e^{\mathbf 1[N_z\ge1]}$.
+Average over the independent activations, and use $1+x\le e^x$, $\bar\kappa^k-1\le k(\bar\kappa^{V_E}-1)/V_E$ for $0\le k\le V_E$, and $\sum_z\rho_z|\gamma\cap E(z)|\le|\gamma|\bar\rho_E$. This gives the factor $\Xi^{|\gamma|}$, as in Steps~3--4 of Theorem~\ref{thm:burst-product}.
+\end{proof}
+
+\noindent At code capacity, $G_{\rm o}$ is the matching graph of Theorem~\ref{thm:mwpm-peierls}, every mechanism has one edge, and $w_e=\ln\frac{1-q}q$, $\lambda=\tfrac12$ give $\beta_e=2\sqrt{q(1-q)}$. Part (b) then replaces the count $d\,3^{\ell-1}$ by the exact non-backtracking walk sum.
+The bound is log-convex in $\lambda$: each $\beta_e$ is a positive combination of exponentials in $\lambda$, and sums and products preserve log-convexity. So the minimization over $\lambda$ is one-dimensional and convex; its optimum is near $\tfrac12$ when the weights are log-likelihood ratios.
+Pymatching~\cite{SB} computes an exact minimum-weight correction for its weights after converting them to integers. We evaluate the bound at the unrounded weights, at which it is continuous. On sampled faults, check N2 finds no violation of minimality beyond floating-point error.
+The computation uses $(I-B)z=\mathbf 1$: if $z>0$, then $\rho(B)\le1-1/\max z<1$ (Collatz--Wielandt), so the same factorization both certifies convergence and evaluates the bound.
+
+\begin{proposition}[Stim's rotated surface-code memory circuit]\label{prop:circuit-numbers}
+Take the rotated surface-code memory circuit generated by stim~\cite{stim} (\texttt{rotated\_memory\_z}) with $d$ rounds, decoded with pymatching's weights, under two noise models:
+\emph{circuit-level noise} of strength $p$ (depolarizing after every Clifford gate, reset and measurement flips, data depolarization before every round, all of strength $p$), and
+\emph{phenomenological noise} (data depolarization and measurement flips of strength $p$, noiseless gates).
+For $3\le d\le15$:
+\begin{enumerate}[(i)]
+\item the flags of stim's decomposition are consistent and $G_{\rm o}$ is balanced. After re-decomposition, every mechanism has exactly one edge in $G_{\rm o}$, so all mechanisms are exclusive and the observable part of the model is an independent-edge model with marginals $q_e$.
+At circuit level, the mechanisms with two components in $G_{\rm o}$ are all pairs of edges to $b$ whose two detectors are also joined by an edge of $G_{\rm o}$ with the right flag. That edge is either a timelike edge (one plaquette, consecutive rounds) or a space-time diagonal with offset $(4,0,-1)$ along the boundary row (Proposition~\ref{prop:circuit-lattice}). There are $48$, $172$, $368$, $636$, $976$, $1388$ and $1872$ of them for $d=3,5,\dots,15$, and all are re-decomposed. Phenomenological noise needs no re-decomposition.
+\item Theorem~\ref{thm:circuit-peierls}(b), minimized over $\lambda$, gives the bounds in Table~\ref{tab:circuit-peierls}.
+\end{enumerate}
+\hfill\st{PROVED} (computer-assisted, floating point; checks N1, N4; \texttt{results/circuit\_peierls.json})
+\end{proposition}
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lccccccc}
+\toprule
+& $d=3$ & $5$ & $7$ & $9$ & $11$ & $13$ & $15$\\
+\midrule
+circuit, $10^{-4}$ & $6.8{\times}10^{-4}$ & $1.5{\times}10^{-5}$ & $2.8{\times}10^{-7}$ & $4.8{\times}10^{-9}$ & $7.4{\times}10^{-11}$ & $1.1{\times}10^{-12}$ & $1.5{\times}10^{-14}$\\
+circuit, $5{\times}10^{-4}$ & $9.0{\times}10^{-3}$ & $1.3{\times}10^{-3}$ & $1.8{\times}10^{-4}$ & $2.1{\times}10^{-5}$ & $2.3{\times}10^{-6}$ & $2.4{\times}10^{-7}$ & $2.3{\times}10^{-8}$\\
+\quad simulated & & $1.6{\times}10^{-5}$ & & & & & \\
+circuit, $10^{-3}$ & $2.9{\times}10^{-2}$ & $1.2{\times}10^{-2}$ & $4.4{\times}10^{-3}$ & $1.6{\times}10^{-3}$ & $5.1{\times}10^{-4}$ & $1.6{\times}10^{-4}$ & $4.6{\times}10^{-5}$\\
+\quad simulated & $7.6{\times}10^{-4}$ & $1.3{\times}10^{-4}$ & $1.9{\times}10^{-5}$ & & & & \\
+circuit, $2{\times}10^{-3}$ & $1.0{\times}10^{-1}$ & $1.6{\times}10^{-1}$ & $4.7{\times}10^{-1}$ & $\infty$ & $\infty$ & $\infty$ & $\infty$\\
+\quad simulated & & $1.1{\times}10^{-3}$ & $2.7{\times}10^{-4}$ & & & & \\
+phenom., $5{\times}10^{-3}$ & $5.4{\times}10^{-2}$ & $1.2{\times}10^{-2}$ & $2.1{\times}10^{-3}$ & $3.5{\times}10^{-4}$ & $5.3{\times}10^{-5}$ & $7.5{\times}10^{-6}$ & $1.0{\times}10^{-6}$\\
+\quad simulated & $2.2{\times}10^{-3}$ & $3.2{\times}10^{-4}$ & & & & & \\
+phenom., $10^{-2}$ & $1.8{\times}10^{-1}$ & $1.1{\times}10^{-1}$ & $6.0{\times}10^{-2}$ & $3.1{\times}10^{-2}$ & $1.5{\times}10^{-2}$ & $6.8{\times}10^{-3}$ & $3.0{\times}10^{-3}$\\
+\quad simulated & & $2.5{\times}10^{-3}$ & $5.9{\times}10^{-4}$ & & & & \\
+\bottomrule
+\end{tabular}
+\caption{Theorem~\ref{thm:circuit-peierls}(b) for stim's rotated memory circuit ($d$ rounds; noise model and $p$ in the first column), minimized over $\lambda$ ($\lambda^\ast\approx0.50$ throughout). ``Simulated'' rows give pymatching failure rates per shot where available. $\infty$ means $\rho(B)\ge1$. The full table (including $p=2\times10^{-4}$, $1.5\times10^{-3}$ and the phenomenological $p=10^{-3}$, $2\times10^{-3}$) and 99\% Clopper--Pearson limits are in \texttt{results/circuit\_peierls.json}.}\label{tab:circuit-peierls}
+\end{table}
+
+\begin{proposition}[A bound for every $d$, and a certified exponent]\label{prop:circuit-lattice}
+In the circuit-level setting of Proposition~\ref{prop:circuit-numbers}, place the detector of the $Z$ plaquette with centre $(x,y)$ at round $t$ at the point $(x,y,t)$ (stim's coordinates). Fix $\lambda=\tfrac12$ and assume:
+\begin{enumerate}[(H1)]
+\item every edge of $G_{\rm o}-b$ joins two detectors whose difference is one of the twelve offsets $\pm(2,2,0)$, $\pm(2,-2,0)$, $\pm(0,0,1)$, $\pm(2,2,-1)$, $\pm(2,-2,-1)$, $\pm(4,0,-1)$, and its factor $\beta_e$ is at most an envelope value $\hat\beta(v)$ of its offset $v$, which does not depend on $d$; every boundary factor is at most $\hat\beta_b$;
+\item the two sides are the rows $y=2$ and $y=2d-2$, each with $(d+1)^2/2$ detectors.
+\end{enumerate}
+For $\theta\ge0$ let $\hat B(\theta)$ be the non-backtracking matrix of the offsets, $\hat B(\theta)_{v,v'}=\hat\beta(v')e^{-\theta\Delta y(v')/2}$ for $v'\ne-v$. Let $\hat\rho(\theta)$ be its spectral radius, $R(\theta)$ the ratio of the largest to the smallest entry of its right Perron vector, and $\hat s(\theta)=\sum_v\hat\beta(v)e^{-\theta\Delta y(v)/2}$. If $\hat\rho(\theta)<1$, then for every odd $d\ge5$
+\[
+\err_d\;\le\;\pL^{\rm MWPM}(d)\;\le\;\frac{(d+1)^2}{2}\,\hat\beta_b^2\,\frac{\hat s(\theta)R(\theta)}{1-\hat\rho(\theta)}\,e^{-\theta(d-2)}.
+\]
+So $\liminf_d-\tfrac1d\ln\pL^{\rm MWPM}(d)\ge\theta^\ast=\sup\{\theta:\hat\rho(\theta)<1\}$, and the suppression factor per distance step of two is at least $\Lambda^\ast=e^{2\theta^\ast}$.
+Numerically, (H1) and (H2) hold for $5\le d\le15$ with the same envelope and boundary factor (checks N5 and the experiment script). The values are:
+$\theta^\ast=2.23,\ 1.83,\ 1.24,\ 0.671$ ($\Lambda^\ast=86,\ 39,\ 12.0,\ 3.83$) at $p=10^{-4},\ 2\times10^{-4},\ 5\times10^{-4},\ 10^{-3}$, and $\hat\rho(0)<1$ for $p<1.405\times10^{-3}$. The growth rate $\hat\rho(0)$ of the bulk alone reaches $1$ at $p=1.55\times10^{-3}$.
+The same statement and proof hold for phenomenological noise, where the offsets are $\pm(2,\pm2,0)$ and $\pm(0,0,1)$. There $\theta^\ast=1.93,\ 1.53,\ 0.915$ at $p=10^{-3},\ 2\times10^{-3},\ 5\times10^{-3}$, and $\hat\rho(0)<1$ for $p<1.01\times10^{-2}$ ($1.32\times10^{-2}$ for the bulk alone).
+\hfill\st{PROVED} for $5\le d\le15$ (computer-assisted); for $d>15$ conditional on (H1)--(H2), which rest on the translation structure of the generated circuit and are not checked there
+\end{proposition}
+\begin{proof}
+Orient every $\gamma\in\mathcal C$ from its end $u$ on the row $y=2d-2$. Its path $u\to v$ in $G_{\rm o}-b$ is a non-backtracking walk. By (H1) every step changes $y$ by $0$ or $\pm2$, and by (H2) the steps add up to $\Delta y=-(2d-4)$. Hence
+$\prod_{e}\beta_e\le\prod_e\hat\beta(v_e)=e^{-\theta(d-2)}\prod_e\hat\beta(v_e)e^{-\theta\Delta y(v_e)/2}$.
+For fixed $u$, a walk is determined by its sequence of offsets, and non-backtracking walks give sequences with $v_{i+1}\ne-v_i$. So the sum over the walks from $u$ is at most
+$e^{-\theta(d-2)}\sum_{v_1}\hat\beta_\theta(v_1)\sum_{n\ge0}(\hat B(\theta)^n\mathbf 1)_{v_1}$.
+If $r>0$ is the right Perron vector, then $\hat B^n\mathbf 1\le\hat B^nr/\min r=\hat\rho^nr/\min r\le\hat\rho^nR\,\mathbf 1$, so this is at most $e^{-\theta(d-2)}\hat s(\theta)R(\theta)/(1-\hat\rho(\theta))$.
+Multiply by the two boundary factors ($\le\hat\beta_b^2$), sum over the $(d+1)^2/2$ choices of $u$, and apply Theorem~\ref{thm:circuit-peierls}(a),(c).
+\end{proof}
+
+\begin{corollary}[Bursts at circuit level: no floor, and a certificate without a strength floor]\label{cor:circuit-bursts}
+In the setting of Proposition~\ref{prop:circuit-lattice}, let bursts act on regions of mechanisms as in Theorem~\ref{thm:circuit-peierls}(d), with $V_E$ and $\bar\rho_E$ bounded. If $\Xi\,\hat\rho(\theta)<1$, the bound of Proposition~\ref{prop:circuit-lattice} holds with $\hat\beta$, $\hat\beta_b$ replaced by $\Xi\hat\beta$, $\Xi\hat\beta_b$ (and $\hat s$ by $\Xi\hat s$). In particular the failure probability still decays exponentially in $d$, and there is no $d$-independent floor; this is the O3 statement at circuit level.
+Theorem~\ref{thm:weak-bursts} carries over with the same proof:
+\begin{itemize}
+\item qubits are replaced by mechanisms ($K=2$, $\lambda(p)=1-2p$), and Lemma~\ref{lem:st-robust} replaces the check-based limits in (c);
+\item in (d), Theorem~\ref{thm:circuit-peierls}(c),(d) replaces Theorem~\ref{thm:peierls-bursts}, with $\bar\rho_E\le\max_e|\{m:e\in\Gamma(m)\}|\cdot\bar\rho$ and $V_E\le V$.
+\end{itemize}
+This gives a circuit-level certificate without a floor on the burst strength (O2).\hfill\st{PROVED} under (H1)--(H2)
+\end{corollary}
+\begin{proof}
+The first part combines Theorem~\ref{thm:circuit-peierls}(d) with the proof of Proposition~\ref{prop:circuit-lattice}.
+For the second part, check the steps of Theorem~\ref{thm:weak-bursts} at the level of mechanisms:
+\begin{itemize}
+\item (a) The thinning uses only the marking theorem and the fact that uniformizing a location absorbs every other fault on it; both hold for mechanisms ($K=2$).
+\item (b) The coverage estimate is the same algebra with $\lambda(p)=1-2p$.
+\item (c) The parity of a detector becomes uniform as soon as one mechanism in its support is uniformized.
+\item (d) The background enters only through the monotone bound of Theorem~\ref{thm:circuit-peierls}(c). A multi-set layer $A$ hits the edges $E(A)$, with $|E(A)|\le|A|$, and an edge collects the layers of all its mechanisms.
+\end{itemize}
+\end{proof}
+
+\noindent\emph{How tight.} At $p=10^{-3}$ the bound is $39$, $91$ and $240$ times the simulated MWPM failure rate at $d=3$, $5$ and $7$. Its certified suppression factor $\Lambda^\ast=3.8$ compares with a simulated $\Lambda\approx6$--$7$.
+The looseness comes from the Peierls step (Chernoff over the condition ``half of the cycle in error''), not from the counting. At $d=3$ with two rounds, the non-backtracking walk sum exceeds the exact sum over the $29{,}138$ odd simple cycles by only $3\%$ (check N3). Walks that also avoid the last two or three vertices lower the bulk growth rate by only $3$--$5\%$.
+\emph{Status.} This answers O5 at circuit level and for phenomenological noise (computable rigorous bounds for MWPM, hence for ML; the constants are still crude). It also gives the circuit-level forms of O3 and O2 under (H1)--(H2). What is not covered: erasure flags at circuit level, where the decoder changes its weights shot by shot; ML-specific (non-MWPM) bounds; and circuits whose decomposition is not balanced or leaves non-exclusive mechanisms (part (a) still applies, with the $p^{1/k}$ split, but no case was computed).

@@ -70,7 +70,8 @@ $R_{e\to p}\le (3/4-p_0)/(1-e_0)$, which is the sharp bound on the marginal rate
 (xii) that the exchange-rate gap of the surface code is code dependence, and a by-hand proof of equality for $[[5,1,3]]$;
 (xiii) the tensor-power rates of the uncoded qubit (exact: the one-shot order; approximate: conditional entropy, rate $R_{\rm hash}$);
 (xiv) the pure-erasure exponent $\alpha(0,e)=\ln\frac1e-\ln2+O(e)$ of the surface code;
-(xv) a Peierls bound with bursts (no floor) and a burst certificate that needs no floor on the burst strength.
+(xv) a Peierls bound with bursts (no floor) and a burst certificate that needs no floor on the burst strength;
+(xvi) a Peierls bound for matching on any balanced detector error model, computed for stim's surface-code memory circuit: non-vacuous at circuit-level noise $p=10^{-3}$ for $d\le15$, with a certified suppression factor $\Lambda\ge3.8$ for every $d$, and with bursts at circuit level (no floor, and a certificate without a strength floor).
 \emph{Correction} (\S\ref{sec:info}): the union bound sums over all elements of the logical classes, which makes it vacuous for the surface code as $d\to\infty$; the asymptotic statements now rest on Peierls bounds. The remaining items are statements with proof routes or open problems (\S\ref{sec:map}).
 \end{abstract}
 
@@ -95,5 +96,8 @@ $R_{e\to p}\le (3/4-p_0)/(1-e_0)$, which is the sharp bound on the marginal rate
 \bibitem{CT} T.~Cover, J.~Thomas, \emph{Elements of Information Theory}, 2nd ed., Wiley (2006), Ch.~11.
 \bibitem{MS} N.~Madras, G.~Slade, \emph{The Self-Avoiding Walk}, Birkh\"auser (1993) (submultiplicativity, Ch.~1; exact counts $c_n$ of square-lattice walks are tabulated there and in OEIS A001411).
 \bibitem{LeCam} L.~Le Cam, \emph{Asymptotic Methods in Statistical Decision Theory}, Springer (1986).
+\bibitem{Fowler} A.~G.~Fowler, \emph{Proof of finite surface code threshold for matching}, Phys.\ Rev.\ Lett.\ 109, 180502 (2012).
+\bibitem{stim} C.~Gidney, \emph{Stim: a fast stabilizer circuit simulator}, Quantum 5, 497 (2021).
+\bibitem{SB} O.~Higgott, C.~Gidney, \emph{Sparse Blossom: correcting a million errors per core second with minimum-weight matching}, arXiv:2303.15933 (2023).
 \end{thebibliography}
 \end{document}

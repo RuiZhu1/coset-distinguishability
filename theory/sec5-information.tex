@@ -267,7 +267,7 @@ Upper: for each $\theta$, $D(Q_\theta\|Q_0)=\sum_i\E_{Q_\theta}[n_i]D_i'(\theta)
 \subsection{What can be proved about $H_B$}\label{sec:hb}
 
 \begin{lemma}[Crossing paths counted by rows]\label{lem:row-count}
-For the rotated surface code and $0<x<0.18$, the crossing paths $\gamma$ of Lemma~\ref{lem:crossing} (simple paths of qubits from row $0$ to row $d-1$, consecutive qubits sharing a $Z$ check) satisfy
+For the rotated surface code and $0<x<0.18$, the crossing paths $\gamma$ of the proof of Theorem~\ref{thm:mwpm-peierls} (simple paths of qubits from row $0$ to row $d-1$, consecutive qubits sharing a $Z$ check) satisfy
 \[
 \sum_\gamma x^{|\gamma|}\;\le\;\frac{d\,x\,\big(2x(1+4x+16x^2)\big)^{d-1}}{\tfrac12-2x-8x^2}.
 \]
@@ -294,7 +294,7 @@ Lower bound. A minimum-weight $X$ logical is a path with one qubit per row: from
 \Prob\Big[\bigcup_{\gamma\in\Gamma}\mathcal E_\gamma\Big]=\sum_{\gamma}\Prob\Big[\mathcal E_\gamma\cap\bigcap_{\gamma'\prec\gamma}\mathcal E^c_{\gamma'}\Big]\ge\sum_\gamma\Prob[\mathcal E_\gamma]\,\Prob[A\cap N_L(\gamma)=\emptyset]\ge2^{d-2}e^d(1-e)^{d-1}.
 \]
 On this event $\err_A\ge\tfrac12$ (Lemma~\ref{lem:jump}), so $\err_d(0,e)\ge\tfrac12\Prob[\bigcup\mathcal E_\gamma]$.
-Upper bound. $\err_d(0,e)=\E_A[1-2^{-r(A)}]\le\Prob[r(A)\ge1]$ (Lemma~\ref{lem:erasure-only}). A nontrivial logical operator supported on $A$ has a nontrivial $X$ part or $Z$ part (CSS), whose support contains a crossing path in the $Z$-check or $X$-check graph (proof of Lemma~\ref{lem:crossing}); so $\Prob[r(A)\ge1]\le2\sum_\gamma e^{|\gamma|}$, and Lemma~\ref{lem:row-count} with $x=e$ gives the bound.
+Upper bound. $\err_d(0,e)=\E_A[1-2^{-r(A)}]\le\Prob[r(A)\ge1]$ (Lemma~\ref{lem:erasure-only}). A nontrivial logical operator supported on $A$ has a nontrivial $X$ part or $Z$ part (CSS), whose support contains a crossing path in the $Z$-check or $X$-check graph (the cycle argument in the proof of Theorem~\ref{thm:mwpm-peierls}); so $\Prob[r(A)\ge1]\le2\sum_\gamma e^{|\gamma|}$, and Lemma~\ref{lem:row-count} with $x=e$ gives the bound.
 \end{proof}
 
 \begin{proposition}[$H_B$ near the erasure axis, and what is missing elsewhere]\label{prop:hb-status}

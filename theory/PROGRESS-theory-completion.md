@@ -79,3 +79,16 @@ Written (numbers from main.aux):
 
 Checks: `checks/third_pass_checks.py` M1-M8 all pass (76 s, 149 MB). PDF builds, 53 pages, no undefined references.
 Still open: H_B at e = 0, Conjecture 3.11 (n >= 6 search, machine), R-c for coded structures, O4 false-alarm orientation and adaptive Chernoff, O7 beyond ~5%, circuit-level Peierls bounds, weak chip events, a proof that AME codes satisfy (E1) in general.
+
+## Fourth pass (2026-10-02): circuit-level Peierls bound for matching (§4.9)
+
+Written (numbers from main.aux):
+- **Def 4.27, Thm 4.28.** Observable graph of a detector error model (components of G - b with an observable edge), graph decompositions, re-decomposition (one edge whenever an edge with the same detectors and flag exists), balance (no odd cycle avoiding b; then two sides), exclusive mechanisms. Theorem: MWPM failure leaves a heavy odd cycle through b joining the two sides; per-cycle Chernoff bound prod beta_e(lam) (exclusive mechanisms give independent edges; the others are shared out by a splitting lemma, p^(1/k) per edge); sum over non-backtracking walks start^T (I - B)^{-1} end; ML <= MWPM; monotone in the noise (certificates); bursts in the DEM-location model multiply beta_e by Xi.
+- **Prop 4.29.** stim rotated_memory_z, d <= 15, uniform circuit noise and phenomenological noise: flags consistent, balanced, and after re-decomposition every mechanism has one edge in the observable graph (stim splits 48 ... 1872 mechanisms into two boundary edges whose detectors are joined by a timelike edge or a (4,0,-1) diagonal). Bounds: p = 1e-3 gives 2.9e-2 (d = 3) ... 4.6e-5 (d = 15); 24-1700 times the simulated pymatching rate at 11 points.
+- **Prop 4.30.** Closed form for every d: the edge factors are below a d-independent envelope on a 12-offset lattice (checked d = 5..15); the tilted non-backtracking matrix gives p_L <= (d+1)^2/2 bb^2 s R/(1-rho) e^{-theta(d-2)}; certified exponent theta*(1e-3) = 0.671, Lambda >= 3.83; valid for p < 1.405e-3 (phenomenological: p < 1.01e-2). For d > 15 conditional on (H1)-(H2).
+- **Cor 4.31.** Bursts at circuit level: no floor (O3), and the weak-burst certificate of Thm 4.24 carries over (O2), under (H1)-(H2).
+- Fixed on the way: the dangling reference `lem:crossing` (sec4 Thm 4.23 proof, sec5 Lemma 5.15 and Thm 5.16) now points to the proof of Thm 4.15.
+
+Code: `src/lcd/analysis/circuit_peierls.py` (any stim DEM with one observable), `experiments/certification/circuit_peierls.py` (numbers, `results/circuit_peierls.json`, about 5 min), `theory/checks/circuit_peierls_checks.py` (N1-N5, about 1 min, part of `make completion`), `tests/test_circuit_peierls.py`. `stim` is now a package dependency.
+Checks: N1-N5 all pass. The looseness of the bound is in the Peierls step, not in the counting (non-backtracking walks exceed the exact sum over the 29,138 odd simple cycles of the d = 3, two-round graph by 3%).
+Still open: sharper constants, erasure flags at circuit level, (H1)-(H2) for d > 15 from the circuit structure, ML-specific bounds at circuit level.
