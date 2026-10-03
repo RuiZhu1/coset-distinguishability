@@ -1,0 +1,153 @@
+{
+ "N1": [
+  {
+   "model": "circuit",
+   "d": 3,
+   "mechanisms": 286,
+   "edges": 55,
+   "boundary_edges": 16,
+   "redecomposed": 48,
+   "exclusive_multi": 0,
+   "split_multi": 0
+  },
+  {
+   "model": "circuit",
+   "d": 5,
+   "mechanisms": 1953,
+   "edges": 301,
+   "boundary_edges": 36,
+   "redecomposed": 172,
+   "exclusive_multi": 0,
+   "split_multi": 0
+  },
+  {
+   "model": "circuit",
+   "d": 7,
+   "mechanisms": 6602,
+   "edges": 883,
+   "boundary_edges": 64,
+   "redecomposed": 368,
+   "exclusive_multi": 0,
+   "split_multi": 0
+  },
+  {
+   "model": "phenomenological",
+   "d": 3,
+   "mechanisms": 76,
+   "edges": 40,
+   "boundary_edges": 16,
+   "redecomposed": 0,
+   "exclusive_multi": 0,
+   "split_multi": 0
+  },
+  {
+   "model": "phenomenological",
+   "d": 5,
+   "mechanisms": 418,
+   "edges": 186,
+   "boundary_edges": 36,
+   "redecomposed": 0,
+   "exclusive_multi": 0,
+   "split_multi": 0
+  },
+  {
+   "model": "phenomenological",
+   "d": 7,
+   "mechanisms": 1224,
+   "edges": 512,
+   "boundary_edges": 64,
+   "redecomposed": 0,
+   "exclusive_multi": 0,
+   "split_multi": 0
+  }
+ ],
+ "N2": [
+  {
+   "d": 3,
+   "p": 0.006,
+   "shots": 3000,
+   "fails": 71,
+   "not_one_edge": 0
+  },
+  {
+   "d": 5,
+   "p": 0.006,
+   "shots": 1500,
+   "fails": 35,
+   "not_one_edge": 0
+  }
+ ],
+ "N3": {
+  "chernoff_max_ratio": 0.472295275284982,
+  "simple_paths": 29138,
+  "simple_sum": 0.06687130062089738,
+  "walk_sum": 0.06893160152427213,
+  "burst_max_ratio": 0.14738361987061893
+ },
+ "N4": [
+  {
+   "model": "circuit",
+   "d": 3,
+   "p": 0.001,
+   "fails": 152,
+   "shots": 200000,
+   "bound": 0.029279356622992102
+  },
+  {
+   "model": "circuit",
+   "d": 3,
+   "p": 0.003,
+   "fails": 718,
+   "shots": 100000,
+   "bound": 0.23379737450475455
+  },
+  {
+   "model": "circuit",
+   "d": 5,
+   "p": 0.002,
+   "fails": 327,
+   "shots": 300000,
+   "bound": 0.16314353547987817
+  },
+  {
+   "model": "phenomenological",
+   "d": 3,
+   "p": 0.005,
+   "fails": 215,
+   "shots": 100000,
+   "bound": 0.053558838828459875
+  },
+  {
+   "model": "phenomenological",
+   "d": 5,
+   "p": 0.01,
+   "fails": 543,
+   "shots": 200000,
+   "bound": 0.10871370500273204
+  }
+ ],
+ "N5": {
+  "rho_envelope": 0.8441881836096479,
+  "rho_bulk": 0.803706398884268,
+  "theta_star": 0.6712691750636919,
+  "Lambda_star": 3.8287498888228106,
+  "closed": [
+   {
+    "d": 5,
+    "closed_form": 1.2553451291004747,
+    "theta": 0.3893361215369413
+   },
+   {
+    "d": 7,
+    "closed_form": 0.9188895723791595,
+    "theta": 0.48667015192117663
+   },
+   {
+    "d": 9,
+    "closed_form": 0.5143905758868873,
+    "theta": 0.533658994175635
+   }
+  ]
+ },
+ "failures": []
+}
