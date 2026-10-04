@@ -8,6 +8,8 @@ The full research plan is in [`ABSTRACT.md`](ABSTRACT.md). This README is also t
 
 ---
 
+**Papers (drafts, 2026-10-04).** `papers/circuit-bounds/main.pdf`: computable rigorous logical-error bounds for matching decoders on detector error models (theory §4.9, hardware margins, data certificates, the `lcd-qec` package). `papers/exchange-rates/main.pdf`: the erasure–Pauli free order, the exchange-rate bound and its equality cases (theory §0, §3, §5). Both are written from the notes; the proofs have not been independently reviewed.
+
 ## 1. Core idea (one paragraph)
 
 Under maximum-likelihood (coset) decoding, the logical failure probability equals the Bayes error of the hypothesis-testing problem "given the syndrome, distinguish the logical cosets". Hence the **distinguishability of logical cosets** can serve as a resource; syndrome coarse-graining, discarding classical side information, and superposing independent, classically samplable noise are free operations, under which the resource does not increase. The error-suppression exponent

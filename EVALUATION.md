@@ -46,7 +46,8 @@ Give every model the same bundle:
 2. `README.md`,
 3. `theory/main.pdf` (built with `make -C theory pdf`),
 4. `results/README.md`,
-5. the GitHub URL (some models cannot open it; the files above must be enough).
+5. the papers `papers/circuit-bounds/main.pdf` and `papers/exchange-rates/main.pdf` (added to the bundle on 2026-10-04, when they were written; the rubric is unchanged),
+6. the GitHub URL (some models cannot open it; the files above must be enough).
 
 ## 3. Prompt (use verbatim; a fresh chat for every run)
 
