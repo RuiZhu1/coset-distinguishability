@@ -4,3 +4,9 @@ __pycache__/
 data/
 dist/
 build/
+papers/*/main.aux
+papers/*/main.log
+papers/*/main.out
+papers/*/main.toc
+papers/*/main.fls
+papers/*/main.fdb_latexmk
