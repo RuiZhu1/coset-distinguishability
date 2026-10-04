@@ -6,7 +6,9 @@
     lcd-peierls a.stim b.stim --json            # one JSON object per line
 
 The number printed (by default the smallest of Theorems 4.28, 4.32, 4.34) is a rigorous upper bound, per shot, on the
-logical failure probability of pymatching (no correlated decoding) on that model, hence of the maximum-likelihood decoder. ``inf`` means the walk sum diverges.
+probability that pymatching (no correlated decoding) gets some logical observable wrong on that model, hence also
+for the maximum-likelihood decoder. With several observables it is the sum of the per-observable bounds.
+``inf`` means the walk sum diverges.
 """
 from __future__ import annotations
 
@@ -18,6 +20,7 @@ import stim
 
 from lcd.analysis.circuit_peierls import peierls_bound
 from lcd.analysis.circuit_peierls_geodesic import best_bound, gap_bound_nb, geodesic_bound
+from lcd.analysis.observables import bound_any
 
 
 def _dem_from_path(path: str) -> stim.DetectorErrorModel:
@@ -61,23 +64,29 @@ def main(argv: list[str] | None = None) -> int:
         try:
             lams = None if a.lam is None else [a.lam]
             if a.method == "4.28":
-                r = dict(peierls_bound(dem, lams=lams), method="4.28")
+                fn = lambda m: dict(peierls_bound(m, lams=lams), method="4.28")  # noqa: E731
             elif a.method == "4.32":
-                r = dict(geodesic_bound(dem, lams=lams), method="4.32", delta=0.0)
+                fn = lambda m: dict(geodesic_bound(m, lams=lams), method="4.32", delta=0.0)  # noqa: E731
             elif a.method == "4.34":
-                r = dict(gap_bound_nb(dem, lams=lams), method="4.34", delta=0.0)
+                fn = lambda m: dict(gap_bound_nb(m, lams=lams), method="4.34", delta=0.0)  # noqa: E731
+            elif lams is None:
+                fn = best_bound
             else:
-                r = best_bound(dem) if lams is None else dict(peierls_bound(dem, lams=lams), method="4.28")
+                fn = lambda m: dict(peierls_bound(m, lams=lams), method="4.28")  # noqa: E731
+            r = bound_any(dem, fn)
         except (ValueError, NotImplementedError) as ex:
             print(f"{name}: not covered: {ex}", file=sys.stderr)
             status = 1
             continue
         if a.json:
-            print(json.dumps(dict(model=name, **{k: r.get(k) for k in ("bound", "method", "lam", "rho_upper", "delta")},
+            print(json.dumps(dict(model=name, **{k: r.get(k) for k in ("bound", "per_observable", "method", "lam", "rho_upper",
+                                                                        "delta")},
                                   stats=r["stats"]), default=float))
         else:
+            extra = "" if len(r["per_observable"]) == 1 else \
+                f", sum over {len(r['per_observable'])} observables: " + ", ".join(f"{b:.2e}" for b in r["per_observable"])
             print(f"{name}: p_L(MWPM) <= {r['bound']:.3e}  (Theorem {r['method']}, lam = {r['lam']:.3f}, "
-                  f"rho <= {r['rho_upper']:.4f})")
+                  f"rho <= {r['rho_upper']:.4f}{extra})")
     return status
 
 

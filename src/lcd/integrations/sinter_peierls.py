@@ -36,8 +36,9 @@ def task_dem(task) -> stim.DetectorErrorModel:
 
 
 def bound_for_task(task) -> dict:
-    """The smaller of Theorems 4.28 and 4.32 on the task's detector error model."""
-    return best_bound(task_dem(task))
+    """The smallest of Theorems 4.28, 4.32, 4.34 on the task's detector error model (union over observables)."""
+    from lcd.analysis.observables import bound_any
+    return bound_any(task_dem(task), best_bound)
 
 
 def compare(tasks: Iterable, stats: Iterable, *, max_likelihood_factor: float = 1e3) -> list[dict]:

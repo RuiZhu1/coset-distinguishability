@@ -3,16 +3,29 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lcd"
-version = "0.0.1"
-description = "Logical Coset Distinguishability: numerics for the resource theory of surface-code noise"
+name = "lcd-qec"
+version = "0.1.0"
+description = "Rigorous logical-error bounds for matching decoders on stim detector error models (logical coset distinguishability)"
+readme = "docs/PYPI.md"
+keywords = ["quantum error correction", "surface code", "stim", "sinter", "pymatching", "Peierls bound", "certification"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Physics",
+]
 requires-python = ">=3.10"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 dependencies = ["numpy", "scipy", "pymatching>=2.1", "stim>=1.12"]
 
+[project.urls]
+Repository = "https://github.com/RuiZhu1/coset-distinguishability"
+Theory = "https://github.com/RuiZhu1/coset-distinguishability/tree/main/theory"
+
 [project.optional-dependencies]
 sinter = ["sinter>=1.12"]
+examples = ["sinter>=1.12", "matplotlib", "jupyter"]
 dev = ["pytest", "sinter>=1.12"]
 
 [project.scripts]
